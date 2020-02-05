@@ -17,9 +17,6 @@ enum FrameFormat {
 
 int      MungePaletteIndex(int value);
 uint32_t FromArgb(uint8_t a, uint8_t r, uint8_t g, uint8_t b);
-void     decode_RGBA5551_Indexed(std::uint32_t *dst, const std::uint8_t *const src, std::uint32_t dimensions);
-void     decode_RGBA32_Indexed(std::uint32_t *dst, const std::uint8_t *const src, std::uint32_t dimensions);
-void     decode_UNK0(std::uint32_t *dst, const std::uint8_t *const src, std::uint32_t dimensions);
 
 void decode_RGBA5551_Indexed(std::uint32_t *dst, const std::uint8_t *const src, std::uint16_t width, std::uint16_t height)
 {
