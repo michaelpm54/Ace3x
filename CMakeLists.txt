@@ -59,6 +59,7 @@ set(WIDGET_SOURCES
 set(FORMATS_HEADERS
     src/Formats/Peg.hpp
     src/Formats/Vpp.hpp
+    src/Formats/P3D.hpp
 )
 
 set(HEADERS
