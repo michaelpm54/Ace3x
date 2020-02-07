@@ -10,6 +10,7 @@
 #include "ui_P3DViewer.h"
 
 class Entry;
+struct P3DHeader;
 
 class P3DViewer : public QWidget, public Viewer {
         Q_OBJECT
@@ -18,6 +19,9 @@ public:
 
         void activate(const Entry *item) override;
         bool shouldBeEnabled(const Entry *item) const override;
+
+private:
+        void addNavpoint(const QString &str, const P3DHeader &header, const std::uint8_t *data);
 
 private:
         Ui::P3DViewer ui;
