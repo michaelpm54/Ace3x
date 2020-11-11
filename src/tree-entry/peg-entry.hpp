@@ -13,6 +13,8 @@ public:
     void read(std::vector<std::uint8_t> data, QTextEdit *log = nullptr) override;
     PegFrame getFrame(std::uint16_t index) const;
 
+    bool is_archive() const override;
+
 private:
     std::vector<PegFrame> mFrames;
 };

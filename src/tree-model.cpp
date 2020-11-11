@@ -4,10 +4,11 @@
 
 #include <QDebug>
 
+#include "tree-entry/file-entry.hpp"
 #include "tree-entry/tree-entry.hpp"
 
 TreeModel::TreeModel()
-    : mInvisibleRoot(new TreeEntry(""))
+    : mInvisibleRoot(new FileEntry(""))
 {
     clear();
 }
@@ -75,7 +76,7 @@ bool TreeModel::hasChildren(const QModelIndex &index) const
         return true;
 
     const auto item = itemFromIndex(index);
-    return item->isArchive() && item->count() != 0;
+    return item->is_archive() && item->count() != 0;
 }
 
 QVariant TreeModel::headerData(int section, Qt::Orientation orientation, int role) const
@@ -114,7 +115,7 @@ void TreeModel::clear()
 
 bool TreeModel::canFetchMore(const QModelIndex &index) const
 {
-    return itemFromIndex(index)->isArchive();
+    return itemFromIndex(index)->is_archive();
 }
 
 void TreeModel::fetchMore(const QModelIndex &index)

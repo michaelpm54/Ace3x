@@ -7,6 +7,7 @@
 #include <sstream>
 
 #include "Util.hpp"
+#include "tree-entry/file-entry.hpp"
 
 void PegEntry::read(std::vector<std::uint8_t> data, QTextEdit *log)
 {
@@ -53,7 +54,7 @@ void PegEntry::read(std::vector<std::uint8_t> data, QTextEdit *log)
             continue;
         }
 
-        auto entry = new TreeEntry(filename, index, size);
+        auto entry = new FileEntry(filename, index, size);
 
         std::vector<std::uint8_t> childData(
             data.begin() + mFrames[i].offset,
@@ -75,4 +76,9 @@ PegFrame PegEntry::getFrame(std::uint16_t index) const
     if (index >= mFrames.size())
         return PegFrame();
     return mFrames[index];
+}
+
+bool PegEntry::is_archive() const
+{
+    return true;
 }

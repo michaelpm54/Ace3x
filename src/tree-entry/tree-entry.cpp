@@ -5,18 +5,10 @@
 #include <QDebug>
 #include <QFileInfo>
 
-bool IsArchive(QString ext)
-{
-    if ((ext == "vpp") || (ext == "peg"))
-        return true;
-    return false;
-}
-
 TreeEntry::TreeEntry(QString name)
     : mName(name)
     , mFilename(QFileInfo(name).fileName())
     , mExtension(QFileInfo(name).suffix().toLower())
-    , mIsArchive(IsArchive(mExtension))
 {
 }
 
@@ -24,7 +16,6 @@ TreeEntry::TreeEntry(QString name, std::uint16_t index, std::uint32_t size)
     : mName(name)
     , mFilename(QFileInfo(name).fileName())
     , mExtension(QFileInfo(name).suffix().toLower())
-    , mIsArchive(IsArchive(mExtension))
     , mIndex(index)
     , mSize(size)
 {
@@ -83,11 +74,6 @@ QString TreeEntry::getExtension() const
 std::uint16_t TreeEntry::count() const
 {
     return mChildren.size();
-}
-
-bool TreeEntry::isArchive() const
-{
-    return mIsArchive;
 }
 
 TreeEntry *TreeEntry::getParent() const

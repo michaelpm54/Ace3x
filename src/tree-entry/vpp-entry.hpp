@@ -15,6 +15,8 @@ public:
     void read(std::vector<std::uint8_t> data, QTextEdit *log = nullptr) override;
     bool isCompressed() const;
 
+    bool is_archive() const override;
+
 private:
     bool mCompressed {false};
 };

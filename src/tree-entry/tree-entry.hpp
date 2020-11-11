@@ -28,10 +28,11 @@ public:
     QString getFilename() const;
     QString getExtension() const;
     qint64 getSize() const;
-    bool isArchive() const;
     TreeEntry *getParent() const;
     const std::uint8_t *getData() const;
     TreeEntry *getChild(std::uint16_t index) const;
+
+    virtual bool is_archive() const = 0;
 
 protected:
     TreeEntry *mParent {nullptr};

@@ -40,6 +40,7 @@ set(ACE3X_SOURCES
 	src/tree-entry/tree-entry-sort-proxy.cpp
 	src/tree-entry/peg-entry.cpp
 	src/tree-entry/vpp-entry.cpp
+	src/tree-entry/file-entry.cpp
 	
 	# Summoner file formats
     src/formats/VifMesh.cpp
