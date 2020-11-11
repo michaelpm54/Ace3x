@@ -31,7 +31,6 @@ set(ACE3X_SOURCES
     src/Main.cpp
     src/FrameDecoder.cpp
     src/Util.cpp
-    src/PegEntry.cpp
     src/VppEntry.cpp
 	
 	# General GUI
@@ -40,6 +39,7 @@ set(ACE3X_SOURCES
 	# GUI: tree model entry
 	src/tree-entry/tree-entry.cpp
 	src/tree-entry/tree-entry-sort-proxy.cpp
+    src/tree-entry/peg-entry.cpp
 	
 	# Summoner file formats
     src/Formats/VifMesh.cpp

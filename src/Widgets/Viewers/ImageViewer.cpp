@@ -9,7 +9,7 @@
 #include <QKeyEvent>
 
 #include "FrameDecoder.hpp"
-#include "PegEntry.hpp"
+#include "tree-entry/peg-entry.hpp"
 
 ImageViewer::ImageViewer(QWidget *parent)
     : QWidget(parent)

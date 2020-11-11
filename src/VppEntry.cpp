@@ -7,8 +7,8 @@
 #include <QDebug>
 #include <QTextEdit>
 
-#include "PegEntry.hpp"
 #include "Util.hpp"
+#include "tree-entry/peg-entry.hpp"
 
 static constexpr std::uint16_t CHUNK_SIZE = 0x800;
 
