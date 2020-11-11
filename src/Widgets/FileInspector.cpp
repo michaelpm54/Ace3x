@@ -11,8 +11,8 @@
 #include <QMessageBox>
 #include <QPushButton>
 
-#include "Entry.hpp"
 #include "Widgets/Viewers/Viewer.hpp"
+#include "tree-entry/tree-entry.hpp"
 
 FileInspector::FileInspector(QWidget *parent)
     : QFrame(parent)
@@ -42,7 +42,7 @@ FileInspector::FileInspector(QWidget *parent)
     connect(mView, &QPushButton::released, this, &FileInspector::viewButtonClicked);
 }
 
-void FileInspector::setItem(const Entry *const item)
+void FileInspector::setItem(const TreeEntry *const item)
 {
     mSave->show();
 

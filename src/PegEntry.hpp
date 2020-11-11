@@ -3,12 +3,12 @@
 #ifndef PEGENTRY_HPP
 #define PEGENTRY_HPP
 
-#include "Entry.hpp"
 #include "Formats/Peg.hpp"
+#include "tree-entry/tree-entry.hpp"
 
-class PegEntry : public Entry {
+class PegEntry : public TreeEntry {
 public:
-    using Entry::Entry;    // inherit constructors
+    using TreeEntry::TreeEntry;    // inherit constructors
 
     void read(std::vector<std::uint8_t> data, QTextEdit *log = nullptr) override;
     PegFrame getFrame(std::uint16_t index) const;

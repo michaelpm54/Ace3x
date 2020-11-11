@@ -4,34 +4,34 @@
 
 #include <QDebug>
 
-#include "Entry.hpp"
+#include "tree-entry/tree-entry.hpp"
 
 FileViewModel::FileViewModel()
-    : mInvisibleRoot(new Entry(""))
+    : mInvisibleRoot(new TreeEntry(""))
 {
     clear();
 }
 
 FileViewModel::~FileViewModel() = default;
 
-Entry *FileViewModel::itemFromIndex(const QModelIndex &index) const
+TreeEntry *FileViewModel::itemFromIndex(const QModelIndex &index) const
 {
     if (!index.isValid())
         return mInvisibleRoot.get();
 
-    return static_cast<Entry *>(index.internalPointer());
+    return static_cast<TreeEntry *>(index.internalPointer());
 }
 
 QModelIndex FileViewModel::index(int row, int col, const QModelIndex &parent) const
 {
-    Entry *parentItem = itemFromIndex(parent);
+    TreeEntry *parentItem = itemFromIndex(parent);
     if (!parentItem)
         return QModelIndex();
 
     if (row >= static_cast<int>(parentItem->count()))
         return QModelIndex();
 
-    Entry *item = parentItem->getChild(row);
+    TreeEntry *item = parentItem->getChild(row);
 
     if (!item)
         return QModelIndex();
@@ -54,7 +54,7 @@ QVariant FileViewModel::data(const QModelIndex &index, int role) const
     if (!index.isValid())
         return QVariant();
 
-    Entry *item = itemFromIndex(index);
+    TreeEntry *item = itemFromIndex(index);
 
     if (role == Qt::DisplayRole)
         switch (index.column()) {
@@ -123,7 +123,7 @@ void FileViewModel::fetchMore(const QModelIndex &index)
         return;
 }
 
-void FileViewModel::addRoots(QList<Entry *> list)
+void FileViewModel::addRoots(QList<TreeEntry *> list)
 {
     clear();
 

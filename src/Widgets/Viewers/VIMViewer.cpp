@@ -5,7 +5,7 @@
 #include <QByteArray>
 #include <QDebug>
 
-#include "Entry.hpp"
+#include "tree-entry/tree-entry.hpp"
 
 float ieee_float(uint32_t f)
 {
@@ -47,7 +47,7 @@ VIMViewer::VIMViewer(QWidget *parent)
     ui.sub5List->setEditTriggers(QAbstractItemView::EditTrigger::NoEditTriggers);
 }
 
-void VIMViewer::activate(const Entry *item)
+void VIMViewer::activate(const TreeEntry *item)
 {
     m_item = item;
 
@@ -174,7 +174,7 @@ void VIMViewer::activate(const Entry *item)
     }
 }
 
-bool VIMViewer::shouldBeEnabled(const Entry *) const
+bool VIMViewer::shouldBeEnabled(const TreeEntry *) const
 {
     return true;
 }

@@ -3,10 +3,11 @@
 #ifndef VPPENTRY_HPP
 #define VPPENTRY_HPP
 
-#include "Entry.hpp"
 #include "Formats/Vpp.hpp"
+#include "tree-entry/tree-entry.hpp"
 
-class VppEntry : public Entry {
+
+class VppEntry : public TreeEntry {
 public:
     VppEntry(QString name);
 

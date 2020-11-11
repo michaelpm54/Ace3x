@@ -10,7 +10,7 @@ class QPushButton;
 class QLineEdit;
 
 class Viewer;
-class Entry;
+class TreeEntry;
 
 class FileInspector : public QFrame {
     Q_OBJECT
@@ -21,7 +21,7 @@ public:
     void clear();
 
 public slots:
-    void setItem(const Entry *const entry);
+    void setItem(const TreeEntry *const entry);
 
 private slots:
     void saveButtonClicked();
@@ -37,7 +37,7 @@ private:
 
     QMap<QString, Viewer *> mViewers;
 
-    const Entry *mItem {nullptr};
+    const TreeEntry *mItem {nullptr};
 };
 
 #endif    // FILEINSPECTOR_HPP

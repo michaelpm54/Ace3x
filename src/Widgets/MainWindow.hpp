@@ -6,7 +6,7 @@
 #include <QItemSelection>
 #include <QMainWindow>
 
-#include "Entry.hpp"
+#include "tree-entry/tree-entry.hpp"
 
 class QFrame;
 class QTreeView;
@@ -38,7 +38,7 @@ public slots:
 
 private:
     void setupActions();
-    QList<Entry *> loadLevel(const QString &path);
+    QList<TreeEntry *> loadLevel(const QString &path);
 
 private slots:
     void updateSelection(const QItemSelection &selected, const QItemSelection &deselected);

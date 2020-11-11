@@ -8,7 +8,7 @@
 #include "Viewer.hpp"
 #include "ui_ImageViewer.h"
 
-class Entry;
+class TreeEntry;
 class PegEntry;
 
 class ImageViewer : public QWidget, public Viewer {
@@ -16,8 +16,8 @@ class ImageViewer : public QWidget, public Viewer {
 public:
     explicit ImageViewer(QWidget *parent = nullptr);
 
-    void activate(const Entry *item) override;
-    bool shouldBeEnabled(const Entry *item) const override;
+    void activate(const TreeEntry *item) override;
+    bool shouldBeEnabled(const TreeEntry *item) const override;
 
 protected:
     void keyPressEvent(QKeyEvent *event) override;

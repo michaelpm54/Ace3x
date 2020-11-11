@@ -4,7 +4,7 @@
 
 #include <QByteArray>
 
-#include "Entry.hpp"
+#include "tree-entry/tree-entry.hpp"
 
 PlaintextViewer::PlaintextViewer(QWidget *parent)
     : QWidget(parent)
@@ -14,14 +14,14 @@ PlaintextViewer::PlaintextViewer(QWidget *parent)
     resize(800, 600);
 }
 
-void PlaintextViewer::activate(const Entry *item)
+void PlaintextViewer::activate(const TreeEntry *item)
 {
     show();
     QString text = QString::fromLatin1(QByteArray(reinterpret_cast<const char *>(item->getData()), item->getSize()));
     ui.textBrowser->setText(text);
 }
 
-bool PlaintextViewer::shouldBeEnabled(const Entry *) const
+bool PlaintextViewer::shouldBeEnabled(const TreeEntry *) const
 {
     return true;
 }

@@ -9,7 +9,7 @@
 #include "Viewer.hpp"
 #include "ui_P3DViewer.h"
 
-class Entry;
+class TreeEntry;
 struct P3DHeader;
 
 class P3DViewer : public QWidget, public Viewer {
@@ -17,8 +17,8 @@ class P3DViewer : public QWidget, public Viewer {
 public:
     explicit P3DViewer(QWidget *parent = nullptr);
 
-    void activate(const Entry *item) override;
-    bool shouldBeEnabled(const Entry *item) const override;
+    void activate(const TreeEntry *item) override;
+    bool shouldBeEnabled(const TreeEntry *item) const override;
 
 private:
     struct P3DInternal {
@@ -35,7 +35,7 @@ private slots:
 
 private:
     Ui::P3DViewer ui;
-    const Entry *m_item {nullptr};
+    const TreeEntry *m_item {nullptr};
     P3DHeader m_header;
 };
 

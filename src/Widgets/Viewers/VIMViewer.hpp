@@ -16,13 +16,13 @@ class VIMViewer : public QWidget, public Viewer {
 public:
     explicit VIMViewer(QWidget *parent = nullptr);
 
-    void activate(const Entry *item) override;
-    bool shouldBeEnabled(const Entry *item) const override;
+    void activate(const TreeEntry *item) override;
+    bool shouldBeEnabled(const TreeEntry *item) const override;
 
 private:
     Ui::VIMViewer ui;
     VifMesh m_vim;
-    const Entry *m_item;
+    const TreeEntry *m_item;
 
 private slots:
     void sub0Changed();

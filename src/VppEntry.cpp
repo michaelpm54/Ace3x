@@ -16,7 +16,7 @@ uint32_t alignToChunk(int n);
 std::vector<std::uint8_t> decompress(const std::uint8_t *const data, std::uint32_t compressedSize, std::uint32_t uncompressedSize);
 
 VppEntry::VppEntry(QString name)
-    : Entry(name)
+    : TreeEntry(name)
 {
 }
 
@@ -67,13 +67,13 @@ void VppEntry::readVpp1(std::vector<std::uint8_t> &data, QTextEdit *log)
 
         const auto ext = ::getExtension(filename);
 
-        Entry *entry;
+        TreeEntry *entry;
 
         if (ext == "peg") {
             entry = new PegEntry(filename, index, size);
         }
         else {
-            entry = new Entry(filename, index, size);
+            entry = new TreeEntry(filename, index, size);
         }
 
         std::vector<std::uint8_t> childData(
@@ -161,13 +161,13 @@ void VppEntry::readVpp2(std::vector<std::uint8_t> &data, QTextEdit *log)
 
         const auto ext = ::getExtension(filename);
 
-        Entry *entry;
+        TreeEntry *entry;
 
         if (ext == "peg") {
             entry = new PegEntry(filename, index, size);
         }
         else {
-            entry = new Entry(filename, index, size);
+            entry = new TreeEntry(filename, index, size);
         }
 
         std::vector<std::uint8_t> childData(

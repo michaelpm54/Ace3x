@@ -53,7 +53,7 @@ void PegEntry::read(std::vector<std::uint8_t> data, QTextEdit *log)
             continue;
         }
 
-        auto entry = new Entry(filename, index, size);
+        auto entry = new TreeEntry(filename, index, size);
 
         std::vector<std::uint8_t> childData(
             data.begin() + mFrames[i].offset,

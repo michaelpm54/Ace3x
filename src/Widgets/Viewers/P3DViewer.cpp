@@ -6,7 +6,7 @@
 #include <array>
 #include <fstream>
 
-#include "Entry.hpp"
+#include "tree-entry/tree-entry.hpp"
 
 void P3DViewer::writeVerticesToObj(const std::uint8_t *const data, int start, int size)
 {
@@ -92,7 +92,7 @@ void P3DViewer::onWriteObjClicked()
     writeVerticesToObj(m_item->getFilename(), m_header, m_item->getData());
 }
 
-void P3DViewer::activate(const Entry *item)
+void P3DViewer::activate(const TreeEntry *item)
 {
     ui.objList->clear();
     ui.imgList->clear();
@@ -153,7 +153,7 @@ void P3DViewer::activate(const Entry *item)
     ui.navTable->sortItems(0, Qt::SortOrder::AscendingOrder);
 }
 
-bool P3DViewer::shouldBeEnabled(const Entry *) const
+bool P3DViewer::shouldBeEnabled(const TreeEntry *) const
 {
     return (true);
 }

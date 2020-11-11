@@ -29,7 +29,7 @@ ImageViewer::ImageViewer(QWidget *parent)
     });
 }
 
-void ImageViewer::activate(const Entry *item)
+void ImageViewer::activate(const TreeEntry *item)
 {
     if (!item) {
         return;
@@ -117,7 +117,7 @@ void ImageViewer::update()
     ui.label->setPixmap(QPixmap::fromImage(image));
 }
 
-bool ImageViewer::shouldBeEnabled(const Entry *item) const
+bool ImageViewer::shouldBeEnabled(const TreeEntry *item) const
 {
     if (item->getExtension() == "peg") {
         return (item->count() != 0);

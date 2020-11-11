@@ -8,15 +8,15 @@
 #include "Viewer.hpp"
 #include "ui_PlaintextViewer.h"
 
-class Entry;
+class TreeEntry;
 
 class PlaintextViewer : public QWidget, public Viewer {
     Q_OBJECT
 public:
     explicit PlaintextViewer(QWidget *parent = nullptr);
 
-    void activate(const Entry *item) override;
-    bool shouldBeEnabled(const Entry *item) const override;
+    void activate(const TreeEntry *item) override;
+    bool shouldBeEnabled(const TreeEntry *item) const override;
 
 private:
     Ui::PlaintextViewer ui;

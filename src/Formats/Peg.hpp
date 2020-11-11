@@ -3,6 +3,8 @@
 #ifndef PEG_HPP
 #define PEG_HPP
 
+#include <cstdint>
+
 struct PegHeader {
     uint32_t signature;
     uint32_t version;

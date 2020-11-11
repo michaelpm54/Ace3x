@@ -31,7 +31,6 @@ set(ACE3X_SOURCES
     src/Main.cpp
     src/FrameDecoder.cpp
     src/Util.cpp
-	src/Entry.cpp
     src/PegEntry.cpp
     src/VppEntry.cpp
 	
@@ -39,6 +38,7 @@ set(ACE3X_SOURCES
     src/FileViewModel.cpp
 	
 	# GUI: tree model entry
+	src/tree-entry/tree-entry.cpp
 	src/tree-entry/tree-entry-sort-proxy.cpp
 	
 	# Summoner file formats

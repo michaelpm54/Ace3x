@@ -120,13 +120,13 @@ void MainWindow::setupActions()
     setMenuBar(mb);
 }
 
-QList<Entry *> MainWindow::loadLevel(const QString &path)
+QList<TreeEntry *> MainWindow::loadLevel(const QString &path)
 {
     QDir dir = QFileInfo(path).dir();
 
     auto entryPaths = dir.entryInfoList(QDir::AllEntries | QDir::NoDotAndDotDot);
 
-    QList<Entry *> list;
+    QList<TreeEntry *> list;
 
     for (auto &e : entryPaths) {
         const auto path = e.absoluteFilePath();
@@ -152,7 +152,7 @@ void MainWindow::loadVpp(const QString &path)
 
     mLastPath = QFileInfo(path).dir().absolutePath();
 
-    QList<Entry *> vppList;
+    QList<TreeEntry *> vppList;
 
     if (path.contains("LEVELS")) {
         vppList.append(loadLevel(path));
@@ -185,7 +185,7 @@ void MainWindow::updateSelection(const QItemSelection &selected, const QItemSele
 
     qDebug() << selected.indexes().first();
 
-    Entry *entry = mFileViewModel->itemFromIndex(mTreeEntrySortProxy->mapToSource(selected.indexes().first()));
+    TreeEntry *entry = mFileViewModel->itemFromIndex(mTreeEntrySortProxy->mapToSource(selected.indexes().first()));
 
     mFileInspector->setItem(entry);
 }

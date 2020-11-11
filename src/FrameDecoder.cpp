@@ -6,7 +6,7 @@
 #include <iostream>
 #include <stdexcept>
 
-#include "Entry.hpp"
+#include "tree-entry/tree-entry.hpp"
 
 enum FrameFormat {
     RGBA5551_Indexed = 0x104,    // gggrrrrr abbbbbgg

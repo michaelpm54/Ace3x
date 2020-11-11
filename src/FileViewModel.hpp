@@ -6,16 +6,16 @@
 #include <QAbstractItemModel>
 #include <memory>
 
-class Entry;
+class TreeEntry;
 
 class FileViewModel : public QAbstractItemModel {
 public:
     FileViewModel();
     ~FileViewModel();
 
-    void addRoots(QList<Entry *> list);
+    void addRoots(QList<TreeEntry *> list);
     void clear();
-    Entry *itemFromIndex(const QModelIndex &index) const;
+    TreeEntry *itemFromIndex(const QModelIndex &index) const;
 
     QModelIndex index(int row, int col, const QModelIndex &parent) const;
 
@@ -30,10 +30,10 @@ protected:
     void fetchMore(const QModelIndex &index);
 
 private:
-    void populate(Entry *parent, const Entry &entry);
-    void addChildren(Entry *parent, Entry *entry);
+    void populate(TreeEntry *parent, const TreeEntry &entry);
+    void addChildren(TreeEntry *parent, TreeEntry *entry);
 
-    std::unique_ptr<Entry> mInvisibleRoot;
+    std::unique_ptr<TreeEntry> mInvisibleRoot;
 };
 
 #endif    // FILEVIEWMODEL_HPP

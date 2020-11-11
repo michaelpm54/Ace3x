@@ -3,6 +3,8 @@
 #ifndef VPP_HPP
 #define VPP_HPP
 
+#include <cstdint>
+
 struct VppHeader_V1 {
     std::uint32_t signature;
     std::uint32_t version;
