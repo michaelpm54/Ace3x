@@ -6,7 +6,7 @@ project(Ace3x
 	LANGUAGES CXX
 )
 
-set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_CXX_STANDARD 17)
 
 if (CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Weverything -Wno-c++98-compat -Wno-padded")
@@ -22,19 +22,22 @@ set(CMAKE_AUTOUIC ON)
 set(CMAKE_AUTOUIC_SEARCH_PATHS ui)
 set(CMAKE_AUTORCC ON)
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
-find_package(Qt5 COMPONENTS Widgets REQUIRED)
-list(APPEND ACE3X_LIBS Qt5::Widgets)
-list(APPEND ACE3X_INCLUDES ${Qt5Widgets_INCLUDE_DIRS})
+find_package(Qt5 5.13 COMPONENTS Widgets REQUIRED )
 
-find_package(ZLIB REQUIRED)
-list(APPEND ACE3X_LIBS ZLIB::ZLIB)
-list(APPEND ACE3X_INCLUDES ${ZLIB_INCLUDE_DIR})
+include(cmake/conan.cmake)
+conan_cmake_run(CONANFILE conanfile.txt
+                BASIC_SETUP CMAKE_TARGETS
+                BUILD missing)
+
+include(${CMAKE_BINARY_DIR}/conanbuildinfo.cmake)
+conan_basic_setup()
 
 set(VIEWER_HEADERS
     src/Widgets/Viewers/Viewer.hpp
     src/Widgets/Viewers/ImageViewer.hpp
     src/Widgets/Viewers/PlaintextViewer.hpp
     src/Widgets/Viewers/P3DViewer.hpp
+    src/Widgets/Viewers/VIMViewer.hpp
 )
 
 set(VIEWER_SOURCES
@@ -42,6 +45,7 @@ set(VIEWER_SOURCES
     src/Widgets/Viewers/ImageViewer.cpp
     src/Widgets/Viewers/PlaintextViewer.cpp
     src/Widgets/Viewers/P3DViewer.cpp
+    src/Widgets/Viewers/VIMViewer.cpp
 )
 
 set(WIDGET_HEADERS
@@ -60,6 +64,11 @@ set(FORMATS_HEADERS
     src/Formats/Peg.hpp
     src/Formats/Vpp.hpp
     src/Formats/P3D.hpp
+    src/Formats/VifMesh.hpp
+)
+
+set(FORMATS_SOURCES
+    src/Formats/VifMesh.cpp
 )
 
 set(HEADERS
@@ -84,6 +93,7 @@ set(SOURCES
     src/VppEntry.cpp
     src/FileViewModel.cpp
     src/ProxyModel.cpp
+    ${FORMATS_SOURCES}
     ${READER_SOURCES}
     ${WIDGET_SOURCES}
     ${HEADERS}
@@ -93,6 +103,7 @@ set(FORMS
     ui/ImageViewer.ui
     ui/PlaintextViewer.ui
     ui/P3DViewer.ui
+    ui/VIMViewer.ui
 )
 
 list(APPEND ACE3X_INCLUDES src)
@@ -102,8 +113,17 @@ add_executable(${EXE_NAME}
     ${FORMS}
 )
 
-target_link_libraries(${EXE_NAME} PRIVATE ${ACE3X_LIBS})
-target_include_directories(${EXE_NAME} PRIVATE ${ACE3X_INCLUDES})
+set(CMAKE_INCLUDE_CURRENT_DIR ON)
+target_link_libraries(${EXE_NAME} PRIVATE Qt5::Widgets ${CONAN_LIBS})
+target_include_directories(${EXE_NAME} PRIVATE src ${ACE3X_INCLUDES} ${Qt5_Widgets_INCLUDES})
+
+# Copy Qt DLL's to output
+add_custom_command(
+    TARGET ${EXE_NAME} POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different
+        $<TARGET_FILE:Qt5::Core> $<TARGET_FILE:Qt5::Gui> $<TARGET_FILE:Qt5::Widgets>
+        $<TARGET_FILE_DIR:${EXE_NAME}>
+)
 
 install(TARGETS ${EXE_NAME} DESTINATION bin)
 

@@ -10,7 +10,9 @@ class VppEntry : public Entry {
 public:
         VppEntry(QString name);
 
-        void read(std::vector<std::uint8_t> data, QTextEdit *log = nullptr) override;
+        void readVpp1(std::vector<std::uint8_t> &data, QTextEdit *log = nullptr);
+        void readVpp2(std::vector<std::uint8_t> &data, QTextEdit *log = nullptr);
+        void read(std::vector<std::uint8_t> data, QTextEdit *log      = nullptr) override;
         bool isCompressed() const;
 
 private:

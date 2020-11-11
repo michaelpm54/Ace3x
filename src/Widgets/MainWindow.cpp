@@ -23,6 +23,7 @@
 #include "Widgets/Viewers/ImageViewer.hpp"
 #include "Widgets/Viewers/PlaintextViewer.hpp"
 #include "Widgets/Viewers/P3DViewer.hpp"
+#include "Widgets/Viewers/VIMViewer.hpp"
 
 #include "Widgets/FileInspector.hpp"
 
@@ -36,6 +37,7 @@ MainWindow::MainWindow(QWidget *parent)
 	, mImageViewer(new ImageViewer())
         , mPlaintextViewer(new PlaintextViewer())
         , mP3DViewer(new P3DViewer())
+        , mVIMViewer(new VIMViewer())
         , mLastPath(QDir::currentPath())
 {
         setupActions();
@@ -67,6 +69,7 @@ MainWindow::MainWindow(QWidget *parent)
 
 	mImageViewer->hide();
 
+        mProxyModel->setSortCaseSensitivity(Qt::CaseInsensitive);
         mProxyModel->setSourceModel(mFileViewModel);
 
 	QSizePolicy leftPolicy(QSizePolicy::Preferred, QSizePolicy::Preferred);
@@ -92,6 +95,8 @@ MainWindow::MainWindow(QWidget *parent)
         mFileInspector->addViewer("arr", mPlaintextViewer);
 
         mFileInspector->addViewer("p3d",       mP3DViewer);
+
+        mFileInspector->addViewer("vim",       mVIMViewer);
 }
 
 MainWindow::~MainWindow()
@@ -127,15 +132,16 @@ QList<Entry *> MainWindow::loadLevel(const QString &path)
         for (auto &e : entryPaths) {
                 const auto path     = e.absoluteFilePath();
                 const auto filename = e.fileName();
-                if (!filename.endsWith("VPP", Qt::CaseSensitivity::CaseInsensitive))
+                if (!filename.endsWith("VPP", Qt::CaseSensitivity::CaseInsensitive)) {
                         continue;
+                }
                 auto entry = new VppEntry(path);
                 entry->read(LoadFile(path.toStdString()), mLog);
                 list.append(entry);
                 mLog->append(QString("[Info] Adding root %1").arg(filename));
         }
 
-        return list;
+        return (list);
 }
 
 void MainWindow::loadVpp(const QString &path)
@@ -149,9 +155,9 @@ void MainWindow::loadVpp(const QString &path)
 
         QList<Entry *> vppList;
 
-        if (path.contains("LEVELS"))
+        if (path.contains("LEVELS")) {
                 vppList.append(loadLevel(path));
-        else {
+        } else {
                 auto root = new VppEntry(path);
 
                 try {
@@ -172,8 +178,11 @@ void MainWindow::loadVpp(const QString &path)
 
 void MainWindow::updateSelection(const QItemSelection &selected, const QItemSelection&)
 {
-        if (selected.isEmpty())
+        if (selected.isEmpty()) {
                 return;
+        }
+
+        qDebug() << selected.indexes().first();
 
         Entry *entry = mFileViewModel->itemFromIndex(mProxyModel->mapToSource(selected.indexes().first()));
 
@@ -184,10 +193,11 @@ void MainWindow::actionOpen()
 {
         actionClose();
         const auto fileName = QFileDialog::getOpenFileName(this, "Open VPP", mLastPath, "Archive File (*.VPP)");
-        if (!fileName.isEmpty())
+        if (!fileName.isEmpty()) {
                 loadVpp(fileName);
-        else
+        } else {
                 mLog->append("[Info] Open: selection empty");
+        }
 }
 
 void MainWindow::actionClose()

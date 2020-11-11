@@ -2,11 +2,11 @@
 
 #include "FileInspector.hpp"
 
-#include <QDebug>
 #include <QFormLayout>
 #include <QLabel>
 #include <QLineEdit>
 #include <QLocale>
+#include <QMessageBox>
 #include <QPushButton>
 #include <QFileDialog>
 #include <QFile>
@@ -56,12 +56,14 @@ void FileInspector::setItem(const Entry *const item)
         mType->setText(ext);
 
 	if (mViewers.count(ext)) {
-                if (mViewers[ext]->shouldBeEnabled(item))
+                if (mViewers[ext]->shouldBeEnabled(item)) {
                         mView->show();
-                else
+                } else {
                         mView->hide();
-	} else
+                }
+        } else {
 		mView->hide();
+        }
 }
 
 void FileInspector::addViewer(QString ext, Viewer *viewer)
@@ -79,19 +81,22 @@ void FileInspector::saveButtonClicked()
 
         QFile file(fileName);
 
-        if (false == file.open(QIODevice::WriteOnly))
+        if (false == file.open(QIODevice::WriteOnly)) {
                 std::clog << "[Error] Failed to open file for writing: " << fileName.toStdString() << std::endl;
-
-        else if (-1 == file.write(reinterpret_cast<const char *>(mItem->getData()), mItem->getSize()))
+        } else if (-1 == file.write(reinterpret_cast<const char *>(mItem->getData()), mItem->getSize())) {
                 std::clog << "[Error] Failed to write data for " << fileName.toStdString() << std::endl;
-
-        else
+        } else {
                 std::clog << "[Info] Wrote file " << fileName.toStdString() << std::endl;
+        }
 }
 
 void FileInspector::viewButtonClicked()
 {
-        mViewers[mItem->getExtension()]->activate(mItem);
+        try {
+                mViewers[mItem->getExtension()]->activate(mItem);
+        } catch (const std::runtime_error &e) {
+                QMessageBox::critical(nullptr, "Error", QString::fromStdString(e.what()), QMessageBox::Ok);
+        }
 }
 
 void FileInspector::clear()

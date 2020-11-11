@@ -34,6 +34,8 @@ int main(int argc, char *argv[])
 		return EXIT_FAILURE;
 	}
 
+        mainWindow.loadVpp("E:/Games/Emulation/Roms/PS2/S2ASSETS/CHARS.VPP");
+
 	mainWindow.show();
 
 	try {

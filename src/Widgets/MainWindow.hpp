@@ -19,6 +19,7 @@ class FileInspector;
 class ImageViewer;
 class PlaintextViewer;
 class P3DViewer;
+class VIMViewer;
 class InfoPanel;
 
 class MainWindow : public QMainWindow {
@@ -53,6 +54,7 @@ private:
 	ImageViewer *mImageViewer{ nullptr };
         PlaintextViewer *mPlaintextViewer{ nullptr };
         P3DViewer *mP3DViewer{ nullptr };
+        VIMViewer *mVIMViewer{ nullptr };
 
         QString mLastPath;
 };

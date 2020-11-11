@@ -29,11 +29,13 @@ private:
 private slots:
 	void nextFrame();
 	void prevFrame();
+        void saveFrame();
 
 private:
         Ui::ImageViewer ui;
 	std::uint16_t mFrameIndex { 0 };
         const PegEntry *mPeg{ nullptr };
+        QString m_frameName;
 };
 
 #endif // IMAGEVIEWER_HPP

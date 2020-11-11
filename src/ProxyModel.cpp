@@ -14,13 +14,16 @@ bool SortProxy::lessThan(const QModelIndex &left, const QModelIndex &right) cons
         auto entryRight = static_cast<Entry *>(right.internalPointer());
 
         switch (left.column()) {
-                case 0:
-                        return entryLeft->getFilename() < entryRight->getFilename();
-                case 1:
-                        return entryLeft->getSize() < entryRight->getSize();
-                default:
+                case 0: {
+                        return (entryLeft->getFilename().toLower() > entryRight->getFilename().toLower());
+                }
+                case 1: {
+                        return (entryLeft->getSize() < entryRight->getSize());
+                }
+                default: {
                         break;
+                }
         }
 
-        return false;
+        return (false);
 }

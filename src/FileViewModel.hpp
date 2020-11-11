@@ -17,8 +17,8 @@ public:
         void  clear();
         Entry *itemFromIndex(const QModelIndex &index) const;
 
+        QModelIndex index(int row, int col, const QModelIndex &parent) const;
 protected:
-	QModelIndex index(int row, int col, const QModelIndex &parent) const;
 	QModelIndex parent(const QModelIndex &index) const;
 	QVariant    data(const QModelIndex &index, int role) const;
 	bool        hasChildren(const QModelIndex &index) const;
