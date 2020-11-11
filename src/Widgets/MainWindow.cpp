@@ -15,7 +15,6 @@
 #include <filesystem>
 
 #include "FileViewModel.hpp"
-#include "ProxyModel.hpp"
 #include "Util.hpp"
 #include "VppEntry.hpp"
 #include "Widgets/FileInspector.hpp"
@@ -23,12 +22,13 @@
 #include "Widgets/Viewers/P3DViewer.hpp"
 #include "Widgets/Viewers/PlaintextViewer.hpp"
 #include "Widgets/Viewers/VIMViewer.hpp"
+#include "tree-entry/tree-entry-sort-proxy.hpp"
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
     , mFileView(new QTreeView())
     , mFileViewModel(new FileViewModel())
-    , mProxyModel(new SortProxy())
+    , mTreeEntrySortProxy(new TreeEntrySortProxy())
     , mFileInspector(new FileInspector())
     , mLog(new QTextEdit())
     , mImageViewer(new ImageViewer())
@@ -66,8 +66,8 @@ MainWindow::MainWindow(QWidget *parent)
 
     mImageViewer->hide();
 
-    mProxyModel->setSortCaseSensitivity(Qt::CaseInsensitive);
-    mProxyModel->setSourceModel(mFileViewModel);
+    mTreeEntrySortProxy->setSortCaseSensitivity(Qt::CaseInsensitive);
+    mTreeEntrySortProxy->setSourceModel(mFileViewModel);
 
     QSizePolicy leftPolicy(QSizePolicy::Preferred, QSizePolicy::Preferred);
     leftPolicy.setHorizontalStretch(2);
@@ -75,7 +75,7 @@ MainWindow::MainWindow(QWidget *parent)
     mFileView->setSelectionMode(QAbstractItemView::SelectionMode::SingleSelection);
     mFileView->setSelectionBehavior(QAbstractItemView::SelectionBehavior::SelectRows);
     mFileView->setAlternatingRowColors(true);
-    mFileView->setModel(mProxyModel);
+    mFileView->setModel(mTreeEntrySortProxy);
 
     connect(mFileView->selectionModel(), &QItemSelectionModel::selectionChanged, this, &MainWindow::updateSelection);
     connect(mFileView, &QTreeView::expanded, this, [this]() {
@@ -101,7 +101,7 @@ MainWindow::MainWindow(QWidget *parent)
 MainWindow::~MainWindow()
 {
     delete mFileViewModel;
-    delete mProxyModel;
+    delete mTreeEntrySortProxy;
     delete mImageViewer;
 }
 
@@ -185,7 +185,7 @@ void MainWindow::updateSelection(const QItemSelection &selected, const QItemSele
 
     qDebug() << selected.indexes().first();
 
-    Entry *entry = mFileViewModel->itemFromIndex(mProxyModel->mapToSource(selected.indexes().first()));
+    Entry *entry = mFileViewModel->itemFromIndex(mTreeEntrySortProxy->mapToSource(selected.indexes().first()));
 
     mFileInspector->setItem(entry);
 }

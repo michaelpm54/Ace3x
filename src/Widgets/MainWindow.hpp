@@ -13,7 +13,7 @@ class QTreeView;
 class QTextEdit;
 
 class FileViewModel;
-class SortProxy;
+class TreeEntrySortProxy;
 
 class FileInspector;
 class ImageViewer;
@@ -46,7 +46,7 @@ private slots:
 private:
     QTreeView *mFileView {nullptr};
     FileViewModel *mFileViewModel {nullptr};
-    SortProxy *mProxyModel {nullptr};
+    TreeEntrySortProxy *mTreeEntrySortProxy {nullptr};
 
     FileInspector *mFileInspector {nullptr};
 

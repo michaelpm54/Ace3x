@@ -37,7 +37,9 @@ set(ACE3X_SOURCES
 	
 	# General GUI
     src/FileViewModel.cpp
-	src/ProxyModel.cpp
+	
+	# GUI: tree model entry
+	src/tree-entry/tree-entry-sort-proxy.cpp
 	
 	# Summoner file formats
     src/Formats/VifMesh.cpp
