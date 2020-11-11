@@ -7,9 +7,9 @@ class Entry;
 
 class Viewer {
 public:
-        virtual ~Viewer();
-        virtual void activate(const Entry *item) = 0;
-        virtual bool shouldBeEnabled(const Entry *item) const = 0;
+    virtual ~Viewer();
+    virtual void activate(const Entry *item) = 0;
+    virtual bool shouldBeEnabled(const Entry *item) const = 0;
 };
 
-#endif // VIEWER_HPP
+#endif    // VIEWER_HPP

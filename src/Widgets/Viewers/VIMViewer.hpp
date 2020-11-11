@@ -8,13 +8,10 @@
 #include <QWidget>
 
 #include "Formats/VifMesh.hpp"
-
 #include "Viewer.hpp"
-
 #include "ui_VIMViewer.h"
 
-class VIMViewer : public QWidget, public Viewer
-{
+class VIMViewer : public QWidget, public Viewer {
     Q_OBJECT
 public:
     explicit VIMViewer(QWidget *parent = nullptr);
@@ -31,4 +28,4 @@ private slots:
     void sub0Changed();
 };
 
-#endif // VIMVIEWER_HPP
+#endif    // VIMVIEWER_HPP

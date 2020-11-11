@@ -8,7 +8,6 @@
 
 #include "Entry.hpp"
 
-
 void P3DViewer::writeVerticesToObj(const std::uint8_t *const data, int start, int size)
 {
 }

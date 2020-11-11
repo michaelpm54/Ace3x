@@ -7,9 +7,9 @@
 
 class SortProxy : public QSortFilterProxyModel {
 public:
-        SortProxy(QObject *parent = nullptr);
+    SortProxy(QObject *parent = nullptr);
 
-        bool lessThan(const QModelIndex &left, const QModelIndex &right) const override;
+    bool lessThan(const QModelIndex &left, const QModelIndex &right) const override;
 };
 
-#endif // PROXYMODEL_HPP
+#endif    // PROXYMODEL_HPP

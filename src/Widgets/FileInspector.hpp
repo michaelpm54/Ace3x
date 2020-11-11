@@ -13,31 +13,31 @@ class Viewer;
 class Entry;
 
 class FileInspector : public QFrame {
-	Q_OBJECT
+    Q_OBJECT
 public:
-	FileInspector(QWidget *parent = nullptr);
+    FileInspector(QWidget *parent = nullptr);
 
-	void addViewer(QString ext, Viewer *viewer);
-        void clear();
+    void addViewer(QString ext, Viewer *viewer);
+    void clear();
 
 public slots:
-        void setItem(const Entry *const entry);
+    void setItem(const Entry *const entry);
 
 private slots:
-        void saveButtonClicked();
-        void viewButtonClicked();
+    void saveButtonClicked();
+    void viewButtonClicked();
 
 private:
-        QLineEdit *mFilename;
-        QLineEdit *mSize;
-        QLineEdit *mType;
+    QLineEdit *mFilename;
+    QLineEdit *mSize;
+    QLineEdit *mType;
 
-        QPushButton *mSave;
-	QPushButton *mView;
+    QPushButton *mSave;
+    QPushButton *mView;
 
-	QMap<QString, Viewer *> mViewers;
+    QMap<QString, Viewer *> mViewers;
 
-	const Entry *mItem{ nullptr };
+    const Entry *mItem {nullptr};
 };
 
-#endif // FILEINSPECTOR_HPP
+#endif    // FILEINSPECTOR_HPP

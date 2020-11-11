@@ -31,7 +31,7 @@ QTableWidgetItem *floatItem(float n)
 }
 
 VIMViewer::VIMViewer(QWidget *parent)
-        : QWidget(parent)
+    : QWidget(parent)
 {
     ui.setupUi(this);
     setWindowTitle("Ace3x - VIM Viewer");
@@ -69,7 +69,7 @@ void VIMViewer::activate(const Entry *item)
 
     show();
 
-    m_vim.initFromBuffer(reinterpret_cast<const char*>(item->getData()));
+    m_vim.initFromBuffer(reinterpret_cast<const char *>(item->getData()));
 
     ui.texCount->setText(QString::number(m_vim.m_numTextures_0x1c));
     for (int i = 0; i < m_vim.m_numTextures_0x1c; i++)
@@ -79,25 +79,23 @@ void VIMViewer::activate(const Entry *item)
     ui.sub0List->setRowCount(m_vim.m_sub0_count);
     ui.sub0List->setColumnCount(1);
     ui.sub0List->setHorizontalHeaderLabels({"VIM offset"});
-    for (int i = 0; i < m_vim.m_sub0_count; i++)
-    {
+    for (int i = 0; i < m_vim.m_sub0_count; i++) {
         auto offset = m_vim.m_sub0_data + sizeof(VifMeshSub0) * i;
         ui.sub0List->setItem(i, 0, uintItem(offset, 16));
     }
 
     ui.vifBoneCount->setText(QString("vifBone # %1").arg(m_vim.m_vifBone_count));
     ui.vifBoneList->setRowCount(m_vim.m_vifBone_count);
-    ui.vifBoneList->setColumnCount(28+2);
+    ui.vifBoneList->setColumnCount(28 + 2);
     ui.vifBoneList->setHorizontalHeaderLabels({"VIM offset", "Name offset", "Name", "x", "y", "z"});
-    for (int row = 0; row < m_vim.m_vifBone_count; row++)
-    {
+    for (int row = 0; row < m_vim.m_vifBone_count; row++) {
         auto offset = m_vim.m_vifBone_data + sizeof(VifBone) * row;
         auto *ptr = &m_item->getData()[offset];
 
         VifBone vifBone;
         memcpy(&vifBone, ptr, sizeof(VifBone));
 
-        ui.vifBoneList->setItem(row, 0, uintItem(offset, 16)); // extra
+        ui.vifBoneList->setItem(row, 0, uintItem(offset, 16));    // extra
         ui.vifBoneList->setItem(row, 1, uintItem(vifBone.boneNameOff, 16));
         ui.vifBoneList->setItem(row, 3, floatItem(vifBone.x));
         ui.vifBoneList->setItem(row, 4, floatItem(vifBone.y));
@@ -111,12 +109,11 @@ void VIMViewer::activate(const Entry *item)
         while (*ptr != 0x0)
             name += *ptr++;
 
-        ui.vifBoneList->setItem(row, 2, new QTableWidgetItem(name)); // extra
+        ui.vifBoneList->setItem(row, 2, new QTableWidgetItem(name));    // extra
 
-        for (int column = 7; column < 28; column++)
-        {
-            uint32_t *off = reinterpret_cast<uint32_t*>(&vifBone) + column;
-            ui.vifBoneList->setItem(row, column+2, floatItem(*off));
+        for (int column = 7; column < 28; column++) {
+            uint32_t *off = reinterpret_cast<uint32_t *>(&vifBone) + column;
+            ui.vifBoneList->setItem(row, column + 2, floatItem(*off));
         }
     }
 
@@ -124,8 +121,7 @@ void VIMViewer::activate(const Entry *item)
     ui.sub4List->setRowCount(m_vim.m_sub4_count);
     ui.sub4List->setColumnCount(15);
     ui.sub4List->setHorizontalHeaderLabels({"VIM offset"});
-    for (int row = 0; row < m_vim.m_sub4_count; row++)
-    {
+    for (int row = 0; row < m_vim.m_sub4_count; row++) {
         auto offset = m_vim.m_sub4_data + (sizeof(VifMeshSub4) * row);
 
         VifMeshSub4 sub4;
@@ -133,20 +129,17 @@ void VIMViewer::activate(const Entry *item)
 
         ui.sub4List->setItem(row, 0, uintItem(offset, 16));
 
-        for (int column = 0; column < 14; column++)
-        {
-            uint32_t *off = reinterpret_cast<uint32_t*>(&sub4) + column;
-            if (column == 0)
-            {
+        for (int column = 0; column < 14; column++) {
+            uint32_t *off = reinterpret_cast<uint32_t *>(&sub4) + column;
+            if (column == 0) {
                 auto value = *off;
                 auto str = QString::number(*off, 16);
-                ui.sub4List->setItem(row, column+1, new QTableWidgetItem(str));
+                ui.sub4List->setItem(row, column + 1, new QTableWidgetItem(str));
             }
-            else
-            {
+            else {
                 auto value = ieee_float(*off);
                 auto str = QString::number(ieee_float(*off), 'G', 4);
-                ui.sub4List->setItem(row, column+1, new QTableWidgetItem(str));
+                ui.sub4List->setItem(row, column + 1, new QTableWidgetItem(str));
             }
         }
     }
@@ -155,8 +148,7 @@ void VIMViewer::activate(const Entry *item)
     ui.sub5List->setRowCount(m_vim.m_sub5_count);
     ui.sub5List->setColumnCount(9);
     ui.sub5List->setHorizontalHeaderLabels({"VIM offset"});
-    for (int row = 0; row < m_vim.m_sub5_count; row++)
-    {
+    for (int row = 0; row < m_vim.m_sub5_count; row++) {
         auto offset = m_vim.m_sub5_data + (sizeof(VifMeshSub5) * row);
 
         ui.sub5List->setItem(row, 0, new QTableWidgetItem(QString::number(offset, 16)));
@@ -164,20 +156,19 @@ void VIMViewer::activate(const Entry *item)
         VifMeshSub5 sub5;
         memcpy(&sub5, &m_item->getData()[offset], sizeof(VifMeshSub5));
 
-        for (int column = 0; column < 8; column++)
-        {
-            uint32_t *off = reinterpret_cast<uint32_t*>(&sub5) + column;
-//            if (column == 0)
+        for (int column = 0; column < 8; column++) {
+            uint32_t *off = reinterpret_cast<uint32_t *>(&sub5) + column;
+            //            if (column == 0)
             {
                 auto value = *off;
                 auto str = QString("0x%1").arg(value);
-                ui.sub5List->setItem(row, column+1, new QTableWidgetItem(str));
+                ui.sub5List->setItem(row, column + 1, new QTableWidgetItem(str));
             }
-//            else
+            //            else
             {
-//                auto value = ieee_float(*off);
-//                auto str = QString("%1").arg(value);
-//                ui.sub4List->setItem(row, column, new QTableWidgetItem(str));
+                //                auto value = ieee_float(*off);
+                //                auto str = QString("%1").arg(value);
+                //                ui.sub4List->setItem(row, column, new QTableWidgetItem(str));
             }
         }
     }
@@ -185,7 +176,7 @@ void VIMViewer::activate(const Entry *item)
 
 bool VIMViewer::shouldBeEnabled(const Entry *) const
 {
-        return true;
+    return true;
 }
 
 void VIMViewer::sub0Changed()
@@ -197,8 +188,7 @@ void VIMViewer::sub0Changed()
     ui.sub1List->setRowCount(sub0.sub1_count);
     ui.sub1List->setColumnCount(14);
     ui.sub1List->setHorizontalHeaderLabels({"VIM offset", "?", "?", "?", "?", "Mesh #", "Offset0", "Offset1", "?", "Offset2", "Offset3", "Offset4", "Offset5", "Offset6"});
-    for (int row = 0; row < sub0.sub1_count; row++)
-    {
+    for (int row = 0; row < sub0.sub1_count; row++) {
         auto offset = sub0.sub1_data + (sizeof(VifMeshSub1) * row);
         VifMeshSub1 sub1;
         memcpy(&sub1, &m_item->getData()[offset], sizeof(VifMeshSub1));
@@ -224,8 +214,7 @@ void VIMViewer::sub0Changed()
     ui.sub2List->setRowCount(sub0.sub2_count);
     ui.sub2List->setColumnCount(4);
     ui.sub2List->setHorizontalHeaderLabels({"VIM offset", "Offset1"});
-    for (int row = 0; row < sub0.sub2_count; row++)
-    {
+    for (int row = 0; row < sub0.sub2_count; row++) {
         auto offset = sub0.sub2_data + (sizeof(VifMeshSub2) * row);
 
         VifMeshSub2 sub2;

@@ -5,25 +5,26 @@
 #include "Entry.hpp"
 
 SortProxy::SortProxy(QObject *parent)
-        : QSortFilterProxyModel(parent)
-{}
+    : QSortFilterProxyModel(parent)
+{
+}
 
 bool SortProxy::lessThan(const QModelIndex &left, const QModelIndex &right) const
 {
-        auto entryLeft  = static_cast<Entry *>(left.internalPointer());
-        auto entryRight = static_cast<Entry *>(right.internalPointer());
+    auto entryLeft = static_cast<Entry *>(left.internalPointer());
+    auto entryRight = static_cast<Entry *>(right.internalPointer());
 
-        switch (left.column()) {
-                case 0: {
-                        return (entryLeft->getFilename().toLower() > entryRight->getFilename().toLower());
-                }
-                case 1: {
-                        return (entryLeft->getSize() < entryRight->getSize());
-                }
-                default: {
-                        break;
-                }
+    switch (left.column()) {
+        case 0: {
+            return (entryLeft->getFilename().toLower() > entryRight->getFilename().toLower());
         }
+        case 1: {
+            return (entryLeft->getSize() < entryRight->getSize());
+        }
+        default: {
+            break;
+        }
+    }
 
-        return (false);
+    return (false);
 }
