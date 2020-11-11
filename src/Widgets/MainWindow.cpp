@@ -16,13 +16,13 @@
 
 #include "FileViewModel.hpp"
 #include "Util.hpp"
-#include "VppEntry.hpp"
 #include "Widgets/FileInspector.hpp"
 #include "Widgets/Viewers/ImageViewer.hpp"
 #include "Widgets/Viewers/P3DViewer.hpp"
 #include "Widgets/Viewers/PlaintextViewer.hpp"
 #include "Widgets/Viewers/VIMViewer.hpp"
 #include "tree-entry/tree-entry-sort-proxy.hpp"
+#include "tree-entry/vpp-entry.hpp"
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
