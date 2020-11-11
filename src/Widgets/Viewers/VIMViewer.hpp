@@ -7,9 +7,10 @@
 #include <QListWidget>
 #include <QWidget>
 
-#include "Formats/VifMesh.hpp"
 #include "Viewer.hpp"
+#include "formats/VifMesh.hpp"
 #include "ui_VIMViewer.h"
+
 
 class VIMViewer : public QWidget, public Viewer {
     Q_OBJECT

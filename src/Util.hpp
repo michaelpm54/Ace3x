@@ -7,8 +7,8 @@
 #include <stdexcept>
 #include <string_view>
 
-#include "Formats/Peg.hpp"
-#include "Formats/Vpp.hpp"
+#include "formats/Peg.hpp"
+#include "formats/Vpp.hpp"
 #include "tree-entry/tree-entry.hpp"
 
 using ByteVec = std::vector<std::uint8_t>;

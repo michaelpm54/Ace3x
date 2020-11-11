@@ -42,7 +42,7 @@ set(ACE3X_SOURCES
 	src/tree-entry/vpp-entry.cpp
 	
 	# Summoner file formats
-    src/Formats/VifMesh.cpp
+    src/formats/VifMesh.cpp
 
 	# Custom widgets
 	src/Widgets/MainWindow.cpp

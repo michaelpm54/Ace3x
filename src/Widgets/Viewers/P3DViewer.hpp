@@ -5,8 +5,8 @@
 
 #include <QWidget>
 
-#include "Formats/P3D.hpp"
 #include "Viewer.hpp"
+#include "formats/P3D.hpp"
 #include "ui_P3DViewer.h"
 
 class TreeEntry;
