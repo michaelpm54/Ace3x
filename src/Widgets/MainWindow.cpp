@@ -14,7 +14,6 @@
 #include <QTreeView>
 #include <filesystem>
 
-#include "FileViewModel.hpp"
 #include "Util.hpp"
 #include "Widgets/FileInspector.hpp"
 #include "Widgets/Viewers/ImageViewer.hpp"
@@ -23,11 +22,12 @@
 #include "Widgets/Viewers/VIMViewer.hpp"
 #include "tree-entry/tree-entry-sort-proxy.hpp"
 #include "tree-entry/vpp-entry.hpp"
+#include "tree-model.hpp"
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
     , mFileView(new QTreeView())
-    , mFileViewModel(new FileViewModel())
+    , mFileViewModel(new TreeModel())
     , mTreeEntrySortProxy(new TreeEntrySortProxy())
     , mFileInspector(new FileInspector())
     , mLog(new QTextEdit())

@@ -32,8 +32,8 @@ set(ACE3X_SOURCES
     src/FrameDecoder.cpp
     src/Util.cpp
 	
-	# General GUI
-    src/FileViewModel.cpp
+	# GUI: tree model
+    src/tree-model.cpp
 	
 	# GUI: tree model entry
 	src/tree-entry/tree-entry.cpp
