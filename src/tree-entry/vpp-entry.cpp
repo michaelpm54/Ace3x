@@ -13,34 +13,34 @@
 #include "format-readers/vpp-v2.hpp"
 #include "tree-entry/peg-entry.hpp"
 
-VppEntry::VppEntry(const FileInfo &info)
-    : TreeEntry(info)
+VppEntry::VppEntry(const FileInfo &vppInfo)
+    : TreeEntry(vppInfo)
 {
     std::uint32_t version = 0;
-    memcpy(&version, &info.file_data.data()[0x4], 4);
+    memcpy(&version, &vppInfo.file_data.data()[0x4], 4);
 
     if (version == 1) {
         VppV1 vpp;
-        vpp.read(info.file_data);
+        vpp.read(vppInfo.file_data);
 
-        for (const auto &info : vpp.get_entries()) {
-            if (info.extension == "peg")
-                addChild(new PegEntry(info));
+        for (const auto &entryInfo : vpp.get_entries()) {
+            if (entryInfo.extension == "peg")
+                addChild(new PegEntry(entryInfo));
             else
-                addChild(new TreeEntry(info));
+                addChild(new TreeEntry(entryInfo));
         }
     }
     else if (version == 2) {
         VppV2 vpp;
-        vpp.read(info.file_data);
+        vpp.read(vppInfo.file_data);
 
         mCompressed = vpp.is_compressed();
 
-        for (const auto &info : vpp.get_entries()) {
-            if (info.extension == "peg")
-                addChild(new PegEntry(info));
+        for (const auto &entryInfo : vpp.get_entries()) {
+            if (entryInfo.extension == "peg")
+                addChild(new PegEntry(entryInfo));
             else
-                addChild(new TreeEntry(info));
+                addChild(new TreeEntry(entryInfo));
         }
     }
     else {
