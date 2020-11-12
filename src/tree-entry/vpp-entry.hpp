@@ -3,15 +3,11 @@
 #ifndef ACE3X_TREE_ENTRY_VPP_ENTRY_HPP_
 #define ACE3X_TREE_ENTRY_VPP_ENTRY_HPP_
 
-#include "formats/Vpp.hpp"
 #include "tree-entry/tree-entry.hpp"
 
 class VppEntry : public TreeEntry {
 public:
     VppEntry(const FileInfo &info);
-
-    void readVpp1(std::vector<std::uint8_t> &data, QTextEdit *log = nullptr);
-    void readVpp2(std::vector<std::uint8_t> &data, QTextEdit *log = nullptr);
     bool isCompressed() const;
 
 private:
