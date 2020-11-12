@@ -28,7 +28,7 @@ find_package(Qt5 5.13 COMPONENTS Widgets REQUIRED)
 ## SOURCES START ##
 
 set(ACE3X_SOURCES
-    src/Main.cpp
+    src/main.cpp
     src/Util.cpp
 	
 	# GUI: tree model
