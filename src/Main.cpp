@@ -7,7 +7,7 @@
 
 #include "FrameDecoder.hpp"
 #include "Util.hpp"
-#include "Widgets/MainWindow.hpp"
+#include "Widgets/main-window.hpp"
 
 int main(int argc, char *argv[])
 {

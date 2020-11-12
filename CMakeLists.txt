@@ -47,7 +47,7 @@ set(ACE3X_SOURCES
 	src/format-readers/vif-mesh.cpp
 
 	# Custom widgets
-	src/Widgets/MainWindow.cpp
+	src/Widgets/main-window.cpp
     src/Widgets/file-info-frame.cpp
     src/Widgets/Viewers/Viewer.cpp
     src/Widgets/Viewers/ImageViewer.cpp
