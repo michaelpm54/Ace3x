@@ -1,5 +1,7 @@
 #include "format-readers/vpp-v1.hpp"
 
+#include <filesystem>
+
 #include "Util.hpp"
 #include "file-info.hpp"
 #include "format-readers/validation-error.hpp"
@@ -47,8 +49,6 @@ void VppV1::read(const std::vector<std::uint8_t> &data)
             continue;
         }
 
-        const auto ext = ::getExtension(QString::fromStdString(filename));
-
         std::vector<std::uint8_t> childData(
             data.begin() + vppOffset,
             data.begin() + vppOffset + size);
@@ -57,6 +57,7 @@ void VppV1::read(const std::vector<std::uint8_t> &data)
         info.index_in_parent = index;
         info.file_name = filename;
         info.file_data = childData;
+        info.extension = std::filesystem::path(filename).extension().string();
 
         entries_.push_back(info);
     }

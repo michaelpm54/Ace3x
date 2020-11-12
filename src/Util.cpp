@@ -8,16 +8,6 @@
 #include <iostream>
 #include <sstream>
 
-std::string GetExtension(const std::string_view path)
-{
-    return std::filesystem::path(path).extension().string();
-}
-
-QString getExtension(QString path)
-{
-    return QFileInfo(path.toLower()).suffix();
-}
-
 std::vector<std::uint8_t> LoadFile(const std::string &path)
 {
     std::ifstream file(path, std::ios::binary | std::ios::ate);
