@@ -29,7 +29,7 @@ public:
     void removeAllChildren();
     void addChild(TreeEntry *entry);
 
-    virtual void read(std::vector<std::uint8_t> data, QTextEdit *log = nullptr);
+    virtual void addChildrenFromData(std::vector<std::uint8_t> data, QTextEdit *log = nullptr);
 
     unsigned int get_num_children() const;
     int getIndex() const;

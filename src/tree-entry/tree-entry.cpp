@@ -72,7 +72,7 @@ const std::uint8_t *TreeEntry::getData() const
     return mFileInfo.file_data.data();
 }
 
-void TreeEntry::read(std::vector<std::uint8_t> data, QTextEdit *log)
+void TreeEntry::addChildrenFromData(std::vector<std::uint8_t> data, QTextEdit *log)
 {
     mFileInfo.file_data = data;
     mFileInfo.file_size = data.size();

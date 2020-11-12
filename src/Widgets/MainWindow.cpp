@@ -153,7 +153,7 @@ QList<TreeEntry *> MainWindow::loadLevelVpps(const QString &path)
             continue;
         }
 
-        vpp->read(info.file_data, mLog);
+        vpp->addChildrenFromData(info.file_data, mLog);
         list.append(vpp);
         mLog->append(QString("[Info] Adding root %1").arg(QString::fromStdString(info.file_name)));
     }
@@ -196,7 +196,7 @@ void MainWindow::loadVpp(const QString &path)
 
         if (vpp) {
             try {
-                vpp->read(info.file_data, mLog);
+                vpp->addChildrenFromData(info.file_data, mLog);
                 mLog->append(QString("[Info] Adding VPP %1").arg(QFileInfo(path).fileName()));
                 vppList.append(vpp);
             }

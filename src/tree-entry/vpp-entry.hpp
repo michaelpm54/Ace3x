@@ -14,7 +14,7 @@ public:
     void readVpp2(std::vector<std::uint8_t> &data, QTextEdit *log = nullptr);
     bool isCompressed() const;
 
-    void read(std::vector<std::uint8_t> data, QTextEdit *log = nullptr) override;
+    void addChildrenFromData(std::vector<std::uint8_t> data, QTextEdit *log = nullptr) override;
 
 private:
     bool mCompressed {false};

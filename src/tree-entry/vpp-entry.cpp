@@ -82,7 +82,7 @@ void VppEntry::readVpp1(std::vector<std::uint8_t> &data, QTextEdit *log)
         }
 
         try {
-            entry->read(childData);
+            entry->addChildrenFromData(childData);
             addChild(entry);
         }
         catch (const ValidationError &e) {
@@ -185,7 +185,7 @@ void VppEntry::readVpp2(std::vector<std::uint8_t> &data, QTextEdit *log)
         }
 
         try {
-            entry->read(childData);
+            entry->addChildrenFromData(childData);
             addChild(entry);
         }
         catch (const ValidationError &e) {
@@ -195,7 +195,7 @@ void VppEntry::readVpp2(std::vector<std::uint8_t> &data, QTextEdit *log)
     }
 }
 
-void VppEntry::read(std::vector<std::uint8_t> data, QTextEdit *log)
+void VppEntry::addChildrenFromData(std::vector<std::uint8_t> data, QTextEdit *log)
 {
     mFileInfo.file_size = data.size();
 

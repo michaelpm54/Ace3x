@@ -12,7 +12,7 @@ public:
 
     PegFrame getFrame(std::uint16_t index) const;
 
-    void read(std::vector<std::uint8_t> data, QTextEdit *log = nullptr) override;
+    void addChildrenFromData(std::vector<std::uint8_t> data, QTextEdit *log = nullptr) override;
 
 private:
     std::vector<PegFrame> mFrames;

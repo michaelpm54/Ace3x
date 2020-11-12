@@ -8,7 +8,7 @@
 
 #include "Util.hpp"
 
-void PegEntry::read(std::vector<std::uint8_t> data, QTextEdit *log)
+void PegEntry::addChildrenFromData(std::vector<std::uint8_t> data, QTextEdit *log)
 {
     mData = data;
 
@@ -66,7 +66,7 @@ void PegEntry::read(std::vector<std::uint8_t> data, QTextEdit *log)
         auto entry = new TreeEntry(info);
 
         try {
-            entry->read(childData);
+            entry->addChildrenFromData(childData);
             addChild(entry);
         }
         catch (const ValidationError &e) {
