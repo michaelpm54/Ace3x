@@ -38,7 +38,6 @@ public slots:
 
 private:
     void setupActions();
-    QList<TreeEntry *> loadLevelVpps(const QString &path);
 
 private slots:
     void updateSelection(const QItemSelection &selected, const QItemSelection &deselected);

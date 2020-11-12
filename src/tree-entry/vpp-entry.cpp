@@ -15,6 +15,28 @@ static constexpr std::uint16_t CHUNK_SIZE = 0x800;
 uint32_t alignToChunk(int n);
 std::vector<std::uint8_t> decompress(const std::uint8_t *const data, std::uint32_t compressedSize, std::uint32_t uncompressedSize);
 
+VppEntry::VppEntry(const FileInfo &info)
+    : TreeEntry(info)
+{
+    std::uint32_t version = 0;
+    memcpy(&version, &info.file_data.data()[0x4], 4);
+
+    switch (version) {
+        case 1: {
+            readVpp1(mFileInfo.file_data);
+            break;
+        }
+        case 2: {
+            readVpp2(mFileInfo.file_data);
+            break;
+        }
+        default: {
+            throw std::runtime_error("Invalid VPP version");
+            break;
+        }
+    }
+}
+
 void VppEntry::readVpp1(std::vector<std::uint8_t> &data, QTextEdit *log)
 {
     VppHeader_V1 header;
@@ -69,7 +91,6 @@ void VppEntry::readVpp1(std::vector<std::uint8_t> &data, QTextEdit *log)
         FileInfo info;
         info.index_in_parent = index;
         info.file_name = filename;
-        info.file_size = size;
         info.file_data = childData;
 
         TreeEntry *entry;
@@ -81,14 +102,7 @@ void VppEntry::readVpp1(std::vector<std::uint8_t> &data, QTextEdit *log)
             entry = new TreeEntry(info);
         }
 
-        try {
-            entry->addChildrenFromData(childData);
-            addChild(entry);
-        }
-        catch (const ValidationError &e) {
-            std::clog << e.what() << std::endl;
-            delete entry;
-        }
+        addChild(entry);
     }
 }
 
@@ -172,7 +186,6 @@ void VppEntry::readVpp2(std::vector<std::uint8_t> &data, QTextEdit *log)
             filename,
             "",
             ext.toStdString(),
-            size,
             // FIXME: This uses more memory than necessary
             childData,
         };
@@ -184,40 +197,8 @@ void VppEntry::readVpp2(std::vector<std::uint8_t> &data, QTextEdit *log)
             entry = new TreeEntry(info);
         }
 
-        try {
-            entry->addChildrenFromData(childData);
-            addChild(entry);
-        }
-        catch (const ValidationError &e) {
-            std::clog << e.what() << std::endl;
-            delete entry;
-        }
+        addChild(entry);
     }
-}
-
-void VppEntry::addChildrenFromData(std::vector<std::uint8_t> data, QTextEdit *log)
-{
-    mFileInfo.file_size = data.size();
-
-    std::uint32_t version = 0;
-    memcpy(&version, &data[0x4], 4);
-
-    switch (version) {
-        case 1: {
-            readVpp1(data, log);
-            break;
-        }
-        case 2: {
-            readVpp2(data, log);
-            break;
-        }
-        default: {
-            throw std::runtime_error("Invalid VPP version");
-            break;
-        }
-    }
-
-    mData = data;
 }
 
 std::vector<std::uint8_t> decompress(const std::uint8_t *const data, std::uint32_t compressedSize, std::uint32_t uncompressedSize)

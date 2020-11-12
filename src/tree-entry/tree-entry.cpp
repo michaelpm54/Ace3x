@@ -7,7 +7,7 @@
 
 TreeEntry::TreeEntry() = default;
 
-TreeEntry::TreeEntry(FileInfo &fileInfo)
+TreeEntry::TreeEntry(const FileInfo &fileInfo)
     : mFileInfo(fileInfo)
 {
 }
@@ -72,15 +72,9 @@ const std::uint8_t *TreeEntry::getData() const
     return mFileInfo.file_data.data();
 }
 
-void TreeEntry::addChildrenFromData(std::vector<std::uint8_t> data, QTextEdit *log)
-{
-    mFileInfo.file_data = data;
-    mFileInfo.file_size = data.size();
-}
-
 std::uint64_t TreeEntry::getSize() const
 {
-    return mFileInfo.file_size;
+    return mFileInfo.file_data.size();
 }
 
 unsigned int TreeEntry::get_num_children() const

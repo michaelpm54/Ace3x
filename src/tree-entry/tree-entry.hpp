@@ -15,7 +15,6 @@ struct FileInfo {
     std::string file_name;
     std::string absolute_path;
     std::string extension;
-    std::uint64_t file_size;
     // FIXME: This uses more memory than necessary
     std::vector<std::uint8_t> file_data;
 };
@@ -23,13 +22,11 @@ struct FileInfo {
 class TreeEntry {
 public:
     TreeEntry();
-    TreeEntry(FileInfo &info);
+    TreeEntry(const FileInfo &info);
 
     virtual ~TreeEntry();
     void removeAllChildren();
     void addChild(TreeEntry *entry);
-
-    virtual void addChildrenFromData(std::vector<std::uint8_t> data, QTextEdit *log = nullptr);
 
     unsigned int get_num_children() const;
     int getIndex() const;

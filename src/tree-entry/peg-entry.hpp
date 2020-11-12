@@ -8,11 +8,9 @@
 
 class PegEntry : public TreeEntry {
 public:
-    using TreeEntry::TreeEntry;    // inherit constructors
+    PegEntry(const FileInfo &info);
 
     PegFrame getFrame(std::uint16_t index) const;
-
-    void addChildrenFromData(std::vector<std::uint8_t> data, QTextEdit *log = nullptr) override;
 
 private:
     std::vector<PegFrame> mFrames;

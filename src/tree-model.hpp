@@ -13,7 +13,7 @@ public:
     TreeModel();
     ~TreeModel();
 
-    void addRoots(QList<TreeEntry *> list);
+    void addTopLevelEntry(TreeEntry *entry);
     void clear();
     TreeEntry *itemFromIndex(const QModelIndex &index) const;
 

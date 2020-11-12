@@ -8,12 +8,11 @@
 
 #include "Util.hpp"
 
-void PegEntry::addChildrenFromData(std::vector<std::uint8_t> data, QTextEdit *log)
+PegEntry::PegEntry(const FileInfo &fileInfo)
+    : TreeEntry(fileInfo)
 {
-    mData = data;
-
     PegHeader header;
-    memcpy(&header, data.data(), sizeof(PegHeader));
+    memcpy(&header, fileInfo.file_data.data(), sizeof(PegHeader));
 
     if (header.signature != 0x564B4547) {
         std::stringstream ss;
@@ -25,7 +24,7 @@ void PegEntry::addChildrenFromData(std::vector<std::uint8_t> data, QTextEdit *lo
 
     mFrames.resize(header.textureCount);
 
-    memcpy(mFrames.data(), &data[sizeof(PegHeader)], sizeof(PegFrame) * header.textureCount);
+    memcpy(mFrames.data(), &fileInfo.file_data.data()[sizeof(PegHeader)], sizeof(PegFrame) * header.textureCount);
 
     auto GetFrameSize = [&](std::uint32_t frameIndex) -> std::uint32_t {
         std::uint32_t frameEnd = 0;
@@ -48,31 +47,24 @@ void PegEntry::addChildrenFromData(std::vector<std::uint8_t> data, QTextEdit *lo
         const auto size = sizes[i];
 
         if (size > 1000000) {
+            // FIXME
+            /*
             if (log)
                 log->append(QString("[Warning] Skipping entry %1: size > 1MB").arg(filename));
+			*/
             continue;
         }
 
         std::vector<std::uint8_t> childData(
-            data.begin() + mFrames[i].offset,
-            data.begin() + mFrames[i].offset + sizes[i]);
+            fileInfo.file_data.begin() + mFrames[i].offset,
+            fileInfo.file_data.begin() + mFrames[i].offset + sizes[i]);
 
         FileInfo info;
         info.index_in_parent = index;
         info.file_name = filename;
-        info.file_data = data;
-        info.file_size = size;
+        info.file_data = childData;
 
-        auto entry = new TreeEntry(info);
-
-        try {
-            entry->addChildrenFromData(childData);
-            addChild(entry);
-        }
-        catch (const ValidationError &e) {
-            std::clog << e.what() << std::endl;
-            delete entry;
-        }
+        addChild(new TreeEntry(info));
     }
 }
 

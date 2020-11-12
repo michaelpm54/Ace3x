@@ -8,13 +8,11 @@
 
 class VppEntry : public TreeEntry {
 public:
-    using TreeEntry::TreeEntry;
+    VppEntry(const FileInfo &info);
 
     void readVpp1(std::vector<std::uint8_t> &data, QTextEdit *log = nullptr);
     void readVpp2(std::vector<std::uint8_t> &data, QTextEdit *log = nullptr);
     bool isCompressed() const;
-
-    void addChildrenFromData(std::vector<std::uint8_t> data, QTextEdit *log = nullptr) override;
 
 private:
     bool mCompressed {false};

@@ -145,14 +145,11 @@ void TreeModel::fetchMore(const QModelIndex &)
     return;
 }
 
-void TreeModel::addRoots(QList<TreeEntry *> list)
+void TreeModel::addTopLevelEntry(TreeEntry *entry)
 {
-    clear();
+    beginInsertRows(QModelIndex(), mInvisibleRoot->get_num_children(), mInvisibleRoot->get_num_children());
 
-    beginInsertRows(QModelIndex(), 0, list.size() - 1);
-
-    for (auto &e : list)
-        mInvisibleRoot->addChild(e);
+    mInvisibleRoot->addChild(entry);
 
     endInsertRows();
 }

@@ -13,6 +13,7 @@
 #include <QTextEdit>
 #include <QTreeView>
 #include <filesystem>
+#include <regex>
 
 #include "Util.hpp"
 #include "Widgets/FileInspector.hpp"
@@ -117,45 +118,39 @@ void MainWindow::setupActions()
     setMenuBar(mb);
 }
 
-QList<TreeEntry *> MainWindow::loadLevelVpps(const QString &path)
+std::vector<FileInfo> load_level_vpps(const std::string &dir)
 {
-    QDir dir = QFileInfo(path).dir();
+    std::vector<FileInfo> vpps;
 
-    auto entryPaths = dir.entryInfoList(QDir::AllEntries | QDir::NoDotAndDotDot);
+    /* Examples:
+		HA_SRC00.VPP
+		HA_SRC01.VPP
+		HA_SRC02.VPP
+		HA_SRC03.VPP
+		HA_SRC04.VPP
+		HA_CORE1.VPP
+		HA_CORE2.VPP
+	*/
+    std::regex level_regex("(SRC\\d\\d|CORE\\d).VPP", std::regex_constants::icase);
 
-    QList<TreeEntry *> list;
+    const std::string dir_ = std::filesystem::is_directory(dir) ? dir : std::filesystem::path(dir).parent_path().string();
 
     int index = 0;
-    for (auto &e : entryPaths) {
-        if (!e.fileName().endsWith("VPP", Qt::CaseSensitivity::CaseInsensitive))
+    for (const auto &entry : std::filesystem::directory_iterator(dir_)) {
+        if (!std::regex_search(entry.path().filename().string(), level_regex)) {
             continue;
+        }
 
         FileInfo info;
         info.index_in_parent = index++;
-        info.absolute_path = e.absoluteFilePath().toStdString();
-        info.file_name = e.fileName().toStdString();
+        info.file_name = entry.path().filename().string();
+        info.absolute_path = std::filesystem::absolute(entry.path()).string();
+        info.file_data = LoadFile(info.absolute_path);
 
-        VppEntry *vpp {nullptr};
-
-        try {
-            info.file_data = LoadFile(path.toStdString());
-            vpp = new VppEntry(info);
-        }
-        catch (const std::runtime_error &e) {
-            mLog->append(QString("[Error] Failed to load VPP: %1").arg(e.what()));
-            continue;
-        }
-        catch (...) {
-            mLog->append(QString("[Error] Failed to load VPP: Unhandled exception type"));
-            continue;
-        }
-
-        vpp->addChildrenFromData(info.file_data, mLog);
-        list.append(vpp);
-        mLog->append(QString("[Info] Adding root %1").arg(QString::fromStdString(info.file_name)));
+        vpps.push_back(info);
     }
 
-    return list;
+    return vpps;
 }
 
 void MainWindow::loadVpp(const QString &path)
@@ -167,10 +162,10 @@ void MainWindow::loadVpp(const QString &path)
 
     mLastPath = QFileInfo(path).dir().absolutePath();
 
-    QList<TreeEntry *> vppList;
-
     if (path.contains("LEVELS")) {
-        vppList.append(loadLevelVpps(path));
+        for (const auto &vpp : load_level_vpps(path.toStdString())) {
+            mFileViewModel->addTopLevelEntry(new VppEntry(vpp));
+        }
     }
     else {
         FileInfo info;
@@ -178,11 +173,9 @@ void MainWindow::loadVpp(const QString &path)
         info.file_name = std::filesystem::path(path.toStdString()).filename().string();
         info.absolute_path = path.toStdString();
 
-        VppEntry *vpp {nullptr};
-
         try {
             info.file_data = LoadFile(path.toStdString());
-            vpp = new VppEntry(info);
+            mFileViewModel->addTopLevelEntry(new VppEntry(info));
         }
         catch (const std::runtime_error &e) {
             mLog->append(QString("[Error] Failed to load VPP: %1").arg(e.what()));
@@ -191,21 +184,9 @@ void MainWindow::loadVpp(const QString &path)
             mLog->append(QString("[Error] Failed to load VPP: Unhandled exception type"));
         }
 
-        if (vpp) {
-            try {
-                vpp->addChildrenFromData(info.file_data, mLog);
-                mLog->append(QString("[Info] Adding VPP %1").arg(QFileInfo(path).fileName()));
-                vppList.append(vpp);
-            }
-            catch (const ValidationError &e) {
-                std::clog << path.toStdString() << ": " << e.what() << std::endl;
-                delete vpp;
-            }
-        }
+        mFileView->expandToDepth(0);
     }
 
-    mFileViewModel->addRoots(vppList);
-    mFileView->expandToDepth(0);
     mFileView->resizeColumnToContents(0);
     mFileView->setSortingEnabled(true);
 }
