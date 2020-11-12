@@ -4,8 +4,9 @@
 #define ACE3X_WIDGETS_FORMAT_VIEWERS_PLAINTEXT_VIEWER_HPP_
 
 #include <QWidget>
+#include <memory>
 
-#include "ui_PlaintextViewer.h"
+#include "ui_plaintext-viewer.h"
 #include "widgets/format-viewers/viewer.hpp"
 
 class TreeEntry;
@@ -19,7 +20,7 @@ public:
     bool shouldBeEnabled(const TreeEntry *item) const override;
 
 private:
-    Ui::PlaintextViewer ui_;
+    std::unique_ptr<Ui::PlaintextViewer> ui_;
 };
 
 #endif    // ACE3X_WIDGETS_FORMAT_VIEWERS_PLAINTEXT_VIEWER_HPP_

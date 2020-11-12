@@ -9,22 +9,23 @@
 #include <QKeyEvent>
 
 #include "tree-entries/peg-entry.hpp"
-
+#include "ui_image-viewer.h"
 
 ImageViewer::ImageViewer(QWidget *parent)
     : QWidget(parent)
+    , ui_(new Ui::ImageViewer())
 {
-    ui_.setupUi(this);
+    ui_->setupUi(this);
 
     setWindowTitle("Ace3x - Image Viewer");
 
-    connect(ui_.prev, &QPushButton::pressed, this, [this]() {
+    connect(ui_->prev, &QPushButton::pressed, this, [this]() {
         prevFrame();
     });
-    connect(ui_.next, &QPushButton::pressed, this, [this]() {
+    connect(ui_->next, &QPushButton::pressed, this, [this]() {
         nextFrame();
     });
-    connect(ui_.save, &QPushButton::pressed, this, [this]() {
+    connect(ui_->save, &QPushButton::pressed, this, [this]() {
         saveFrame();
     });
 }
@@ -54,10 +55,10 @@ void ImageViewer::activate(const TreeEntry *item)
         throw std::runtime_error("PEG doesn't have frame for index: " + std::to_string(current_frame_index_));
     }
 
-    ui_.pegLineEdit->setText(QString::fromStdString(peg_->getFilename()));
-    ui_.frameLineEdit->setText(QString::fromStdString(peg_->getChild(current_frame_index_)->getFilename()));
-    ui_.numFrames->setText(QString::number(peg_->get_num_children()));
-    ui_.frameIndex->setText(QString::number(current_frame_index_ + 1));
+    ui_->pegLineEdit->setText(QString::fromStdString(peg_->getFilename()));
+    ui_->frameLineEdit->setText(QString::fromStdString(peg_->getChild(current_frame_index_)->getFilename()));
+    ui_->numFrames->setText(QString::number(peg_->get_num_children()));
+    ui_->frameIndex->setText(QString::number(current_frame_index_ + 1));
 
     update();
 }
@@ -91,14 +92,14 @@ void ImageViewer::keyPressEvent(QKeyEvent *event)
 void ImageViewer::nextFrame()
 {
     current_frame_index_ = (current_frame_index_ + 1) % peg_->get_num_children();
-    ui_.frameIndex->setText(QString::number(current_frame_index_ + 1));
+    ui_->frameIndex->setText(QString::number(current_frame_index_ + 1));
     update();
 }
 
 void ImageViewer::prevFrame()
 {
     current_frame_index_ = ((current_frame_index_ - 1) + peg_->get_num_children()) % peg_->get_num_children();
-    ui_.frameIndex->setText(QString::number(current_frame_index_ + 1));
+    ui_->frameIndex->setText(QString::number(current_frame_index_ + 1));
     update();
 }
 
@@ -109,8 +110,8 @@ void ImageViewer::update()
 
     current_frame_name_ = QString::fromStdString(peg_image.filename);
 
-    ui_.frameLineEdit->setText(QString::fromStdString(peg_image.filename));
-    ui_.label->setPixmap(QPixmap::fromImage(qt_image));
+    ui_->frameLineEdit->setText(QString::fromStdString(peg_image.filename));
+    ui_->label->setPixmap(QPixmap::fromImage(qt_image));
 }
 
 bool ImageViewer::shouldBeEnabled(const TreeEntry *item) const
@@ -135,7 +136,7 @@ void ImageViewer::saveFrame()
     if (false == file.open(QIODevice::WriteOnly)) {
         std::clog << "[Error] Failed to open file for writing: " << fileName.toStdString() << std::endl;
     }
-    else if (!ui_.label->pixmap()->save(fileName, "PNG")) {
+    else if (!ui_->label->pixmap()->save(fileName, "PNG")) {
         std::clog << "[Error] Failed to write data for " << fileName.toStdString() << std::endl;
     }
     else {

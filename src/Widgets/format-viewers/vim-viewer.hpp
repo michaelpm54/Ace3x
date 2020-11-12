@@ -6,10 +6,14 @@
 #include <QHBoxLayout>
 #include <QListWidget>
 #include <QWidget>
+#include <memory>
 
 #include "format-readers/vif-mesh.hpp"
-#include "ui_VIMViewer.h"
 #include "widgets/format-viewers/viewer.hpp"
+
+namespace Ui {
+class VIMViewer;
+}
 
 class VIMViewer : public QWidget, public Viewer {
     Q_OBJECT
@@ -20,7 +24,7 @@ public:
     bool shouldBeEnabled(const TreeEntry *item) const override;
 
 private:
-    Ui::VIMViewer ui_;
+    std::unique_ptr<Ui::VIMViewer> ui_;
     VifMesh vim_;
     const TreeEntry *item_;
 

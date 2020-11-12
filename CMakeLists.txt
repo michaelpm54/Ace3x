@@ -60,10 +60,10 @@ set(ACE3X_SOURCES
 )
 
 set(ACE3X_FORMS
-    ui/ImageViewer.ui
-    ui/PlaintextViewer.ui
-    ui/P3DViewer.ui
-    ui/VIMViewer.ui
+    ui/image-viewer.ui
+    ui/plaintext-viewer.ui
+    ui/p3d-viewer.ui
+    ui/vim-viewer.ui
 )
 
 ## SOURCES_END

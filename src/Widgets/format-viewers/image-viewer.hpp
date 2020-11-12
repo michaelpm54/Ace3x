@@ -4,9 +4,13 @@
 #define ACE3X_WIDGETS_FORMAT_VIEWERS_IMAGE_VIEWER_HPP_
 
 #include <QWidget>
+#include <memory>
 
-#include "ui_ImageViewer.h"
 #include "widgets/format-viewers/viewer.hpp"
+
+namespace Ui {
+class ImageViewer;
+}
 
 class TreeEntry;
 class PegEntry;
@@ -31,7 +35,7 @@ private slots:
     void saveFrame();
 
 private:
-    Ui::ImageViewer ui_;
+    std::unique_ptr<Ui::ImageViewer> ui_;
     const PegEntry *peg_ {nullptr};
     std::uint16_t current_frame_index_ {0};
     QString current_frame_name_;

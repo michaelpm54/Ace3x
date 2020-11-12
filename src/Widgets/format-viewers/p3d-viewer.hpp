@@ -4,10 +4,14 @@
 #define ACE3X_WIDGETS_FORMAT_VIEWERS_P3D_VIEWER_HPP_
 
 #include <QWidget>
+#include <memory>
 
 #include "formats/p3d.hpp"
-#include "ui_P3DViewer.h"
 #include "widgets/format-viewers/viewer.hpp"
+
+namespace Ui {
+class P3DViewer;
+}
 
 class TreeEntry;
 struct P3DHeader;
@@ -33,7 +37,7 @@ private slots:
     void onWriteObjClicked();
 
 private:
-    Ui::P3DViewer ui_;
+    std::unique_ptr<Ui::P3DViewer> ui_;
     const TreeEntry *item_ {nullptr};
     P3DHeader p3d_header_;
 };
