@@ -92,11 +92,6 @@ qint64 TreeEntry::getSize() const
     return mSize;
 }
 
-bool TreeEntry::is_archive() const
-{
-    return mIsArchive;
-}
-
 unsigned int TreeEntry::get_num_children() const
 {
     return mChildren.size();

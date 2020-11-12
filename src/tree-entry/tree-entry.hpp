@@ -21,7 +21,6 @@ public:
 
     virtual void read(std::vector<std::uint8_t> data, QTextEdit *log = nullptr);
 
-    bool is_archive() const;
     unsigned int get_num_children() const;
     std::uint16_t getIndex() const;
     QString getName() const;
@@ -39,7 +38,6 @@ protected:
     QString mName {""};
     QString mFilename {""};
     QString mExtension {""};
-    bool mIsArchive {false};
     std::uint16_t mIndex {0};
     qint64 mSize {0};
     std::vector<std::uint8_t> mData;

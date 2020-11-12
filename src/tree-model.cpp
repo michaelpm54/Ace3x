@@ -136,7 +136,7 @@ bool TreeModel::canFetchMore(const QModelIndex &index) const
     if (!index.isValid())
         return false;
 
-    return itemFromIndex(index)->is_archive();
+    return itemFromIndex(index)->get_num_children() > 0;
 }
 
 void TreeModel::fetchMore(const QModelIndex &)
