@@ -11,7 +11,7 @@ public:
     bool isCompressed() const;
 
 private:
-    bool mCompressed {false};
+    bool compressed_ {false};
 };
 
 #endif    // ACE3X_TREE_ENTRIES_VPP_ENTRY_HPP_

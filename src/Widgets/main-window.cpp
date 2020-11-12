@@ -27,16 +27,16 @@
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
-    , mFileView(new QTreeView())
-    , mFileViewModel(new TreeModel())
-    , mTreeEntrySortProxy(new TreeEntrySortProxy())
-    , mFileInspector(new FileInfoFrame())
-    , mLog(new QTextEdit())
-    , mImageViewer(new ImageViewer())
-    , mPlaintextViewer(new PlaintextViewer())
-    , mP3DViewer(new P3DViewer())
-    , mVIMViewer(new VIMViewer())
-    , mLastPath(QDir::currentPath())
+    , tree_view_(new QTreeView())
+    , tree_model_(new TreeModel())
+    , tree_sort_proxy_(new TreeEntrySortProxy())
+    , file_info_view_(new FileInfoFrame())
+    , log_(new QTextEdit())
+    , image_viewer_(new ImageViewer())
+    , plaintext_viewer_(new PlaintextViewer())
+    , p3d_viewer_(new P3DViewer())
+    , vim_viewer_(new VIMViewer())
+    , last_open_path_(QDir::currentPath())
 {
     setupActions();
 
@@ -47,7 +47,7 @@ MainWindow::MainWindow(QWidget *parent)
     auto splitter0 = new QSplitter(Qt::Orientation::Vertical);
     auto splitter1 = new QSplitter(Qt::Orientation::Horizontal);
 
-    mLog->setReadOnly(true);
+    log_->setReadOnly(true);
 
     setCentralWidget(centralWidget);
     centralWidget->setLayout(layout);
@@ -55,52 +55,52 @@ MainWindow::MainWindow(QWidget *parent)
     layout->addWidget(splitter0);
 
     splitter0->addWidget(splitter1);
-    splitter0->addWidget(mLog);
+    splitter0->addWidget(log_);
     splitter0->setChildrenCollapsible(false);
 
-    splitter1->addWidget(mFileView);
-    splitter1->addWidget(mFileInspector);
+    splitter1->addWidget(tree_view_);
+    splitter1->addWidget(file_info_view_);
     splitter1->setChildrenCollapsible(false);
 
     splitter0->setStretchFactor(0, 3);
     splitter0->setStretchFactor(1, 1);
 
-    mImageViewer->hide();
+    image_viewer_->hide();
 
-    mTreeEntrySortProxy->setSortCaseSensitivity(Qt::CaseInsensitive);
-    mTreeEntrySortProxy->setSourceModel(mFileViewModel);
+    tree_sort_proxy_->setSortCaseSensitivity(Qt::CaseInsensitive);
+    tree_sort_proxy_->setSourceModel(tree_model_);
 
     QSizePolicy leftPolicy(QSizePolicy::Preferred, QSizePolicy::Preferred);
     leftPolicy.setHorizontalStretch(2);
-    mFileView->setSizePolicy(leftPolicy);
-    mFileView->setSelectionMode(QAbstractItemView::SelectionMode::SingleSelection);
-    mFileView->setSelectionBehavior(QAbstractItemView::SelectionBehavior::SelectRows);
-    mFileView->setAlternatingRowColors(true);
-    mFileView->setModel(mTreeEntrySortProxy);
+    tree_view_->setSizePolicy(leftPolicy);
+    tree_view_->setSelectionMode(QAbstractItemView::SelectionMode::SingleSelection);
+    tree_view_->setSelectionBehavior(QAbstractItemView::SelectionBehavior::SelectRows);
+    tree_view_->setAlternatingRowColors(true);
+    tree_view_->setModel(tree_sort_proxy_);
 
-    connect(mFileView->selectionModel(), &QItemSelectionModel::selectionChanged, this, &MainWindow::updateSelection);
-    connect(mFileView, &QTreeView::expanded, this, [this]() {
-        mFileView->resizeColumnToContents(0);
+    connect(tree_view_->selectionModel(), &QItemSelectionModel::selectionChanged, this, &MainWindow::updateSelection);
+    connect(tree_view_, &QTreeView::expanded, this, [this]() {
+        tree_view_->resizeColumnToContents(0);
     });
 
     QSizePolicy rightPolicy(QSizePolicy::Preferred, QSizePolicy::Preferred);
     rightPolicy.setHorizontalStretch(1);
-    mFileInspector->setSizePolicy(rightPolicy);
+    file_info_view_->setSizePolicy(rightPolicy);
 
-    mFileInspector->addViewer(".peg", mImageViewer);
-    mFileInspector->addViewer(".tga", mImageViewer);
-    mFileInspector->addViewer(".vbm", mImageViewer);
-    mFileInspector->addViewer(".tbl", mPlaintextViewer);
-    mFileInspector->addViewer(".arr", mPlaintextViewer);
-    mFileInspector->addViewer(".p3d", mP3DViewer);
-    mFileInspector->addViewer(".vim", mVIMViewer);
+    file_info_view_->addViewer(".peg", image_viewer_);
+    file_info_view_->addViewer(".tga", image_viewer_);
+    file_info_view_->addViewer(".vbm", image_viewer_);
+    file_info_view_->addViewer(".tbl", plaintext_viewer_);
+    file_info_view_->addViewer(".arr", plaintext_viewer_);
+    file_info_view_->addViewer(".p3d", p3d_viewer_);
+    file_info_view_->addViewer(".vim", vim_viewer_);
 }
 
 MainWindow::~MainWindow()
 {
-    delete mFileViewModel;
-    delete mTreeEntrySortProxy;
-    delete mImageViewer;
+    delete tree_model_;
+    delete tree_sort_proxy_;
+    delete image_viewer_;
 }
 
 void MainWindow::setupActions()
@@ -126,23 +126,23 @@ void MainWindow::updateSelection(const QItemSelection &selected, const QItemSele
 
     qDebug() << selected.indexes().first();
 
-    TreeEntry *entry = mFileViewModel->itemFromIndex(mTreeEntrySortProxy->mapToSource(selected.indexes().first()));
+    TreeEntry *entry = tree_model_->itemFromIndex(tree_sort_proxy_->mapToSource(selected.indexes().first()));
 
-    mFileInspector->setItem(entry);
+    file_info_view_->setItem(entry);
 }
 
 void MainWindow::actionOpen()
 {
     actionClose();
 
-    load(QFileDialog::getOpenFileName(this, "Open VPP", mLastPath, "Archive File (*.VPP)"));
+    load(QFileDialog::getOpenFileName(this, "Open VPP", last_open_path_, "Archive File (*.VPP)"));
 }
 
 void MainWindow::actionClose()
 {
-    mLog->clear();
-    mFileViewModel->clear();
-    mFileInspector->clear();
+    log_->clear();
+    tree_model_->clear();
+    file_info_view_->clear();
 }
 
 void MainWindow::actionQuit()
@@ -155,17 +155,17 @@ void MainWindow::load(const QString &path)
     if (path.isEmpty())
         return;
 
-    mLastPath = QFileInfo(path).dir().absolutePath();
+    last_open_path_ = QFileInfo(path).dir().absolutePath();
 
-    int num_loaded = mFileViewModel->load(path);
+    int num_loaded = tree_model_->load(path);
 
     // If there is only one top-level archive, expand it.
     // Don't do this for multiple top-level archives because it's messy.
     // Let the user expand them on their own.
     if (num_loaded == 1) {
-        mFileView->expandToDepth(0);
+        tree_view_->expandToDepth(0);
     }
 
-    mFileView->resizeColumnToContents(0);
-    mFileView->setSortingEnabled(true);
+    tree_view_->resizeColumnToContents(0);
+    tree_view_->setSortingEnabled(true);
 }

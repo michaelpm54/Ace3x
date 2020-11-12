@@ -74,34 +74,34 @@ void P3DViewer::writeVerticesToObj(const QString &fileName, const P3DHeader &hea
 P3DViewer::P3DViewer(QWidget *parent)
     : QWidget(parent)
 {
-    ui.setupUi(this);
+    ui_.setupUi(this);
 
     resize(800, 600);
 
     setWindowTitle("Ace3x - P3D Viewer");
 
-    ui.navTable->setColumnCount(8);
-    ui.navTable->setHorizontalHeaderLabels({"Name", "?", "?", "?", "?", "x", "y", "z"});
-    ui.navTable->setSortingEnabled(true);
+    ui_.navTable->setColumnCount(8);
+    ui_.navTable->setHorizontalHeaderLabels({"Name", "?", "?", "?", "?", "x", "y", "z"});
+    ui_.navTable->setSortingEnabled(true);
 
-    connect(ui.writeToObjButton, &QPushButton::clicked, this, &P3DViewer::onWriteObjClicked);
+    connect(ui_.writeToObjButton, &QPushButton::clicked, this, &P3DViewer::onWriteObjClicked);
 }
 
 void P3DViewer::onWriteObjClicked()
 {
-    writeVerticesToObj(QString::fromStdString(m_item->getFilename()), m_header, m_item->getData());
+    writeVerticesToObj(QString::fromStdString(item_->getFilename()), p3d_header_, item_->getData());
 }
 
 void P3DViewer::activate(const TreeEntry *item)
 {
-    ui.objList->clear();
-    ui.imgList->clear();
-    ui.lyrList->clear();
-    ui.navTable->clearContents();
+    ui_.objList->clear();
+    ui_.imgList->clear();
+    ui_.lyrList->clear();
+    ui_.navTable->clearContents();
 
     show();
 
-    m_item = item;
+    item_ = item;
 
     auto ptr = item->getData();
 
@@ -109,7 +109,7 @@ void P3DViewer::activate(const TreeEntry *item)
     memcpy(&header, ptr, sizeof(P3DHeader));
     header.size += 0x8;
 
-    m_header = header;
+    p3d_header_ = header;
 
     std::uint32_t namesStart = sizeof(P3DHeader);
     std::uint32_t namesEnd = header.filenamesEnd;
@@ -128,7 +128,7 @@ void P3DViewer::activate(const TreeEntry *item)
     for (auto &f : names) {
         auto str = QString::fromStdString(f);
         if (str.endsWith("tga", Qt::CaseSensitivity::CaseInsensitive)) {
-            ui.imgList->addItem(str);
+            ui_.imgList->addItem(str);
         }
         else if (str.startsWith('$')) {
             // $player, $npc, $hostile
@@ -136,21 +136,21 @@ void P3DViewer::activate(const TreeEntry *item)
                 addNavpoint(str, header, ptr);
             }
             else {
-                ui.lyrList->addItem(str);
+                ui_.lyrList->addItem(str);
             }
         }
         else {
-            ui.objList->addItem(str);
+            ui_.objList->addItem(str);
         }
     }
 
-    ui.objCount->setNum(ui.objList->count());
-    ui.imgCount->setNum(ui.imgList->count());
-    ui.lyrCount->setNum(ui.lyrList->count());
-    ui.navCount->setNum(ui.navTable->rowCount());
+    ui_.objCount->setNum(ui_.objList->count());
+    ui_.imgCount->setNum(ui_.imgList->count());
+    ui_.lyrCount->setNum(ui_.lyrList->count());
+    ui_.navCount->setNum(ui_.navTable->rowCount());
 
-    ui.navTable->resizeColumnsToContents();
-    ui.navTable->sortItems(0, Qt::SortOrder::AscendingOrder);
+    ui_.navTable->resizeColumnsToContents();
+    ui_.navTable->sortItems(0, Qt::SortOrder::AscendingOrder);
 }
 
 bool P3DViewer::shouldBeEnabled(const TreeEntry *) const
@@ -160,19 +160,19 @@ bool P3DViewer::shouldBeEnabled(const TreeEntry *) const
 
 void P3DViewer::addNavpoint(const QString &str, const P3DHeader &header, const std::uint8_t *const data)
 {
-    const int row = ui.navTable->rowCount();
+    const int row = ui_.navTable->rowCount();
 
     Navpoint nav;
     memcpy(&nav, &data[header.navpointsStart + (row * sizeof(Navpoint))], sizeof(Navpoint));
 
-    ui.navTable->insertRow(row);
+    ui_.navTable->insertRow(row);
 
-    ui.navTable->setItem(row, 0, new QTableWidgetItem(str));
-    ui.navTable->setItem(row, 1, new QTableWidgetItem(QString::number(*reinterpret_cast<int *>(&nav.unk0))));
-    ui.navTable->setItem(row, 2, new QTableWidgetItem(QString::number(nav.unk4, 'g', 4)));
-    ui.navTable->setItem(row, 3, new QTableWidgetItem(QString::number(nav.unk14, 'g', 4)));
-    ui.navTable->setItem(row, 4, new QTableWidgetItem(QString::number(nav.unk24, 'g', 4)));
-    ui.navTable->setItem(row, 5, new QTableWidgetItem(QString::number(nav.x, 'g', 4)));
-    ui.navTable->setItem(row, 6, new QTableWidgetItem(QString::number(nav.y, 'g', 4)));
-    ui.navTable->setItem(row, 7, new QTableWidgetItem(QString::number(nav.z, 'g', 4)));
+    ui_.navTable->setItem(row, 0, new QTableWidgetItem(str));
+    ui_.navTable->setItem(row, 1, new QTableWidgetItem(QString::number(*reinterpret_cast<int *>(&nav.unk0))));
+    ui_.navTable->setItem(row, 2, new QTableWidgetItem(QString::number(nav.unk4, 'g', 4)));
+    ui_.navTable->setItem(row, 3, new QTableWidgetItem(QString::number(nav.unk14, 'g', 4)));
+    ui_.navTable->setItem(row, 4, new QTableWidgetItem(QString::number(nav.unk24, 'g', 4)));
+    ui_.navTable->setItem(row, 5, new QTableWidgetItem(QString::number(nav.x, 'g', 4)));
+    ui_.navTable->setItem(row, 6, new QTableWidgetItem(QString::number(nav.y, 'g', 4)));
+    ui_.navTable->setItem(row, 7, new QTableWidgetItem(QString::number(nav.z, 'g', 4)));
 }

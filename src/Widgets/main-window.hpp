@@ -43,19 +43,19 @@ private slots:
     void updateSelection(const QItemSelection &selected, const QItemSelection &deselected);
 
 private:
-    QTreeView *mFileView {nullptr};
-    TreeModel *mFileViewModel {nullptr};
-    TreeEntrySortProxy *mTreeEntrySortProxy {nullptr};
+    QTreeView *tree_view_ {nullptr};
+    TreeModel *tree_model_ {nullptr};
+    TreeEntrySortProxy *tree_sort_proxy_ {nullptr};
 
-    FileInfoFrame *mFileInspector {nullptr};
+    FileInfoFrame *file_info_view_ {nullptr};
 
-    QTextEdit *mLog;
-    ImageViewer *mImageViewer {nullptr};
-    PlaintextViewer *mPlaintextViewer {nullptr};
-    P3DViewer *mP3DViewer {nullptr};
-    VIMViewer *mVIMViewer {nullptr};
+    QTextEdit *log_;
+    ImageViewer *image_viewer_ {nullptr};
+    PlaintextViewer *plaintext_viewer_ {nullptr};
+    P3DViewer *p3d_viewer_ {nullptr};
+    VIMViewer *vim_viewer_ {nullptr};
 
-    QString mLastPath;
+    QString last_open_path_;
 };
 
 #endif    // ACE3X_WIDGETS_MAIN_WINDOW_HPP_

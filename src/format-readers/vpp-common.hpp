@@ -2,6 +2,7 @@
 #define ACE3X_FORMAT_READERS_VPP_COMMON_HPP_
 
 namespace vpp_common {
+
 inline constexpr std::uint16_t kChunkSize {0x800};
 
 inline std::uint32_t align_to_chunk(std::uint32_t addr)
@@ -18,6 +19,7 @@ inline std::uint32_t align_to_chunk(std::uint32_t addr)
 
     return addr;
 }
+
 }    // namespace vpp_common
 
 #endif    // ACE3X_FORMAT_READERS_VPP_COMMON_HPP_

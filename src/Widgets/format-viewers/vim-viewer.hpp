@@ -20,9 +20,9 @@ public:
     bool shouldBeEnabled(const TreeEntry *item) const override;
 
 private:
-    Ui::VIMViewer ui;
-    VifMesh m_vim;
-    const TreeEntry *m_item;
+    Ui::VIMViewer ui_;
+    VifMesh vim_;
+    const TreeEntry *item_;
 
 private slots:
     void sub0Changed();

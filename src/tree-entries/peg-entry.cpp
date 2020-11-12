@@ -6,7 +6,6 @@
 #include <QTextEdit>
 #include <sstream>
 
-#include "Util.hpp"
 #include "format-readers/peg.hpp"
 
 PegEntry::PegEntry(const FileInfo &pegInfo)

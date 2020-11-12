@@ -33,11 +33,9 @@ public:
     TreeEntry *getChild(std::uint16_t index) const;
 
 protected:
-    FileInfo mFileInfo {};
-
-    TreeEntry *mParent {nullptr};
-    std::vector<std::unique_ptr<TreeEntry> > mChildren;
-    std::vector<std::uint8_t> mData;
+    FileInfo file_info_ {};
+    TreeEntry *parent_ {nullptr};
+    std::vector<std::unique_ptr<TreeEntry> > children_;
 };
 
 #endif    // ACE3X_TREE_ENTRIES_TREE_ENTRY_HPP_

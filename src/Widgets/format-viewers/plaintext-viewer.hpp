@@ -19,7 +19,7 @@ public:
     bool shouldBeEnabled(const TreeEntry *item) const override;
 
 private:
-    Ui::PlaintextViewer ui;
+    Ui::PlaintextViewer ui_;
 };
 
 #endif    // ACE3X_WIDGETS_FORMAT_VIEWERS_PLAINTEXT_VIEWER_HPP_

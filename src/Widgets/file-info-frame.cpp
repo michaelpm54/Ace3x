@@ -16,66 +16,66 @@
 
 FileInfoFrame::FileInfoFrame(QWidget *parent)
     : QFrame(parent)
-    , mFilename(new QLineEdit())
-    , mSize(new QLineEdit())
-    , mType(new QLineEdit())
-    , mSave(new QPushButton("Save"))
-    , mView(new QPushButton("View"))
+    , filename_(new QLineEdit())
+    , size_(new QLineEdit())
+    , type_(new QLineEdit())
+    , save_(new QPushButton("Save"))
+    , view_(new QPushButton("View"))
 {
-    mView->hide();
+    view_->hide();
 
     auto layout = new QFormLayout();
     setLayout(layout);
 
-    mFilename->setReadOnly(true);
-    mSize->setReadOnly(true);
-    mType->setReadOnly(true);
-    layout->addRow("Filename", mFilename);
-    layout->addRow("Size", mSize);
-    layout->addRow("Type", mType);
-    layout->addWidget(mSave);
-    layout->addWidget(mView);
+    filename_->setReadOnly(true);
+    size_->setReadOnly(true);
+    type_->setReadOnly(true);
+    layout->addRow("Filename", filename_);
+    layout->addRow("Size", size_);
+    layout->addRow("Type", type_);
+    layout->addWidget(save_);
+    layout->addWidget(view_);
 
-    mSave->hide();
+    save_->hide();
 
-    connect(mSave, &QPushButton::released, this, &FileInfoFrame::saveButtonClicked);
-    connect(mView, &QPushButton::released, this, &FileInfoFrame::viewButtonClicked);
+    connect(save_, &QPushButton::released, this, &FileInfoFrame::saveButtonClicked);
+    connect(view_, &QPushButton::released, this, &FileInfoFrame::viewButtonClicked);
 }
 
 void FileInfoFrame::setItem(const TreeEntry *const item)
 {
-    mSave->show();
+    save_->show();
 
-    mItem = item;
+    item_ = item;
 
     auto ext = QString::fromStdString(item->getExtension());
 
-    mFilename->setText(QString::fromStdString(item->getFilename()));
-    mFilename->setToolTip(QString::fromStdString(item->getPath()));
-    mSize->setText(QLocale::system().formattedDataSize(item->getSize(), 2, nullptr));
-    mType->setText(ext);
+    filename_->setText(QString::fromStdString(item->getFilename()));
+    filename_->setToolTip(QString::fromStdString(item->getPath()));
+    size_->setText(QLocale::system().formattedDataSize(item->getSize(), 2, nullptr));
+    type_->setText(ext);
 
-    if (mViewers.count(ext)) {
-        if (mViewers[ext]->shouldBeEnabled(item)) {
-            mView->show();
+    if (viewers_.count(ext)) {
+        if (viewers_[ext]->shouldBeEnabled(item)) {
+            view_->show();
         }
         else {
-            mView->hide();
+            view_->hide();
         }
     }
     else {
-        mView->hide();
+        view_->hide();
     }
 }
 
 void FileInfoFrame::addViewer(QString ext, Viewer *viewer)
 {
-    mViewers[ext] = viewer;
+    viewers_[ext] = viewer;
 }
 
 void FileInfoFrame::saveButtonClicked()
 {
-    const auto fileName = QFileDialog::getSaveFileName(this, "Save File", QDir::currentPath() + '/' + QString::fromStdString(mItem->getFilename()));
+    const auto fileName = QFileDialog::getSaveFileName(this, "Save File", QDir::currentPath() + '/' + QString::fromStdString(item_->getFilename()));
     if (fileName.isEmpty()) {
         std::clog << "[Info] Cancelled save" << std::endl;
         return;
@@ -86,7 +86,7 @@ void FileInfoFrame::saveButtonClicked()
     if (false == file.open(QIODevice::WriteOnly)) {
         std::clog << "[Error] Failed to open file for writing: " << fileName.toStdString() << std::endl;
     }
-    else if (-1 == file.write(reinterpret_cast<const char *>(mItem->getData()), mItem->getSize())) {
+    else if (-1 == file.write(reinterpret_cast<const char *>(item_->getData()), item_->getSize())) {
         std::clog << "[Error] Failed to write data for " << fileName.toStdString() << std::endl;
     }
     else {
@@ -97,7 +97,7 @@ void FileInfoFrame::saveButtonClicked()
 void FileInfoFrame::viewButtonClicked()
 {
     try {
-        mViewers[QString::fromStdString(mItem->getExtension())]->activate(mItem);
+        viewers_[QString::fromStdString(item_->getExtension())]->activate(item_);
     }
     catch (const std::runtime_error &e) {
         QMessageBox::critical(nullptr, "Error", QString::fromStdString(e.what()), QMessageBox::Ok);
@@ -106,9 +106,9 @@ void FileInfoFrame::viewButtonClicked()
 
 void FileInfoFrame::clear()
 {
-    mFilename->clear();
-    mSize->clear();
-    mType->clear();
-    mSave->hide();
-    mView->hide();
+    filename_->clear();
+    size_->clear();
+    type_->clear();
+    save_->hide();
+    view_->hide();
 }

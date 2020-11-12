@@ -34,9 +34,9 @@ private slots:
     void onWriteObjClicked();
 
 private:
-    Ui::P3DViewer ui;
-    const TreeEntry *m_item {nullptr};
-    P3DHeader m_header;
+    Ui::P3DViewer ui_;
+    const TreeEntry *item_ {nullptr};
+    P3DHeader p3d_header_;
 };
 
 #endif    // ACE3X_WIDGETS_FORMAT_VIEWERS_P3D_VIEWER_HPP_

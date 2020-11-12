@@ -35,7 +35,7 @@ protected:
 private:
     static std::vector<FileInfo> TreeModel::gather_level_vpps_in_dir(const std::string &dir, bool load_data);
 
-    std::unique_ptr<TreeEntry> mInvisibleRoot;
+    std::unique_ptr<TreeEntry> invisible_root_;
 };
 
 #endif    // ACE3X_TREE_MODEL_HPP_

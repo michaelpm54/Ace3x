@@ -28,16 +28,16 @@ private slots:
     void viewButtonClicked();
 
 private:
-    QLineEdit *mFilename;
-    QLineEdit *mSize;
-    QLineEdit *mType;
+    QLineEdit *filename_;
+    QLineEdit *size_;
+    QLineEdit *type_;
 
-    QPushButton *mSave;
-    QPushButton *mView;
+    QPushButton *save_;
+    QPushButton *view_;
 
-    QMap<QString, Viewer *> mViewers;
+    QMap<QString, Viewer *> viewers_;
 
-    const TreeEntry *mItem {nullptr};
+    const TreeEntry *item_ {nullptr};
 };
 
 #endif    // ACE3X_WIDGETS_FILE_INFO_FRAME_HPP_

@@ -27,7 +27,7 @@ VppEntry::VppEntry(const FileInfo &vppInfo)
         VppV2 vpp;
         vpp.read(vppInfo.file_data);
 
-        mCompressed = vpp.is_compressed();
+        compressed_ = vpp.is_compressed();
 
         for (const auto &entryInfo : vpp.get_entries()) {
             if (entryInfo.extension == ".peg")

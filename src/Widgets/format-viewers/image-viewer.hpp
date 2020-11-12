@@ -31,10 +31,10 @@ private slots:
     void saveFrame();
 
 private:
-    Ui::ImageViewer ui;
-    std::uint16_t mFrameIndex {0};
-    const PegEntry *mPeg {nullptr};
-    QString m_frameName;
+    Ui::ImageViewer ui_;
+    const PegEntry *peg_ {nullptr};
+    std::uint16_t current_frame_index_ {0};
+    QString current_frame_name_;
 };
 
 #endif    // ACE3X_WIDGETS_FORMAT_VIEWERS_IMAGE_VIEWER_HPP_

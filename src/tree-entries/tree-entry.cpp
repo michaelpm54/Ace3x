@@ -8,7 +8,7 @@
 TreeEntry::TreeEntry() = default;
 
 TreeEntry::TreeEntry(const FileInfo &fileInfo)
-    : mFileInfo(fileInfo)
+    : file_info_(fileInfo)
 {
 }
 
@@ -16,68 +16,68 @@ TreeEntry::~TreeEntry() = default;
 
 void TreeEntry::removeAllChildren()
 {
-    mChildren.clear();
+    children_.clear();
 }
 
 int TreeEntry::getIndex() const
 {
-    return mFileInfo.index_in_parent;
+    return file_info_.index_in_parent;
 }
 
 void TreeEntry::addChild(TreeEntry *entry)
 {
-    mChildren.push_back(std::unique_ptr<TreeEntry>(entry));
-    entry->mParent = this;
+    children_.push_back(std::unique_ptr<TreeEntry>(entry));
+    entry->parent_ = this;
 }
 
 TreeEntry *TreeEntry::getChild(std::uint16_t index) const
 {
-    if (index >= mChildren.size())
+    if (index >= children_.size())
         return nullptr;
-    return mChildren[index].get();
+    return children_[index].get();
 }
 
 std::string TreeEntry::getPath() const
 {
-    if (mParent) {
-        if (!mParent->getPath().empty())
-            return mParent->getPath() + '/' + mFileInfo.file_name;
+    if (parent_) {
+        if (!parent_->getPath().empty())
+            return parent_->getPath() + '/' + file_info_.file_name;
     }
 
-    return mFileInfo.file_name;
+    return file_info_.file_name;
 }
 
 std::string TreeEntry::getFilename() const
 {
-    return mFileInfo.file_name;
+    return file_info_.file_name;
 }
 
 std::string TreeEntry::getName() const
 {
-    return mFileInfo.file_name;
+    return file_info_.file_name;
 }
 
 std::string TreeEntry::getExtension() const
 {
-    return mFileInfo.extension;
+    return file_info_.extension;
 }
 
 TreeEntry *TreeEntry::getParent() const
 {
-    return mParent;
+    return parent_;
 }
 
 const std::uint8_t *TreeEntry::getData() const
 {
-    return mFileInfo.file_data.data();
+    return file_info_.file_data.data();
 }
 
 std::uint64_t TreeEntry::getSize() const
 {
-    return mFileInfo.file_data.size();
+    return file_info_.file_data.size();
 }
 
 unsigned int TreeEntry::get_num_children() const
 {
-    return mChildren.size();
+    return children_.size();
 }

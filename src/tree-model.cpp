@@ -12,7 +12,7 @@
 #include "tree-entries/vpp-entry.hpp"
 
 TreeModel::TreeModel()
-    : mInvisibleRoot(new TreeEntry())
+    : invisible_root_(new TreeEntry())
 {
     clear();
 }
@@ -22,7 +22,7 @@ TreeModel::~TreeModel() = default;
 TreeEntry *TreeModel::itemFromIndex(const QModelIndex &index) const
 {
     if (!index.isValid())
-        return mInvisibleRoot.get();
+        return invisible_root_.get();
 
     return static_cast<TreeEntry *>(index.internalPointer());
 }
@@ -35,7 +35,7 @@ QModelIndex TreeModel::index(int row, int col, const QModelIndex &parent) const
     TreeEntry *parent_entry;
 
     if (!parent.isValid())
-        parent_entry = mInvisibleRoot.get();
+        parent_entry = invisible_root_.get();
     else
         parent_entry = static_cast<TreeEntry *>(parent.internalPointer());
 
@@ -56,7 +56,7 @@ QModelIndex TreeModel::parent(const QModelIndex &index) const
     TreeEntry *parent_entry = child_entry->getParent();
 
     // Return an invalid index for the root as it has no parent
-    if (parent_entry == mInvisibleRoot.get())
+    if (parent_entry == invisible_root_.get())
         return QModelIndex();
 
     // Create the parent index
@@ -115,7 +115,7 @@ int TreeModel::rowCount(const QModelIndex &parent) const
 
     TreeEntry *parent_entry;
     if (!parent.isValid())
-        parent_entry = mInvisibleRoot.get();
+        parent_entry = invisible_root_.get();
     else
         parent_entry = static_cast<TreeEntry *>(parent.internalPointer());
 
@@ -131,7 +131,7 @@ void TreeModel::clear()
 {
     beginResetModel();
 
-    mInvisibleRoot->removeAllChildren();
+    invisible_root_->removeAllChildren();
 
     endResetModel();
 }
@@ -152,9 +152,9 @@ void TreeModel::fetchMore(const QModelIndex &)
 
 void TreeModel::addTopLevelEntry(TreeEntry *entry)
 {
-    beginInsertRows(QModelIndex(), mInvisibleRoot->get_num_children(), mInvisibleRoot->get_num_children());
+    beginInsertRows(QModelIndex(), invisible_root_->get_num_children(), invisible_root_->get_num_children());
 
-    mInvisibleRoot->addChild(entry);
+    invisible_root_->addChild(entry);
 
     endInsertRows();
 }
@@ -189,10 +189,10 @@ int TreeModel::load(const QString &path)
         }
         catch (const std::runtime_error &e) {
             // FIXME: Log
-            // mLog->append(QString("[Error] Failed to load VPP: %1").arg(e.what()));
+            // log_->append(QString("[Error] Failed to load VPP: %1").arg(e.what()));
         }
         catch (...) {
-            // mLog->append(QString("[Error] Failed to load VPP: Unhandled exception type"));
+            // log_->append(QString("[Error] Failed to load VPP: Unhandled exception type"));
         }
 
         num_loaded = 1;
