@@ -89,12 +89,9 @@ MainWindow::MainWindow(QWidget *parent)
     mFileInspector->addViewer("peg", mImageViewer);
     mFileInspector->addViewer("tga", mImageViewer);
     mFileInspector->addViewer("vbm", mImageViewer);
-
     mFileInspector->addViewer("tbl", mPlaintextViewer);
     mFileInspector->addViewer("arr", mPlaintextViewer);
-
     mFileInspector->addViewer("p3d", mP3DViewer);
-
     mFileInspector->addViewer("vim", mVIMViewer);
 }
 
