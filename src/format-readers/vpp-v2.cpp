@@ -16,7 +16,7 @@ void VppV2::read(const std::vector<std::uint8_t> &data)
 {
     VppV2Header header;
 
-    memcpy(&header, data.data(), sizeof(VppV2Header));
+    std::memcpy(&header, data.data(), sizeof(VppV2Header));
 
     if (header.signature != 0x51890ACE) {
         throw ValidationError("signature mismatch");
@@ -31,7 +31,7 @@ void VppV2::read(const std::vector<std::uint8_t> &data)
     }
 
     std::vector<VppV2DirectoryEntry> dirEntries(header.fileCount);
-    memcpy(
+    std::memcpy(
         dirEntries.data(),
         &data[vpp_common::kChunkSize],
         header.fileCount * sizeof(VppV2DirectoryEntry));
