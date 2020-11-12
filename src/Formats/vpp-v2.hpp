@@ -1,5 +1,5 @@
-#ifndef ACE3X_FORMATS_VPP_V1_HEADER_HPP_
-#define ACE3X_FORMATS_VPP_V1_HEADER_HPP_
+#ifndef ACE3X_FORMATS_VPP_V2_HEADER_HPP_
+#define ACE3X_FORMATS_VPP_V2_HEADER_HPP_
 
 #include <cstdint>
 
@@ -29,4 +29,4 @@ struct VppV2DirectoryEntry {
     std::uint32_t unk2;
 };
 
-#endif    // ACE3X_FORMATS_VPP_V1_HEADER_HPP_
+#endif    // ACE3X_FORMATS_VPP_V2_HEADER_HPP_

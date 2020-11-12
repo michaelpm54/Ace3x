@@ -1,7 +1,7 @@
 /* SPDX-License-Identifier: GPLv3-or-later */
 
-#ifndef ACE3X_TREE_ENTRY_VPP_ENTRY_HPP_
-#define ACE3X_TREE_ENTRY_VPP_ENTRY_HPP_
+#ifndef ACE3X_TREE_ENTRIES_VPP_ENTRY_HPP_
+#define ACE3X_TREE_ENTRIES_VPP_ENTRY_HPP_
 
 #include "tree-entries/tree-entry.hpp"
 
@@ -14,4 +14,4 @@ private:
     bool mCompressed {false};
 };
 
-#endif    // ACE3X_TREE_ENTRY_VPP_ENTRY_HPP_
+#endif    // ACE3X_TREE_ENTRIES_VPP_ENTRY_HPP_

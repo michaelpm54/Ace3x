@@ -1,7 +1,7 @@
 /* SPDX-License-Identifier: GPLv3-or-later */
 
-#ifndef ACE3X_TREE_ENTRY_TREE_ENTRY_HPP_
-#define ACE3X_TREE_ENTRY_TREE_ENTRY_HPP_
+#ifndef ACE3X_TREE_ENTRIES_TREE_ENTRY_HPP_
+#define ACE3X_TREE_ENTRIES_TREE_ENTRY_HPP_
 
 #include <QString>
 #include <iostream>
@@ -40,4 +40,4 @@ protected:
     std::vector<std::uint8_t> mData;
 };
 
-#endif    // ACE3X_TREE_ENTRY_TREE_ENTRY_HPP_
+#endif    // ACE3X_TREE_ENTRIES_TREE_ENTRY_HPP_

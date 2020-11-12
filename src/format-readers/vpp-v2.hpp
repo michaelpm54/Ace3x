@@ -1,5 +1,5 @@
 #ifndef ACE3X_FORMAT_READERS_VPP_V2_HPP_
-#define ACE3X_FORMAT_READERS_VPP_V1_HPP_
+#define ACE3X_FORMAT_READERS_VPP_V2_HPP_
 
 #include "format-readers/vpp-archive.hpp"
 

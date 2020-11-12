@@ -1,7 +1,7 @@
 /* SPDX-License-Identifier: GPLv3-or-later */
 
-#ifndef ACE3X_TREE_ENTRY_PEG_ENTRY_HPP_
-#define ACE3X_TREE_ENTRY_PEG_ENTRY_HPP_
+#ifndef ACE3X_TREE_ENTRIES_PEG_ENTRY_HPP_
+#define ACE3X_TREE_ENTRIES_PEG_ENTRY_HPP_
 
 #include "format-readers/peg.hpp"
 #include "formats/peg.hpp"
@@ -17,4 +17,4 @@ private:
     Peg peg_;
 };
 
-#endif    // ACE3X_TREE_ENTRY_PEG_ENTRY_HPP_
+#endif    // ACE3X_TREE_ENTRIES_PEG_ENTRY_HPP_
