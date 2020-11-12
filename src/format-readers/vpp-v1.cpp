@@ -1,3 +1,5 @@
+/* SPDX-License-Identifier: GPLv3-or-later */
+
 #include "format-readers/vpp-v1.hpp"
 
 #include <filesystem>

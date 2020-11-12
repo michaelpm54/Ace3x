@@ -1,3 +1,5 @@
+/* SPDX-License-Identifier: GPLv3-or-later */
+
 #ifndef ACE3X_FORMATS_VIF_MESH_HPP_
 #define ACE3X_FORMATS_VIF_MESH_HPP_
 

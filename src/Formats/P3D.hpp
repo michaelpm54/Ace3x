@@ -3,6 +3,8 @@
 #ifndef ACE3X_FORMATS_P3D_HPP_
 #define ACE3X_FORMATS_P3D_HPP_
 
+#include <cstdint>
+
 struct P3DHeader {
     std::uint32_t signature;
     std::uint32_t unk4;

@@ -1,3 +1,5 @@
+/* SPDX-License-Identifier: GPLv3-or-later */
+
 #ifndef ACE3X_FORMATS_VPP_V1_HEADER_HPP_
 #define ACE3X_FORMATS_VPP_V1_HEADER_HPP_
 

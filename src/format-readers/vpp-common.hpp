@@ -1,3 +1,5 @@
+/* SPDX-License-Identifier: GPLv3-or-later */
+
 #ifndef ACE3X_FORMAT_READERS_VPP_COMMON_HPP_
 #define ACE3X_FORMAT_READERS_VPP_COMMON_HPP_
 
