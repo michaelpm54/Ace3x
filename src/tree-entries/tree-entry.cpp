@@ -77,7 +77,7 @@ std::uint64_t TreeEntry::getSize() const
     return file_info_.file_data.size();
 }
 
-unsigned int TreeEntry::get_num_children() const
+int TreeEntry::get_num_children() const
 {
-    return children_.size();
+    return static_cast<int>(children_.size());
 }

@@ -10,7 +10,7 @@ char **allocate_filenames(const char *buffer, int count, int &totalSize);
 VifMesh::~VifMesh()
 {
     if (textureNames_0x20_) {
-        for (int i = 0; i < numTextures_0x1c_; i++)
+        for (auto i = 0u; i < numTextures_0x1c_; i++)
             delete[] textureNames_0x20_[i];
         delete[] textureNames_0x20_;
     }
@@ -19,7 +19,7 @@ VifMesh::~VifMesh()
 void VifMesh::read(const char *buffer)
 {
     if (textureNames_0x20_) {
-        for (int i = 0; i < numTextures_0x1c_; i++)
+        for (auto i = 0u; i < numTextures_0x1c_; i++)
             delete[] textureNames_0x20_[i];
         delete[] textureNames_0x20_;
     }
@@ -65,7 +65,7 @@ void VifMesh::read(const char *buffer)
     while (((*ptr) & 0xFF) != 0xFF)
         ptr++;
 
-    printf("Buffer 0x%04X data 0x%04X, offset from start = 0x%02X\n", buffer, ptr, reinterpret_cast<intptr_t>(ptr) - reinterpret_cast<intptr_t>(buffer));
+    printf("Buffer %p data %p, offset from start = %td\n", buffer, ptr, reinterpret_cast<intptr_t>(ptr) - reinterpret_cast<intptr_t>(buffer));
 
     // Seek past 0xFF's
     while (((*ptr) & 0xFF) == 0xFF)

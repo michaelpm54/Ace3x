@@ -26,9 +26,8 @@ private:
     };
 
 private:
-    void addNavpoint(const QString &str, const P3DHeader &header, const std::uint8_t *const data);
-    void writeVerticesToObj(const QString &fileName, const P3DHeader &header, const std::uint8_t *const data);
-    void writeVerticesToObj(const std::uint8_t *const data, int start, int size);
+    void addNavpoint(const QString &str, const P3DHeader &header, const std::uint8_t *const navpoint_data);
+    void writeVerticesToObj(const QString &fileName, const P3DHeader &header, const std::uint8_t *const vertex_data);
 
 private slots:
     void onWriteObjClicked();

@@ -21,7 +21,7 @@ public:
     void removeAllChildren();
     void addChild(TreeEntry *entry);
 
-    unsigned int get_num_children() const;
+    int get_num_children() const;
     int getIndex() const;
     std::string getName() const;
     std::string getPath() const;

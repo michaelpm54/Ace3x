@@ -172,7 +172,7 @@ int TreeModel::load(const QString &path)
         for (const auto &vpp : level_vpps) {
             addTopLevelEntry(new VppEntry(vpp));
         }
-        num_loaded = level_vpps.size();
+        num_loaded = static_cast<int>(level_vpps.size());
     }
     else {
         const auto fs_path = std::filesystem::path(path.toStdString());
@@ -187,7 +187,7 @@ int TreeModel::load(const QString &path)
             info.file_data = ace3x::fs::load_file_to_vector(path.toStdString());
             addTopLevelEntry(new VppEntry(info));
         }
-        catch (const std::runtime_error &e) {
+        catch (const std::runtime_error &) {
             // FIXME: Log
             // log_->append(QString("[Error] Failed to load VPP: %1").arg(e.what()));
         }
@@ -228,7 +228,9 @@ std::vector<FileInfo> TreeModel::gather_level_vpps_in_dir(const std::string &dir
         info.index_in_parent = index++;
         info.file_name = entry.path().filename().string();
         info.absolute_path = std::filesystem::absolute(entry.path()).string();
-        info.file_data = ace3x::fs::load_file_to_vector(info.absolute_path);
+
+        if (load_data)
+            info.file_data = ace3x::fs::load_file_to_vector(info.absolute_path);
 
         vpps.push_back(info);
     }

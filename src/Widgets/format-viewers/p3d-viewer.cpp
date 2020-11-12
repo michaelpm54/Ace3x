@@ -8,14 +8,10 @@
 
 #include "tree-entries/tree-entry.hpp"
 
-void P3DViewer::writeVerticesToObj(const std::uint8_t *const data, int start, int size)
-{
-}
-
-void P3DViewer::writeVerticesToObj(const QString &fileName, const P3DHeader &header, const std::uint8_t *const data)
+void P3DViewer::writeVerticesToObj(const QString &fileName, const P3DHeader &header, const std::uint8_t *const vertex_data)
 {
     std::vector<P3DSubHeader> subHeaders(header.numSubHeaders);
-    memcpy(subHeaders.data(), data + header.filenamesEnd, sizeof(P3DSubHeader) * header.numSubHeaders);
+    memcpy(subHeaders.data(), vertex_data + header.filenamesEnd, sizeof(P3DSubHeader) * header.numSubHeaders);
 
     QString fnQt {QString("%1/%2.obj").arg(QDir::currentPath()).arg(fileName)};
     const std::string fnStd {fnQt.toStdString()};
@@ -38,7 +34,7 @@ void P3DViewer::writeVerticesToObj(const QString &fileName, const P3DHeader &hea
     int index = 0;
 
     for (auto i = 0u; i < 1; i++) {
-        const float *ptr = reinterpret_cast<const float *>(&data[subHeaders[i].offsetC]);
+        const float *ptr = reinterpret_cast<const float *>(&vertex_data[subHeaders[i].offsetC]);
 
         auto size = *(std::uint32_t *)(&ptr[3]);
         while (size < 100 && size != 0) {
@@ -158,12 +154,12 @@ bool P3DViewer::shouldBeEnabled(const TreeEntry *) const
     return (true);
 }
 
-void P3DViewer::addNavpoint(const QString &str, const P3DHeader &header, const std::uint8_t *const data)
+void P3DViewer::addNavpoint(const QString &str, const P3DHeader &header, const std::uint8_t *const navpoint_data)
 {
     const int row = ui_.navTable->rowCount();
 
     Navpoint nav;
-    memcpy(&nav, &data[header.navpointsStart + (row * sizeof(Navpoint))], sizeof(Navpoint));
+    memcpy(&nav, &navpoint_data[header.navpointsStart + (row * sizeof(Navpoint))], sizeof(Navpoint));
 
     ui_.navTable->insertRow(row);
 

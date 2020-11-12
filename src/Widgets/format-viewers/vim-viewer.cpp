@@ -12,16 +12,16 @@ float ieee_float(uint32_t f)
 {
     static_assert(sizeof(float) == sizeof f, "`float` has a weird size.");
     float ret;
-    memcpy(&ret, &f, sizeof(float));
+    std::memcpy(&ret, &f, sizeof(float));
     return ret;
 }
 
-QTableWidgetItem *uintItem(uint32_t n, int base)
+QTableWidgetItem *uintItem(std::uint32_t n, int base)
 {
     return new QTableWidgetItem(QString::number(n, base));
 }
 
-QTableWidgetItem *floatItem(uint32_t n)
+QTableWidgetItem *floatItem(std::uint32_t n)
 {
     return new QTableWidgetItem(QString::number(ieee_float(n), 'G', 4));
 }
@@ -73,15 +73,16 @@ void VIMViewer::activate(const TreeEntry *item)
     vim_.read(reinterpret_cast<const char *>(item->getData()));
 
     ui_.texCount->setText(QString::number(vim_.numTextures_0x1c_));
-    for (int i = 0; i < vim_.numTextures_0x1c_; i++)
+    for (std::uint32_t i = 0u; i < vim_.numTextures_0x1c_; i++)
         ui_.texList->addItem(vim_.textureNames_0x20_[i]);
 
     ui_.sub0Count->setText(QString("Sub0 # %1").arg(vim_.sub0_count_));
     ui_.sub0List->setRowCount(vim_.sub0_count_);
     ui_.sub0List->setColumnCount(1);
     ui_.sub0List->setHorizontalHeaderLabels({"VIM offset"});
-    for (int i = 0; i < vim_.sub0_count_; i++) {
-        auto offset = vim_.sub0_data_ + sizeof(VifMeshSub0) * i;
+
+    for (std::uint32_t i = 0u; i < vim_.sub0_count_; i++) {
+        std::uint32_t offset = vim_.sub0_data_ + sizeof(VifMeshSub0) * i;
         ui_.sub0List->setItem(i, 0, uintItem(offset, 16));
     }
 
@@ -89,12 +90,13 @@ void VIMViewer::activate(const TreeEntry *item)
     ui_.vifBoneList->setRowCount(vim_.vifBone_count_);
     ui_.vifBoneList->setColumnCount(28 + 2);
     ui_.vifBoneList->setHorizontalHeaderLabels({"VIM offset", "Name offset", "Name", "x", "y", "z"});
-    for (int row = 0; row < vim_.vifBone_count_; row++) {
-        auto offset = vim_.vifBone_data_ + sizeof(VifBone) * row;
+
+    for (std::uint32_t row = 0u; row < vim_.vifBone_count_; row++) {
+        std::uint32_t offset = vim_.vifBone_data_ + sizeof(VifBone) * row;
         auto *ptr = &item_->getData()[offset];
 
         VifBone vifBone;
-        memcpy(&vifBone, ptr, sizeof(VifBone));
+        std::memcpy(&vifBone, ptr, sizeof(VifBone));
 
         ui_.vifBoneList->setItem(row, 0, uintItem(offset, 16));    // extra
         ui_.vifBoneList->setItem(row, 1, uintItem(vifBone.boneNameOff, 16));
@@ -122,23 +124,22 @@ void VIMViewer::activate(const TreeEntry *item)
     ui_.sub4List->setRowCount(vim_.sub4_count_);
     ui_.sub4List->setColumnCount(15);
     ui_.sub4List->setHorizontalHeaderLabels({"VIM offset"});
-    for (int row = 0; row < vim_.sub4_count_; row++) {
-        auto offset = vim_.sub4_data_ + (sizeof(VifMeshSub4) * row);
+
+    for (std::uint32_t row = 0u; row < vim_.sub4_count_; row++) {
+        std::uint32_t offset = vim_.sub4_data_ + (sizeof(VifMeshSub4) * row);
 
         VifMeshSub4 sub4;
-        memcpy(&sub4, &item_->getData()[offset], sizeof(VifMeshSub4));
+        std::memcpy(&sub4, &item_->getData()[offset], sizeof(VifMeshSub4));
 
         ui_.sub4List->setItem(row, 0, uintItem(offset, 16));
 
         for (int column = 0; column < 14; column++) {
             uint32_t *off = reinterpret_cast<uint32_t *>(&sub4) + column;
             if (column == 0) {
-                auto value = *off;
                 auto str = QString::number(*off, 16);
                 ui_.sub4List->setItem(row, column + 1, new QTableWidgetItem(str));
             }
             else {
-                auto value = ieee_float(*off);
                 auto str = QString::number(ieee_float(*off), 'G', 4);
                 ui_.sub4List->setItem(row, column + 1, new QTableWidgetItem(str));
             }
@@ -149,16 +150,17 @@ void VIMViewer::activate(const TreeEntry *item)
     ui_.sub5List->setRowCount(vim_.sub5_count_);
     ui_.sub5List->setColumnCount(9);
     ui_.sub5List->setHorizontalHeaderLabels({"VIM offset"});
-    for (int row = 0; row < vim_.sub5_count_; row++) {
-        auto offset = vim_.sub5_data_ + (sizeof(VifMeshSub5) * row);
+
+    for (std::uint32_t row = 0u; row < vim_.sub5_count_; row++) {
+        std::uint32_t offset = vim_.sub5_data_ + (sizeof(VifMeshSub5) * row);
 
         ui_.sub5List->setItem(row, 0, new QTableWidgetItem(QString::number(offset, 16)));
 
         VifMeshSub5 sub5;
-        memcpy(&sub5, &item_->getData()[offset], sizeof(VifMeshSub5));
+        std::memcpy(&sub5, &item_->getData()[offset], sizeof(VifMeshSub5));
 
         for (int column = 0; column < 8; column++) {
-            uint32_t *off = reinterpret_cast<uint32_t *>(&sub5) + column;
+            std::uint32_t *off = reinterpret_cast<uint32_t *>(&sub5) + column;
             //            if (column == 0)
             {
                 auto value = *off;
@@ -183,16 +185,18 @@ bool VIMViewer::shouldBeEnabled(const TreeEntry *) const
 void VIMViewer::sub0Changed()
 {
     VifMeshSub0 sub0;
-    memcpy(&sub0, &item_->getData()[vim_.sub0_data_ + (sizeof(VifMeshSub0) * ui_.sub0List->currentRow())], sizeof(VifMeshSub0));
+    std::memcpy(&sub0, &item_->getData()[vim_.sub0_data_ + (sizeof(VifMeshSub0) * ui_.sub0List->currentRow())], sizeof(VifMeshSub0));
 
     ui_.sub1Count->setText(QString("Sub1 # %1").arg(sub0.sub1_count));
     ui_.sub1List->setRowCount(sub0.sub1_count);
     ui_.sub1List->setColumnCount(14);
     ui_.sub1List->setHorizontalHeaderLabels({"VIM offset", "?", "?", "?", "?", "Mesh #", "Offset0", "Offset1", "?", "Offset2", "Offset3", "Offset4", "Offset5", "Offset6"});
-    for (int row = 0; row < sub0.sub1_count; row++) {
-        auto offset = sub0.sub1_data + (sizeof(VifMeshSub1) * row);
+
+    for (std::uint32_t row = 0u; row < sub0.sub1_count; row++) {
+        std::uint32_t offset = sub0.sub1_data + (sizeof(VifMeshSub1) * row);
+
         VifMeshSub1 sub1;
-        memcpy(&sub1, &item_->getData()[offset], sizeof(VifMeshSub1));
+        std::memcpy(&sub1, &item_->getData()[offset], sizeof(VifMeshSub1));
 
         int col = 0;
         ui_.sub1List->setItem(row, col++, uintItem(offset, 16));
@@ -215,11 +219,12 @@ void VIMViewer::sub0Changed()
     ui_.sub2List->setRowCount(sub0.sub2_count);
     ui_.sub2List->setColumnCount(4);
     ui_.sub2List->setHorizontalHeaderLabels({"VIM offset", "Offset1"});
-    for (int row = 0; row < sub0.sub2_count; row++) {
-        auto offset = sub0.sub2_data + (sizeof(VifMeshSub2) * row);
+
+    for (std::uint32_t row = 0u; row < sub0.sub2_count; row++) {
+        std::uint32_t offset = sub0.sub2_data + (sizeof(VifMeshSub2) * row);
 
         VifMeshSub2 sub2;
-        memcpy(&sub2, &item_->getData()[offset], sizeof(VifMeshSub2));
+        std::memcpy(&sub2, &item_->getData()[offset], sizeof(VifMeshSub2));
 
         ui_.sub2List->setItem(row, 0, uintItem(offset, 16));
         ui_.sub2List->setItem(row, 1, uintItem(sub2.off0, 16));

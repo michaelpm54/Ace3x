@@ -27,7 +27,7 @@ void VppV1::read(const std::vector<std::uint8_t> &data)
         &data[vpp_common::kChunkSize],
         header.fileCount * sizeof(VppV1DirectoryEntry));
 
-    std::uint32_t dataStart = vpp_common::align_to_chunk(dirEntries.size() * sizeof(VppV1DirectoryEntry) + vpp_common::kChunkSize);
+    std::uint32_t dataStart = vpp_common::align_to_chunk(static_cast<std::uint32_t>(dirEntries.size() * sizeof(VppV1DirectoryEntry) + vpp_common::kChunkSize));
 
     std::uint32_t offset = dataStart;
     for (std::uint16_t i = 0; i < header.fileCount; i++) {
