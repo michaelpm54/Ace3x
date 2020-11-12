@@ -46,13 +46,13 @@ void ImageViewer::activate(const TreeEntry *item)
         mFrameIndex = item->getIndex();
     }
 
-    if (!mPeg || (mFrameIndex >= mPeg->count())) {
+    if (!mPeg || (mFrameIndex >= mPeg->get_num_children())) {
         throw std::runtime_error("Failed to activate ImageViewer for item");
     }
 
     ui.pegLineEdit->setText(mPeg->getFilename());
     ui.frameLineEdit->setText(mPeg->getChild(mFrameIndex)->getFilename());
-    ui.numFrames->setText(QString::number(mPeg->count()));
+    ui.numFrames->setText(QString::number(mPeg->get_num_children()));
     ui.frameIndex->setText(QString::number(mFrameIndex + 1));
 
     update();
@@ -86,14 +86,14 @@ void ImageViewer::keyPressEvent(QKeyEvent *event)
 
 void ImageViewer::nextFrame()
 {
-    mFrameIndex = (mFrameIndex + 1) % mPeg->count();
+    mFrameIndex = (mFrameIndex + 1) % mPeg->get_num_children();
     ui.frameIndex->setText(QString::number(mFrameIndex + 1));
     update();
 }
 
 void ImageViewer::prevFrame()
 {
-    mFrameIndex = ((mFrameIndex - 1) + mPeg->count()) % mPeg->count();
+    mFrameIndex = ((mFrameIndex - 1) + mPeg->get_num_children()) % mPeg->get_num_children();
     ui.frameIndex->setText(QString::number(mFrameIndex + 1));
     update();
 }
@@ -120,7 +120,7 @@ void ImageViewer::update()
 bool ImageViewer::shouldBeEnabled(const TreeEntry *item) const
 {
     if (item->getExtension() == "peg") {
-        return (item->count() != 0);
+        return (item->get_num_children() != 0);
     }
 
     return (true);

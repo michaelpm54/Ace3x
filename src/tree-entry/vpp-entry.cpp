@@ -8,7 +8,6 @@
 #include <QTextEdit>
 
 #include "Util.hpp"
-#include "tree-entry/file-entry.hpp"
 #include "tree-entry/peg-entry.hpp"
 
 static constexpr std::uint16_t CHUNK_SIZE = 0x800;
@@ -74,7 +73,7 @@ void VppEntry::readVpp1(std::vector<std::uint8_t> &data, QTextEdit *log)
             entry = new PegEntry(filename, index, size);
         }
         else {
-            entry = new FileEntry(filename, index, size);
+            entry = new TreeEntry(filename, index, size);
         }
 
         std::vector<std::uint8_t> childData(
@@ -168,7 +167,7 @@ void VppEntry::readVpp2(std::vector<std::uint8_t> &data, QTextEdit *log)
             entry = new PegEntry(filename, index, size);
         }
         else {
-            entry = new FileEntry(filename, index, size);
+            entry = new TreeEntry(filename, index, size);
         }
 
         std::vector<std::uint8_t> childData(
@@ -327,9 +326,4 @@ uint32_t alignToChunk(int n)
     }
 
     return (n);
-}
-
-bool VppEntry::is_archive() const
-{
-    return true;
 }

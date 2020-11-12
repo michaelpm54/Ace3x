@@ -4,11 +4,10 @@
 
 #include <QDebug>
 
-#include "tree-entry/file-entry.hpp"
 #include "tree-entry/tree-entry.hpp"
 
 TreeModel::TreeModel()
-    : mInvisibleRoot(new FileEntry(""))
+    : mInvisibleRoot(new TreeEntry("Root"))
 {
     clear();
 }
@@ -25,29 +24,38 @@ TreeEntry *TreeModel::itemFromIndex(const QModelIndex &index) const
 
 QModelIndex TreeModel::index(int row, int col, const QModelIndex &parent) const
 {
-    TreeEntry *parentItem = itemFromIndex(parent);
-    if (!parentItem)
+    if (!hasIndex(row, col, parent))
         return QModelIndex();
 
-    if (row >= static_cast<int>(parentItem->count()))
+    TreeEntry *parent_entry;
+
+    if (!parent.isValid())
+        parent_entry = mInvisibleRoot.get();
+    else
+        parent_entry = static_cast<TreeEntry *>(parent.internalPointer());
+
+    // Create a new index for this item
+    TreeEntry *childItem = parent_entry->getChild(row);
+    if (childItem)
+        return createIndex(row, col, childItem);
+    else
         return QModelIndex();
-
-    TreeEntry *item = parentItem->getChild(row);
-
-    if (!item)
-        return QModelIndex();
-
-    return createIndex(row, col, item);
 }
 
 QModelIndex TreeModel::parent(const QModelIndex &index) const
 {
-    auto parent = itemFromIndex(index)->getParent();
-
-    if (parent == mInvisibleRoot.get())
+    if (!index.isValid())
         return QModelIndex();
 
-    return createIndex(parent->getIndex(), 0, parent);
+    TreeEntry *child_entry = static_cast<TreeEntry *>(index.internalPointer());
+    TreeEntry *parent_entry = child_entry->getParent();
+
+    // Return an invalid index for the root as it has no parent
+    if (parent_entry == mInvisibleRoot.get())
+        return QModelIndex();
+
+    // Create the parent index
+    return createIndex(parent_entry->getIndex(), 0, parent_entry);
 }
 
 QVariant TreeModel::data(const QModelIndex &index, int role) const
@@ -75,8 +83,8 @@ bool TreeModel::hasChildren(const QModelIndex &index) const
     if (!index.isValid())
         return true;
 
-    const auto item = itemFromIndex(index);
-    return item->is_archive() && item->count() != 0;
+    const auto *item = itemFromIndex(index);
+    return item->get_num_children() != 0;
 }
 
 QVariant TreeModel::headerData(int section, Qt::Orientation orientation, int role) const
@@ -96,7 +104,17 @@ QVariant TreeModel::headerData(int section, Qt::Orientation orientation, int rol
 
 int TreeModel::rowCount(const QModelIndex &parent) const
 {
-    return itemFromIndex(parent)->count();
+    if (parent.column() > 1) {
+        return 0;
+    }
+
+    TreeEntry *parent_entry;
+    if (!parent.isValid())
+        parent_entry = mInvisibleRoot.get();
+    else
+        parent_entry = static_cast<TreeEntry *>(parent.internalPointer());
+
+    return parent_entry->get_num_children();
 }
 
 int TreeModel::columnCount(const QModelIndex &) const
@@ -115,13 +133,16 @@ void TreeModel::clear()
 
 bool TreeModel::canFetchMore(const QModelIndex &index) const
 {
+    if (!index.isValid())
+        return false;
+
     return itemFromIndex(index)->is_archive();
 }
 
-void TreeModel::fetchMore(const QModelIndex &index)
+void TreeModel::fetchMore(const QModelIndex &)
 {
-    if (!index.isValid())
-        return;
+    // FIXME
+    return;
 }
 
 void TreeModel::addRoots(QList<TreeEntry *> list)
@@ -129,7 +150,9 @@ void TreeModel::addRoots(QList<TreeEntry *> list)
     clear();
 
     beginInsertRows(QModelIndex(), 0, list.size() - 1);
+
     for (auto &e : list)
         mInvisibleRoot->addChild(e);
+
     endInsertRows();
 }

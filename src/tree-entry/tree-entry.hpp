@@ -21,7 +21,8 @@ public:
 
     virtual void read(std::vector<std::uint8_t> data, QTextEdit *log = nullptr);
 
-    std::uint16_t count() const;
+    bool is_archive() const;
+    unsigned int get_num_children() const;
     std::uint16_t getIndex() const;
     QString getName() const;
     QString getPath() const;
@@ -31,8 +32,6 @@ public:
     TreeEntry *getParent() const;
     const std::uint8_t *getData() const;
     TreeEntry *getChild(std::uint16_t index) const;
-
-    virtual bool is_archive() const = 0;
 
 protected:
     TreeEntry *mParent {nullptr};

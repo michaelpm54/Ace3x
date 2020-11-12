@@ -71,11 +71,6 @@ QString TreeEntry::getExtension() const
     return mExtension;
 }
 
-std::uint16_t TreeEntry::count() const
-{
-    return mChildren.size();
-}
-
 TreeEntry *TreeEntry::getParent() const
 {
     return mParent;
@@ -95,4 +90,14 @@ void TreeEntry::read(std::vector<std::uint8_t> data, QTextEdit *log)
 qint64 TreeEntry::getSize() const
 {
     return mSize;
+}
+
+bool TreeEntry::is_archive() const
+{
+    return mIsArchive;
+}
+
+unsigned int TreeEntry::get_num_children() const
+{
+    return mChildren.size();
 }
