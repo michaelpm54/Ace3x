@@ -4,7 +4,7 @@
 
 #include <QDebug>
 
-#include "tree-entry/tree-entry.hpp"
+#include "tree-entries/tree-entry.hpp"
 
 TreeModel::TreeModel()
     : mInvisibleRoot(new TreeEntry())

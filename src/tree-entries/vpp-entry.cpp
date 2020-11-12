@@ -1,10 +1,10 @@
 /* SPDX-License-Identifier: GPLv3-or-later */
 
-#include "tree-entry/vpp-entry.hpp"
+#include "tree-entries/vpp-entry.hpp"
 
 #include "format-readers/vpp-v1.hpp"
 #include "format-readers/vpp-v2.hpp"
-#include "tree-entry/peg-entry.hpp"
+#include "tree-entries/peg-entry.hpp"
 
 VppEntry::VppEntry(const FileInfo &vppInfo)
     : TreeEntry(vppInfo)

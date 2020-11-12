@@ -6,7 +6,7 @@
 #include <array>
 #include <fstream>
 
-#include "tree-entry/tree-entry.hpp"
+#include "tree-entries/tree-entry.hpp"
 
 void P3DViewer::writeVerticesToObj(const std::uint8_t *const data, int start, int size)
 {

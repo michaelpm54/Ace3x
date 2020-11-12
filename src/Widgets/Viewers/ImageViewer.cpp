@@ -8,7 +8,7 @@
 #include <QImage>
 #include <QKeyEvent>
 
-#include "tree-entry/peg-entry.hpp"
+#include "tree-entries/peg-entry.hpp"
 
 ImageViewer::ImageViewer(QWidget *parent)
     : QWidget(parent)

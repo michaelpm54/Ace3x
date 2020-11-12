@@ -16,15 +16,14 @@
 #include <regex>
 
 #include "Util.hpp"
-#include "tree-entry/tree-entry-sort-proxy.hpp"
-#include "tree-entry/vpp-entry.hpp"
+#include "tree-entries/tree-entry-sort-proxy.hpp"
+#include "tree-entries/vpp-entry.hpp"
 #include "tree-model.hpp"
 #include "widgets/Viewers/ImageViewer.hpp"
 #include "widgets/Viewers/P3DViewer.hpp"
 #include "widgets/Viewers/PlaintextViewer.hpp"
 #include "widgets/Viewers/VIMViewer.hpp"
 #include "widgets/file-info-frame.hpp"
-
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)

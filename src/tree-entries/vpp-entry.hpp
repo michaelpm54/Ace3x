@@ -3,7 +3,7 @@
 #ifndef ACE3X_TREE_ENTRY_VPP_ENTRY_HPP_
 #define ACE3X_TREE_ENTRY_VPP_ENTRY_HPP_
 
-#include "tree-entry/tree-entry.hpp"
+#include "tree-entries/tree-entry.hpp"
 
 class VppEntry : public TreeEntry {
 public:

@@ -6,7 +6,7 @@
 #include <QItemSelection>
 #include <QMainWindow>
 
-#include "tree-entry/tree-entry.hpp"
+#include "tree-entries/tree-entry.hpp"
 
 class QFrame;
 class QTreeView;

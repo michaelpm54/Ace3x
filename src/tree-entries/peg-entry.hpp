@@ -5,7 +5,7 @@
 
 #include "format-readers/peg.hpp"
 #include "formats/peg.hpp"
-#include "tree-entry/tree-entry.hpp"
+#include "tree-entries/tree-entry.hpp"
 
 class PegEntry : public TreeEntry {
 public:

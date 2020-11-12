@@ -1,6 +1,6 @@
 /* SPDX-License-Identifier: GPLv3-or-later */
 
-#include "tree-entry/tree-entry.hpp"
+#include "tree-entries/tree-entry.hpp"
 
 #include <QDebug>
 #include <QFileInfo>

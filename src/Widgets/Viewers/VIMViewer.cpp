@@ -6,7 +6,7 @@
 #include <QDebug>
 
 #include "formats/vif-mesh.hpp"
-#include "tree-entry/tree-entry.hpp"
+#include "tree-entries/tree-entry.hpp"
 
 float ieee_float(uint32_t f)
 {

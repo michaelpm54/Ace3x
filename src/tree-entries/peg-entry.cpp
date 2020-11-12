@@ -1,6 +1,6 @@
 /* SPDX-License-Identifier: GPLv3-or-later */
 
-#include "tree-entry/peg-entry.hpp"
+#include "tree-entries/peg-entry.hpp"
 
 #include <QDebug>
 #include <QTextEdit>

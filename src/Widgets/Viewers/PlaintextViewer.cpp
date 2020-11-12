@@ -4,7 +4,7 @@
 
 #include <QByteArray>
 
-#include "tree-entry/tree-entry.hpp"
+#include "tree-entries/tree-entry.hpp"
 
 PlaintextViewer::PlaintextViewer(QWidget *parent)
     : QWidget(parent)

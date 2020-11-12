@@ -1,8 +1,8 @@
 /* SPDX-License-Identifier: GPLv3-or-later */
 
-#include "tree-entry/tree-entry-sort-proxy.hpp"
+#include "tree-entries/tree-entry-sort-proxy.hpp"
 
-#include "tree-entry/tree-entry.hpp"
+#include "tree-entries/tree-entry.hpp"
 
 TreeEntrySortProxy::TreeEntrySortProxy(QObject *parent)
     : QSortFilterProxyModel(parent)
