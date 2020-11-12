@@ -1,18 +1,7 @@
 /* SPDX-License-Identifier: GPLv3-or-later */
 
-#ifndef P3D_HPP
-#define P3D_HPP
-
-// F15EC0 // p3d
-// 383d70 // player 1
-// 389ea8 // player 2
-// 431580 // maia.vim
-// 433EF0 // head
-
-// 92e721 // maia.vim part 132 numverts original
-// 45e261 // maia.vim part 132 numverts copied
-
-// 19c8fc -> s7+1c4 -> 431580+1c4 -> 431744 -> 431aa4 -> 6a05a4 -> floats
+#ifndef ACE3X_FORMATS_P3D_HPP_
+#define ACE3X_FORMATS_P3D_HPP_
 
 struct P3DHeader {
     std::uint32_t signature;
@@ -62,4 +51,4 @@ struct Navpoint {    // 34h/52d bytes
     float z;
 };
 
-#endif    // P3D_HPP
+#endif    // ACE3X_FORMATS_P3D_HPP_
