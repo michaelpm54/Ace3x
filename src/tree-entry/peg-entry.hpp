@@ -3,7 +3,7 @@
 #ifndef ACE3X_TREE_ENTRY_PEG_ENTRY_HPP_
 #define ACE3X_TREE_ENTRY_PEG_ENTRY_HPP_
 
-#include "formats/Peg.hpp"
+#include "formats/peg.hpp"
 #include "tree-entry/tree-entry.hpp"
 
 class PegEntry : public TreeEntry {
