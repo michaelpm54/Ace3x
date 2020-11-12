@@ -1,15 +1,15 @@
 /* SPDX-License-Identifier: GPLv3-or-later */
 
-#ifndef VIMVIEWER_HPP
-#define VIMVIEWER_HPP
+#ifndef ACE3X_WIDGETS_FORMAT_VIEWERS_VIM_VIEWER_HPP_
+#define ACE3X_WIDGETS_FORMAT_VIEWERS_VIM_VIEWER_HPP_
 
 #include <QHBoxLayout>
 #include <QListWidget>
 #include <QWidget>
 
-#include "Viewer.hpp"
 #include "format-readers/vif-mesh.hpp"
 #include "ui_VIMViewer.h"
+#include "widgets/format-viewers/viewer.hpp"
 
 class VIMViewer : public QWidget, public Viewer {
     Q_OBJECT
@@ -28,4 +28,4 @@ private slots:
     void sub0Changed();
 };
 
-#endif    // VIMVIEWER_HPP
+#endif    // ACE3X_WIDGETS_FORMAT_VIEWERS_VIM_VIEWER_HPP_

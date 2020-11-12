@@ -50,18 +50,13 @@ set(ACE3X_SOURCES
 	# Custom Qt widgets
 	src/widgets/main-window.cpp
     src/widgets/file-info-frame.cpp
-    src/widgets/Viewers/Viewer.cpp
-    src/widgets/Viewers/ImageViewer.cpp
-    src/widgets/Viewers/PlaintextViewer.cpp
-    src/widgets/Viewers/P3DViewer.cpp
-	src/widgets/Viewers/VIMViewer.cpp
 
 	# Qt widgets to view specific formats
-	src/widgets/Viewers/Viewer.cpp
-    src/widgets/Viewers/ImageViewer.cpp
-    src/widgets/Viewers/PlaintextViewer.cpp
-    src/widgets/Viewers/P3DViewer.cpp
-    src/widgets/Viewers/VIMViewer.cpp
+    src/widgets/format-viewers/image-viewer.cpp
+    src/widgets/format-viewers/plaintext-viewer.cpp
+    src/widgets/format-viewers/p3d-viewer.cpp
+	src/widgets/format-viewers/vim-viewer.cpp
+    src/widgets/format-viewers/plaintext-viewer.cpp
 )
 
 set(ACE3X_FORMS

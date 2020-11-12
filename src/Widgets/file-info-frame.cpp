@@ -12,7 +12,7 @@
 #include <QPushButton>
 
 #include "tree-entries/tree-entry.hpp"
-#include "widgets/Viewers/Viewer.hpp"
+#include "widgets/format-viewers/viewer.hpp"
 
 FileInfoFrame::FileInfoFrame(QWidget *parent)
     : QFrame(parent)

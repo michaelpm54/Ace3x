@@ -1,6 +1,6 @@
 /* SPDX-License-Identifier: GPLv3-or-later */
 
-#include "VIMViewer.hpp"
+#include "widgets/format-viewers/vim-viewer.hpp"
 
 #include <QByteArray>
 #include <QDebug>

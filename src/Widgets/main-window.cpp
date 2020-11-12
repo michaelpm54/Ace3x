@@ -19,11 +19,11 @@
 #include "tree-entries/tree-entry-sort-proxy.hpp"
 #include "tree-entries/vpp-entry.hpp"
 #include "tree-model.hpp"
-#include "widgets/Viewers/ImageViewer.hpp"
-#include "widgets/Viewers/P3DViewer.hpp"
-#include "widgets/Viewers/PlaintextViewer.hpp"
-#include "widgets/Viewers/VIMViewer.hpp"
 #include "widgets/file-info-frame.hpp"
+#include "widgets/format-viewers/image-viewer.hpp"
+#include "widgets/format-viewers/p3d-viewer.hpp"
+#include "widgets/format-viewers/plaintext-viewer.hpp"
+#include "widgets/format-viewers/vim-viewer.hpp"
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
