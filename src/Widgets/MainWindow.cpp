@@ -87,13 +87,13 @@ MainWindow::MainWindow(QWidget *parent)
     rightPolicy.setHorizontalStretch(1);
     mFileInspector->setSizePolicy(rightPolicy);
 
-    mFileInspector->addViewer("peg", mImageViewer);
-    mFileInspector->addViewer("tga", mImageViewer);
-    mFileInspector->addViewer("vbm", mImageViewer);
-    mFileInspector->addViewer("tbl", mPlaintextViewer);
-    mFileInspector->addViewer("arr", mPlaintextViewer);
-    mFileInspector->addViewer("p3d", mP3DViewer);
-    mFileInspector->addViewer("vim", mVIMViewer);
+    mFileInspector->addViewer(".peg", mImageViewer);
+    mFileInspector->addViewer(".tga", mImageViewer);
+    mFileInspector->addViewer(".vbm", mImageViewer);
+    mFileInspector->addViewer(".tbl", mPlaintextViewer);
+    mFileInspector->addViewer(".arr", mPlaintextViewer);
+    mFileInspector->addViewer(".p3d", mP3DViewer);
+    mFileInspector->addViewer(".vim", mVIMViewer);
 }
 
 MainWindow::~MainWindow()

@@ -8,9 +8,8 @@
 #include <QWidget>
 
 #include "Viewer.hpp"
-#include "formats/VifMesh.hpp"
+#include "format-readers/vif-mesh.hpp"
 #include "ui_VIMViewer.h"
-
 
 class VIMViewer : public QWidget, public Viewer {
     Q_OBJECT

@@ -44,8 +44,7 @@ set(ACE3X_SOURCES
 	src/format-readers/validation-error.cpp
 	src/format-readers/vpp-v1.cpp
 	src/format-readers/vpp-v2.cpp
-
-    src/formats/VifMesh.cpp
+	src/format-readers/vif-mesh.cpp
 
 	# Custom widgets
 	src/Widgets/MainWindow.cpp

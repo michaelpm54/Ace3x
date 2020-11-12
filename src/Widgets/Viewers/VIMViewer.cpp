@@ -5,6 +5,7 @@
 #include <QByteArray>
 #include <QDebug>
 
+#include "formats/vif-mesh.hpp"
 #include "tree-entry/tree-entry.hpp"
 
 float ieee_float(uint32_t f)
@@ -69,27 +70,27 @@ void VIMViewer::activate(const TreeEntry *item)
 
     show();
 
-    m_vim.initFromBuffer(reinterpret_cast<const char *>(item->getData()));
+    m_vim.read(reinterpret_cast<const char *>(item->getData()));
 
-    ui.texCount->setText(QString::number(m_vim.m_numTextures_0x1c));
-    for (int i = 0; i < m_vim.m_numTextures_0x1c; i++)
-        ui.texList->addItem(m_vim.m_textureNames_0x20[i]);
+    ui.texCount->setText(QString::number(m_vim.numTextures_0x1c_));
+    for (int i = 0; i < m_vim.numTextures_0x1c_; i++)
+        ui.texList->addItem(m_vim.textureNames_0x20_[i]);
 
-    ui.sub0Count->setText(QString("Sub0 # %1").arg(m_vim.m_sub0_count));
-    ui.sub0List->setRowCount(m_vim.m_sub0_count);
+    ui.sub0Count->setText(QString("Sub0 # %1").arg(m_vim.sub0_count_));
+    ui.sub0List->setRowCount(m_vim.sub0_count_);
     ui.sub0List->setColumnCount(1);
     ui.sub0List->setHorizontalHeaderLabels({"VIM offset"});
-    for (int i = 0; i < m_vim.m_sub0_count; i++) {
-        auto offset = m_vim.m_sub0_data + sizeof(VifMeshSub0) * i;
+    for (int i = 0; i < m_vim.sub0_count_; i++) {
+        auto offset = m_vim.sub0_data_ + sizeof(VifMeshSub0) * i;
         ui.sub0List->setItem(i, 0, uintItem(offset, 16));
     }
 
-    ui.vifBoneCount->setText(QString("vifBone # %1").arg(m_vim.m_vifBone_count));
-    ui.vifBoneList->setRowCount(m_vim.m_vifBone_count);
+    ui.vifBoneCount->setText(QString("vifBone # %1").arg(m_vim.vifBone_count_));
+    ui.vifBoneList->setRowCount(m_vim.vifBone_count_);
     ui.vifBoneList->setColumnCount(28 + 2);
     ui.vifBoneList->setHorizontalHeaderLabels({"VIM offset", "Name offset", "Name", "x", "y", "z"});
-    for (int row = 0; row < m_vim.m_vifBone_count; row++) {
-        auto offset = m_vim.m_vifBone_data + sizeof(VifBone) * row;
+    for (int row = 0; row < m_vim.vifBone_count_; row++) {
+        auto offset = m_vim.vifBone_data_ + sizeof(VifBone) * row;
         auto *ptr = &m_item->getData()[offset];
 
         VifBone vifBone;
@@ -117,12 +118,12 @@ void VIMViewer::activate(const TreeEntry *item)
         }
     }
 
-    ui.sub4Count->setText(QString("Sub4 # %1").arg(m_vim.m_sub4_count));
-    ui.sub4List->setRowCount(m_vim.m_sub4_count);
+    ui.sub4Count->setText(QString("Sub4 # %1").arg(m_vim.sub4_count_));
+    ui.sub4List->setRowCount(m_vim.sub4_count_);
     ui.sub4List->setColumnCount(15);
     ui.sub4List->setHorizontalHeaderLabels({"VIM offset"});
-    for (int row = 0; row < m_vim.m_sub4_count; row++) {
-        auto offset = m_vim.m_sub4_data + (sizeof(VifMeshSub4) * row);
+    for (int row = 0; row < m_vim.sub4_count_; row++) {
+        auto offset = m_vim.sub4_data_ + (sizeof(VifMeshSub4) * row);
 
         VifMeshSub4 sub4;
         memcpy(&sub4, &m_item->getData()[offset], sizeof(VifMeshSub4));
@@ -144,12 +145,12 @@ void VIMViewer::activate(const TreeEntry *item)
         }
     }
 
-    ui.sub5Count->setText(QString("Sub5 # %1").arg(m_vim.m_sub5_count));
-    ui.sub5List->setRowCount(m_vim.m_sub5_count);
+    ui.sub5Count->setText(QString("Sub5 # %1").arg(m_vim.sub5_count_));
+    ui.sub5List->setRowCount(m_vim.sub5_count_);
     ui.sub5List->setColumnCount(9);
     ui.sub5List->setHorizontalHeaderLabels({"VIM offset"});
-    for (int row = 0; row < m_vim.m_sub5_count; row++) {
-        auto offset = m_vim.m_sub5_data + (sizeof(VifMeshSub5) * row);
+    for (int row = 0; row < m_vim.sub5_count_; row++) {
+        auto offset = m_vim.sub5_data_ + (sizeof(VifMeshSub5) * row);
 
         ui.sub5List->setItem(row, 0, new QTableWidgetItem(QString::number(offset, 16)));
 
@@ -182,7 +183,7 @@ bool VIMViewer::shouldBeEnabled(const TreeEntry *) const
 void VIMViewer::sub0Changed()
 {
     VifMeshSub0 sub0;
-    memcpy(&sub0, &m_item->getData()[m_vim.m_sub0_data + (sizeof(VifMeshSub0) * ui.sub0List->currentRow())], sizeof(VifMeshSub0));
+    memcpy(&sub0, &m_item->getData()[m_vim.sub0_data_ + (sizeof(VifMeshSub0) * ui.sub0List->currentRow())], sizeof(VifMeshSub0));
 
     ui.sub1Count->setText(QString("Sub1 # %1").arg(sub0.sub1_count));
     ui.sub1List->setRowCount(sub0.sub1_count);
