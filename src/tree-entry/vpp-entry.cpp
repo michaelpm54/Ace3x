@@ -17,7 +17,7 @@ VppEntry::VppEntry(const FileInfo &vppInfo)
         vpp.read(vppInfo.file_data);
 
         for (const auto &entryInfo : vpp.get_entries()) {
-            if (entryInfo.extension == "peg")
+            if (entryInfo.extension == ".peg")
                 addChild(new PegEntry(entryInfo));
             else
                 addChild(new TreeEntry(entryInfo));
@@ -30,7 +30,7 @@ VppEntry::VppEntry(const FileInfo &vppInfo)
         mCompressed = vpp.is_compressed();
 
         for (const auto &entryInfo : vpp.get_entries()) {
-            if (entryInfo.extension == "peg")
+            if (entryInfo.extension == ".peg")
                 addChild(new PegEntry(entryInfo));
             else
                 addChild(new TreeEntry(entryInfo));

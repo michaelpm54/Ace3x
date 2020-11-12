@@ -2,9 +2,9 @@
 
 #include <zlib.h>
 
+#include <filesystem>
 #include <iostream>
 
-#include "Util.hpp"
 #include "file-info.hpp"
 #include "format-readers/validation-error.hpp"
 #include "format-readers/vpp-common.hpp"
@@ -81,8 +81,6 @@ void VppV2::read(const std::vector<std::uint8_t> &data)
             continue;
         }
 
-        const auto ext = ::getExtension(QString::fromStdString(filename));
-
         std::vector<std::uint8_t> childData(
             decompressed_data.begin() + vppOffset,
             decompressed_data.begin() + vppOffset + size);
@@ -91,7 +89,7 @@ void VppV2::read(const std::vector<std::uint8_t> &data)
             index,
             filename,
             "",
-            ext.toStdString(),
+            std::filesystem::path(filename).extension().string(),
             // FIXME: This uses more memory than necessary
             childData,
         };
