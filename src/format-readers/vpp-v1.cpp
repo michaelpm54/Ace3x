@@ -4,13 +4,13 @@
 #include "file-info.hpp"
 #include "format-readers/validation-error.hpp"
 #include "format-readers/vpp-common.hpp"
-#include "formats/Vpp.hpp"
+#include "formats/vpp-v1.hpp"
 
 void VppV1::read(const std::vector<std::uint8_t> &data)
 {
-    VppHeader_V1 header;
+    VppV1Header header;
 
-    memcpy(&header, data.data(), sizeof(VppHeader_V1));
+    memcpy(&header, data.data(), sizeof(VppV1Header));
 
     if (header.signature != 0x51890ACE) {
         throw ValidationError("signature mismatch");
@@ -20,13 +20,13 @@ void VppV1::read(const std::vector<std::uint8_t> &data)
         throw ValidationError("bad file count " + std::to_string(header.fileCount));
     }
 
-    std::vector<VppDirectoryEntry_V1> dirEntries(header.fileCount);
+    std::vector<VppV1DirectoryEntry> dirEntries(header.fileCount);
     memcpy(
         dirEntries.data(),
         &data[vpp_common::kChunkSize],
-        header.fileCount * sizeof(VppDirectoryEntry_V1));
+        header.fileCount * sizeof(VppV1DirectoryEntry));
 
-    std::uint32_t dataStart = vpp_common::align_to_chunk(dirEntries.size() * sizeof(VppDirectoryEntry_V1) + vpp_common::kChunkSize);
+    std::uint32_t dataStart = vpp_common::align_to_chunk(dirEntries.size() * sizeof(VppV1DirectoryEntry) + vpp_common::kChunkSize);
 
     std::uint32_t offset = dataStart;
     for (std::uint16_t i = 0; i < header.fileCount; i++) {

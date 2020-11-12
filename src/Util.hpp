@@ -6,10 +6,7 @@
 #include <QString>
 #include <stdexcept>
 #include <string_view>
-
-#include "formats/Peg.hpp"
-#include "formats/Vpp.hpp"
-#include "tree-entry/tree-entry.hpp"
+#include <vector>
 
 std::string GetExtension(const std::string_view path);
 QString getExtension(QString path);

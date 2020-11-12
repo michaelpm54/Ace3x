@@ -2,19 +2,21 @@
 
 #include <zlib.h>
 
+#include <iostream>
+
 #include "Util.hpp"
 #include "file-info.hpp"
 #include "format-readers/validation-error.hpp"
 #include "format-readers/vpp-common.hpp"
-#include "formats/Vpp.hpp"
+#include "formats/vpp-v2.hpp"
 
 std::vector<std::uint8_t> decompress(const std::uint8_t *const data, std::uint32_t compressedSize, std::uint32_t uncompressedSize);
 
 void VppV2::read(const std::vector<std::uint8_t> &data)
 {
-    VppHeader_V2 header;
+    VppV2Header header;
 
-    memcpy(&header, data.data(), sizeof(VppHeader_V2));
+    memcpy(&header, data.data(), sizeof(VppV2Header));
 
     if (header.signature != 0x51890ACE) {
         throw ValidationError("signature mismatch");
@@ -28,11 +30,11 @@ void VppV2::read(const std::vector<std::uint8_t> &data)
         throw ValidationError("bad version");
     }
 
-    std::vector<VppDirectoryEntry_V2> dirEntries(header.fileCount);
+    std::vector<VppV2DirectoryEntry> dirEntries(header.fileCount);
     memcpy(
         dirEntries.data(),
         &data[vpp_common::kChunkSize],
-        header.fileCount * sizeof(VppDirectoryEntry_V2));
+        header.fileCount * sizeof(VppV2DirectoryEntry));
 
     compressed_ = header.compressedDataSize != 0xFFFFFFFF;
 
@@ -130,6 +132,7 @@ std::vector<std::uint8_t> decompress(const std::uint8_t *const data, std::uint32
             break;
         }
         case Z_MEM_ERROR: {
+            // FIXME: Log
             std::clog << "inflateInit: Not enough memory." << std::endl;
             break;
         }
