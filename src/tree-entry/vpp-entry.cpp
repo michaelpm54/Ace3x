@@ -2,13 +2,6 @@
 
 #include "tree-entry/vpp-entry.hpp"
 
-#include <zlib.h>
-
-#include <QDebug>
-#include <QTextEdit>
-
-#include "Util.hpp"
-#include "format-readers/validation-error.hpp"
 #include "format-readers/vpp-v1.hpp"
 #include "format-readers/vpp-v2.hpp"
 #include "tree-entry/peg-entry.hpp"
@@ -16,8 +9,8 @@
 VppEntry::VppEntry(const FileInfo &vppInfo)
     : TreeEntry(vppInfo)
 {
-    std::uint32_t version = 0;
-    memcpy(&version, &vppInfo.file_data.data()[0x4], 4);
+    std::uint32_t version {0};
+    std::memcpy(&version, &vppInfo.file_data.data()[0x4], 4);
 
     if (version == 1) {
         VppV1 vpp;
