@@ -12,12 +12,8 @@
 #include <QSplitter>
 #include <QTextEdit>
 #include <QTreeView>
-#include <filesystem>
-#include <regex>
 
-#include "fs.hpp"
 #include "tree-entries/tree-entry-sort-proxy.hpp"
-#include "tree-entries/vpp-entry.hpp"
 #include "tree-model.hpp"
 #include "widgets/file-info-frame.hpp"
 #include "widgets/format-viewers/image-viewer.hpp"

@@ -4,6 +4,7 @@
 #include <QCommandLineOption>
 #include <QCommandLineParser>
 #include <QMessageBox>
+#include <iostream>
 
 #include "widgets/main-window.hpp"
 
