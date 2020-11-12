@@ -29,7 +29,7 @@ public:
     explicit MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
 
-    void loadVpp(const QString &path);
+    void load(const QString &path);
 
 public slots:
     void actionOpen();

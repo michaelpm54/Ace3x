@@ -27,14 +27,14 @@ int main(int argc, char *argv[])
 
     try {
         if (parser.isSet(fileOption))
-            mainWindow.loadVpp(parser.value(fileOption));
+            mainWindow.load(parser.value(fileOption));
     }
     catch (const std::exception &e) {
         std::cerr << e.what() << std::endl;
         return EXIT_FAILURE;
     }
 
-    mainWindow.loadVpp("E:/Games/Emulation/Roms/PS2/S2ASSETS/CHARS.VPP");
+    mainWindow.load("E:/Games/Emulation/Roms/PS2/S2ASSETS/CHARS.VPP");
 
     mainWindow.show();
 

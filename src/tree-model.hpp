@@ -6,6 +6,7 @@
 #include <QAbstractItemModel>
 #include <memory>
 
+struct FileInfo;
 class TreeEntry;
 
 class TreeModel : public QAbstractItemModel {
@@ -17,6 +18,8 @@ public:
     void clear();
     TreeEntry *itemFromIndex(const QModelIndex &index) const;
 
+    /* Returns the number of VPP's loaded */
+    int load(const QString &path);
     QModelIndex index(int row, int col, const QModelIndex &parent) const;
 
 protected:
@@ -30,8 +33,7 @@ protected:
     void fetchMore(const QModelIndex &index);
 
 private:
-    void populate(TreeEntry *parent, const TreeEntry &entry);
-    void addChildren(TreeEntry *parent, TreeEntry *entry);
+    static std::vector<FileInfo> TreeModel::gather_level_vpps_in_dir(const std::string &dir, bool load_data);
 
     std::unique_ptr<TreeEntry> mInvisibleRoot;
 };

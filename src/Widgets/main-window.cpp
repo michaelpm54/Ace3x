@@ -118,79 +118,6 @@ void MainWindow::setupActions()
     setMenuBar(mb);
 }
 
-std::vector<FileInfo> load_level_vpps(const std::string &dir)
-{
-    std::vector<FileInfo> vpps;
-
-    /* Examples:
-		HA_SRC00.VPP
-		HA_SRC01.VPP
-		HA_SRC02.VPP
-		HA_SRC03.VPP
-		HA_SRC04.VPP
-		HA_CORE1.VPP
-		HA_CORE2.VPP
-	*/
-    std::regex level_regex("(SRC\\d\\d|CORE\\d).VPP", std::regex_constants::icase);
-
-    const std::string dir_ = std::filesystem::is_directory(dir) ? dir : std::filesystem::path(dir).parent_path().string();
-
-    int index = 0;
-    for (const auto &entry : std::filesystem::directory_iterator(dir_)) {
-        if (!std::regex_search(entry.path().filename().string(), level_regex)) {
-            continue;
-        }
-
-        FileInfo info;
-        info.index_in_parent = index++;
-        info.file_name = entry.path().filename().string();
-        info.absolute_path = std::filesystem::absolute(entry.path()).string();
-        info.file_data = ace3x::fs::load_file_to_vector(info.absolute_path);
-
-        vpps.push_back(info);
-    }
-
-    return vpps;
-}
-
-void MainWindow::loadVpp(const QString &path)
-{
-    if (path.isEmpty()) {
-        std::clog << "VPP path empty" << std::endl;
-        return;
-    }
-
-    mLastPath = QFileInfo(path).dir().absolutePath();
-
-    if (path.contains("LEVELS")) {
-        for (const auto &vpp : load_level_vpps(path.toStdString())) {
-            mFileViewModel->addTopLevelEntry(new VppEntry(vpp));
-        }
-    }
-    else {
-        FileInfo info;
-        info.index_in_parent = 0;
-        info.file_name = std::filesystem::path(path.toStdString()).filename().string();
-        info.absolute_path = path.toStdString();
-
-        try {
-            info.file_data = ace3x::fs::load_file_to_vector(path.toStdString());
-            mFileViewModel->addTopLevelEntry(new VppEntry(info));
-        }
-        catch (const std::runtime_error &e) {
-            mLog->append(QString("[Error] Failed to load VPP: %1").arg(e.what()));
-        }
-        catch (...) {
-            mLog->append(QString("[Error] Failed to load VPP: Unhandled exception type"));
-        }
-
-        mFileView->expandToDepth(0);
-    }
-
-    mFileView->resizeColumnToContents(0);
-    mFileView->setSortingEnabled(true);
-}
-
 void MainWindow::updateSelection(const QItemSelection &selected, const QItemSelection &)
 {
     if (selected.isEmpty()) {
@@ -207,13 +134,8 @@ void MainWindow::updateSelection(const QItemSelection &selected, const QItemSele
 void MainWindow::actionOpen()
 {
     actionClose();
-    const auto fileName = QFileDialog::getOpenFileName(this, "Open VPP", mLastPath, "Archive File (*.VPP)");
-    if (!fileName.isEmpty()) {
-        loadVpp(fileName);
-    }
-    else {
-        mLog->append("[Info] Open: selection empty");
-    }
+
+    load(QFileDialog::getOpenFileName(this, "Open VPP", mLastPath, "Archive File (*.VPP)"));
 }
 
 void MainWindow::actionClose()
@@ -226,4 +148,24 @@ void MainWindow::actionClose()
 void MainWindow::actionQuit()
 {
     QApplication::quit();
+}
+
+void MainWindow::load(const QString &path)
+{
+    if (path.isEmpty())
+        return;
+
+    mLastPath = QFileInfo(path).dir().absolutePath();
+
+    int num_loaded = mFileViewModel->load(path);
+
+    // If there is only one top-level archive, expand it.
+    // Don't do this for multiple top-level archives because it's messy.
+    // Let the user expand them on their own.
+    if (num_loaded == 1) {
+        mFileView->expandToDepth(0);
+    }
+
+    mFileView->resizeColumnToContents(0);
+    mFileView->setSortingEnabled(true);
 }

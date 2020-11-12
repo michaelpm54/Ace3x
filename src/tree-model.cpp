@@ -2,9 +2,14 @@
 
 #include "tree-model.hpp"
 
-#include <QDebug>
+#include <QLocale>
+#include <filesystem>
+#include <regex>
 
+#include "file-info.hpp"
+#include "fs.hpp"
 #include "tree-entries/tree-entry.hpp"
+#include "tree-entries/vpp-entry.hpp"
 
 TreeModel::TreeModel()
     : mInvisibleRoot(new TreeEntry())
@@ -152,4 +157,81 @@ void TreeModel::addTopLevelEntry(TreeEntry *entry)
     mInvisibleRoot->addChild(entry);
 
     endInsertRows();
+}
+
+int TreeModel::load(const QString &path)
+{
+    if (path.isEmpty()) {
+        return 0;
+    }
+
+    int num_loaded = 0;
+
+    if (path.contains("LEVELS")) {
+        const auto level_vpps = TreeModel::gather_level_vpps_in_dir(path.toStdString(), true);
+        for (const auto &vpp : level_vpps) {
+            addTopLevelEntry(new VppEntry(vpp));
+        }
+        num_loaded = level_vpps.size();
+    }
+    else {
+        const auto fs_path = std::filesystem::path(path.toStdString());
+
+        FileInfo info;
+        info.index_in_parent = 0;
+        info.file_name = fs_path.filename().string();
+        info.extension = fs_path.extension().string();
+        info.absolute_path = std::filesystem::absolute(fs_path).string();
+
+        try {
+            info.file_data = ace3x::fs::load_file_to_vector(path.toStdString());
+            addTopLevelEntry(new VppEntry(info));
+        }
+        catch (const std::runtime_error &e) {
+            // FIXME: Log
+            // mLog->append(QString("[Error] Failed to load VPP: %1").arg(e.what()));
+        }
+        catch (...) {
+            // mLog->append(QString("[Error] Failed to load VPP: Unhandled exception type"));
+        }
+
+        num_loaded = 1;
+    }
+
+    return num_loaded;
+}
+
+std::vector<FileInfo> TreeModel::gather_level_vpps_in_dir(const std::string &dir, bool load_data)
+{
+    std::vector<FileInfo> vpps;
+
+    /* Examples:
+		HA_SRC00.VPP
+		HA_SRC01.VPP
+		HA_SRC02.VPP
+		HA_SRC03.VPP
+		HA_SRC04.VPP
+		HA_CORE1.VPP
+		HA_CORE2.VPP
+	*/
+    std::regex level_regex("(SRC\\d\\d|CORE\\d).VPP", std::regex_constants::icase);
+
+    const std::string dir_ = std::filesystem::is_directory(dir) ? dir : std::filesystem::path(dir).parent_path().string();
+
+    int index = 0;
+    for (const auto &entry : std::filesystem::directory_iterator(dir_)) {
+        if (!std::regex_search(entry.path().filename().string(), level_regex)) {
+            continue;
+        }
+
+        FileInfo info;
+        info.index_in_parent = index++;
+        info.file_name = entry.path().filename().string();
+        info.absolute_path = std::filesystem::absolute(entry.path()).string();
+        info.file_data = ace3x::fs::load_file_to_vector(info.absolute_path);
+
+        vpps.push_back(info);
+    }
+
+    return vpps;
 }
