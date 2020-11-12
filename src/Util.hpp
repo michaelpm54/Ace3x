@@ -11,11 +11,6 @@
 #include "formats/Vpp.hpp"
 #include "tree-entry/tree-entry.hpp"
 
-class ValidationError : public std::runtime_error {
-public:
-    ValidationError(const std::string &str);
-};
-
 std::string GetExtension(const std::string_view path);
 QString getExtension(QString path);
 std::vector<std::uint8_t> LoadFile(const std::string &path);

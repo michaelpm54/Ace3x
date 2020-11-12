@@ -8,16 +8,9 @@
 #include <memory>
 #include <vector>
 
-class QTextEdit;
+#include "file-info.hpp"
 
-struct FileInfo {
-    int index_in_parent;
-    std::string file_name;
-    std::string absolute_path;
-    std::string extension;
-    // FIXME: This uses more memory than necessary
-    std::vector<std::uint8_t> file_data;
-};
+class QTextEdit;
 
 class TreeEntry {
 public:

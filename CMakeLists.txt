@@ -41,7 +41,10 @@ set(ACE3X_SOURCES
 	src/tree-entry/peg-entry.cpp
 	src/tree-entry/vpp-entry.cpp
 	
-	# Summoner file formats
+	src/format-readers/validation-error.cpp
+	src/format-readers/vpp-v1.cpp
+	src/format-readers/vpp-v2.cpp
+
     src/formats/VifMesh.cpp
 
 	# Custom widgets

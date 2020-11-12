@@ -7,6 +7,7 @@
 #include <sstream>
 
 #include "Util.hpp"
+#include "format-readers/validation-error.hpp"
 
 PegEntry::PegEntry(const FileInfo &fileInfo)
     : TreeEntry(fileInfo)

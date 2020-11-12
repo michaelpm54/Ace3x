@@ -8,11 +8,6 @@
 #include <iostream>
 #include <sstream>
 
-ValidationError::ValidationError(const std::string &str)
-    : std::runtime_error("Validation failed: " + str)
-{
-}
-
 std::string GetExtension(const std::string_view path)
 {
     return std::filesystem::path(path).extension().string();
