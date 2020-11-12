@@ -29,12 +29,12 @@ find_package(Qt5 5.13 COMPONENTS Widgets REQUIRED)
 
 set(ACE3X_SOURCES
     src/main.cpp
-    src/Util.cpp
-	
-	# GUI: tree model
+    src/fs.cpp
     src/tree-model.cpp
 	
-	# GUI: tree model entry
+	# GUI: Types of tree entry.
+	# The only reason to make a new type is if
+	# it needs to add more children to itself from data.
 	src/tree-entries/tree-entry-sort-proxy.cpp
 	src/tree-entries/tree-entry.cpp
 	src/tree-entries/peg-entry.cpp
@@ -47,7 +47,7 @@ set(ACE3X_SOURCES
 	src/format-readers/peg.cpp
     src/format-readers/peg-texture-decoder.cpp
 
-	# Custom widgets
+	# Custom Qt widgets
 	src/widgets/main-window.cpp
     src/widgets/file-info-frame.cpp
     src/widgets/Viewers/Viewer.cpp
@@ -56,7 +56,7 @@ set(ACE3X_SOURCES
     src/widgets/Viewers/P3DViewer.cpp
 	src/widgets/Viewers/VIMViewer.cpp
 
-	# Widgets to view specific formats
+	# Qt widgets to view specific formats
 	src/widgets/Viewers/Viewer.cpp
     src/widgets/Viewers/ImageViewer.cpp
     src/widgets/Viewers/PlaintextViewer.cpp

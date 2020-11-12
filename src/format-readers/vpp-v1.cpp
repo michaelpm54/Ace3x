@@ -2,7 +2,6 @@
 
 #include <filesystem>
 
-#include "Util.hpp"
 #include "file-info.hpp"
 #include "format-readers/validation-error.hpp"
 #include "format-readers/vpp-common.hpp"

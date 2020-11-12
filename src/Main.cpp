@@ -5,7 +5,6 @@
 #include <QCommandLineParser>
 #include <QMessageBox>
 
-#include "Util.hpp"
 #include "widgets/main-window.hpp"
 
 int main(int argc, char *argv[])

@@ -15,7 +15,7 @@
 #include <filesystem>
 #include <regex>
 
-#include "Util.hpp"
+#include "fs.hpp"
 #include "tree-entries/tree-entry-sort-proxy.hpp"
 #include "tree-entries/vpp-entry.hpp"
 #include "tree-model.hpp"
@@ -145,7 +145,7 @@ std::vector<FileInfo> load_level_vpps(const std::string &dir)
         info.index_in_parent = index++;
         info.file_name = entry.path().filename().string();
         info.absolute_path = std::filesystem::absolute(entry.path()).string();
-        info.file_data = LoadFile(info.absolute_path);
+        info.file_data = ace3x::fs::load_file_to_vector(info.absolute_path);
 
         vpps.push_back(info);
     }
@@ -174,7 +174,7 @@ void MainWindow::loadVpp(const QString &path)
         info.absolute_path = path.toStdString();
 
         try {
-            info.file_data = LoadFile(path.toStdString());
+            info.file_data = ace3x::fs::load_file_to_vector(path.toStdString());
             mFileViewModel->addTopLevelEntry(new VppEntry(info));
         }
         catch (const std::runtime_error &e) {
