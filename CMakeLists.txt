@@ -29,7 +29,6 @@ find_package(Qt5 5.13 COMPONENTS Widgets REQUIRED)
 
 set(ACE3X_SOURCES
     src/Main.cpp
-    src/FrameDecoder.cpp
     src/Util.cpp
 	
 	# GUI: tree model
@@ -45,6 +44,8 @@ set(ACE3X_SOURCES
 	src/format-readers/vpp-v1.cpp
 	src/format-readers/vpp-v2.cpp
 	src/format-readers/vif-mesh.cpp
+	src/format-readers/peg.cpp
+    src/format-readers/peg-texture-decoder.cpp
 
 	# Custom widgets
 	src/widgets/main-window.cpp

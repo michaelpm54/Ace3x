@@ -5,7 +5,6 @@
 #include <QCommandLineParser>
 #include <QMessageBox>
 
-#include "FrameDecoder.hpp"
 #include "Util.hpp"
 #include "widgets/main-window.hpp"
 

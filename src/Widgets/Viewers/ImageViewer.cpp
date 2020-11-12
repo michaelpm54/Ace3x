@@ -8,7 +8,6 @@
 #include <QImage>
 #include <QKeyEvent>
 
-#include "FrameDecoder.hpp"
 #include "tree-entry/peg-entry.hpp"
 
 ImageViewer::ImageViewer(QWidget *parent)
@@ -37,17 +36,21 @@ void ImageViewer::activate(const TreeEntry *item)
 
     show();
 
-    if (item->getExtension() == "peg") {
+    if (item->getExtension() == ".peg") {
         mPeg = static_cast<const PegEntry *>(item);
         mFrameIndex = 0;
     }
-    else if (item->getParent() && (item->getParent()->getExtension() == "peg")) {
+    else if (item->getParent() && (item->getParent()->getExtension() == ".peg")) {
         mPeg = static_cast<const PegEntry *>(item->getParent());
         mFrameIndex = item->getIndex();
     }
 
-    if (!mPeg || (mFrameIndex >= mPeg->get_num_children())) {
-        throw std::runtime_error("Failed to activate ImageViewer for item");
+    if (!mPeg) {
+        throw std::runtime_error("PEG is null");
+    }
+
+    if (mFrameIndex >= mPeg->get_num_children()) {
+        throw std::runtime_error("PEG doesn't have frame for index: " + std::to_string(mFrameIndex));
     }
 
     ui.pegLineEdit->setText(QString::fromStdString(mPeg->getFilename()));
@@ -100,26 +103,18 @@ void ImageViewer::prevFrame()
 
 void ImageViewer::update()
 {
-    const auto frame = mPeg->getFrame(mFrameIndex);
-    m_frameName = frame.filename;
-    ui.frameLineEdit->setText(frame.filename);
+    const auto peg_image = mPeg->getImage(mFrameIndex);
+    const auto qt_image = QImage(reinterpret_cast<const std::uint8_t *>(peg_image.pixels.data()), peg_image.width, peg_image.height, QImage::Format_ARGB32);
 
-    std::vector<std::uint32_t> pixels(frame.width * frame.height);
-    decodeFrame(
-        reinterpret_cast<std::uint32_t *>(pixels.data()),
-        mPeg->getChild(mFrameIndex)->getData(),
-        frame.width,
-        frame.height,
-        frame.format);
+    m_frameName = QString::fromStdString(peg_image.filename);
 
-    auto image = QImage(reinterpret_cast<const std::uint8_t *>(pixels.data()), frame.width, frame.height, QImage::Format_ARGB32);
-
-    ui.label->setPixmap(QPixmap::fromImage(image));
+    ui.frameLineEdit->setText(QString::fromStdString(peg_image.filename));
+    ui.label->setPixmap(QPixmap::fromImage(qt_image));
 }
 
 bool ImageViewer::shouldBeEnabled(const TreeEntry *item) const
 {
-    if (item->getExtension() == "peg") {
+    if (item->getExtension() == ".peg") {
         return (item->get_num_children() != 0);
     }
 
