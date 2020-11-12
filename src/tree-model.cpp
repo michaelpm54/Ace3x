@@ -7,7 +7,7 @@
 #include "tree-entry/tree-entry.hpp"
 
 TreeModel::TreeModel()
-    : mInvisibleRoot(new TreeEntry("Root"))
+    : mInvisibleRoot(new TreeEntry())
 {
     clear();
 }
@@ -68,7 +68,7 @@ QVariant TreeModel::data(const QModelIndex &index, int role) const
     if (role == Qt::DisplayRole)
         switch (index.column()) {
             case 0:
-                return item->getFilename();
+                return QString::fromStdString(item->getFilename());
             case 1:
                 return QLocale::system().formattedDataSize(item->getSize(), 2, nullptr);
             default:

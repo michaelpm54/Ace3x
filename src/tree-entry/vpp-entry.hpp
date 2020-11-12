@@ -8,7 +8,7 @@
 
 class VppEntry : public TreeEntry {
 public:
-    VppEntry(QString name);
+    using TreeEntry::TreeEntry;
 
     void readVpp1(std::vector<std::uint8_t> &data, QTextEdit *log = nullptr);
     void readVpp2(std::vector<std::uint8_t> &data, QTextEdit *log = nullptr);

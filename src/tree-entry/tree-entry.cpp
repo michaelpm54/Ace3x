@@ -5,19 +5,10 @@
 #include <QDebug>
 #include <QFileInfo>
 
-TreeEntry::TreeEntry(QString name)
-    : mName(name)
-    , mFilename(QFileInfo(name).fileName())
-    , mExtension(QFileInfo(name).suffix().toLower())
-{
-}
+TreeEntry::TreeEntry() = default;
 
-TreeEntry::TreeEntry(QString name, std::uint16_t index, std::uint32_t size)
-    : mName(name)
-    , mFilename(QFileInfo(name).fileName())
-    , mExtension(QFileInfo(name).suffix().toLower())
-    , mIndex(index)
-    , mSize(size)
+TreeEntry::TreeEntry(FileInfo &fileInfo)
+    : mFileInfo(fileInfo)
 {
 }
 
@@ -28,9 +19,9 @@ void TreeEntry::removeAllChildren()
     mChildren.clear();
 }
 
-std::uint16_t TreeEntry::getIndex() const
+int TreeEntry::getIndex() const
 {
-    return mIndex;
+    return mFileInfo.index_in_parent;
 }
 
 void TreeEntry::addChild(TreeEntry *entry)
@@ -46,29 +37,29 @@ TreeEntry *TreeEntry::getChild(std::uint16_t index) const
     return mChildren[index].get();
 }
 
-QString TreeEntry::getPath() const
+std::string TreeEntry::getPath() const
 {
     if (mParent) {
-        if (!mParent->getPath().isEmpty())
-            return mParent->getPath() + '/' + mFilename;
+        if (!mParent->getPath().empty())
+            return mParent->getPath() + '/' + mFileInfo.file_name;
     }
 
-    return mName;
+    return mFileInfo.file_name;
 }
 
-QString TreeEntry::getFilename() const
+std::string TreeEntry::getFilename() const
 {
-    return mFilename;
+    return mFileInfo.file_name;
 }
 
-QString TreeEntry::getName() const
+std::string TreeEntry::getName() const
 {
-    return mName;
+    return mFileInfo.file_name;
 }
 
-QString TreeEntry::getExtension() const
+std::string TreeEntry::getExtension() const
 {
-    return mExtension;
+    return mFileInfo.extension;
 }
 
 TreeEntry *TreeEntry::getParent() const
@@ -78,18 +69,18 @@ TreeEntry *TreeEntry::getParent() const
 
 const std::uint8_t *TreeEntry::getData() const
 {
-    return mData.data();
+    return mFileInfo.file_data.data();
 }
 
 void TreeEntry::read(std::vector<std::uint8_t> data, QTextEdit *log)
 {
-    mData = data;
-    mSize = data.size();
+    mFileInfo.file_data = data;
+    mFileInfo.file_size = data.size();
 }
 
-qint64 TreeEntry::getSize() const
+std::uint64_t TreeEntry::getSize() const
 {
-    return mSize;
+    return mFileInfo.file_size;
 }
 
 unsigned int TreeEntry::get_num_children() const

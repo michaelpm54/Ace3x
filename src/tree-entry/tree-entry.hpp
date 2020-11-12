@@ -10,10 +10,20 @@
 
 class QTextEdit;
 
+struct FileInfo {
+    int index_in_parent;
+    std::string file_name;
+    std::string absolute_path;
+    std::string extension;
+    std::uint64_t file_size;
+    // FIXME: This uses more memory than necessary
+    std::vector<std::uint8_t> file_data;
+};
+
 class TreeEntry {
 public:
-    TreeEntry(QString name);
-    TreeEntry(QString name, std::uint16_t index, std::uint32_t size);
+    TreeEntry();
+    TreeEntry(FileInfo &info);
 
     virtual ~TreeEntry();
     void removeAllChildren();
@@ -22,24 +32,21 @@ public:
     virtual void read(std::vector<std::uint8_t> data, QTextEdit *log = nullptr);
 
     unsigned int get_num_children() const;
-    std::uint16_t getIndex() const;
-    QString getName() const;
-    QString getPath() const;
-    QString getFilename() const;
-    QString getExtension() const;
-    qint64 getSize() const;
-    TreeEntry *getParent() const;
+    int getIndex() const;
+    std::string getName() const;
+    std::string getPath() const;
+    std::string getFilename() const;
+    std::string getExtension() const;
+    std::uint64_t getSize() const;
     const std::uint8_t *getData() const;
+    TreeEntry *getParent() const;
     TreeEntry *getChild(std::uint16_t index) const;
 
 protected:
+    FileInfo mFileInfo {};
+
     TreeEntry *mParent {nullptr};
     std::vector<std::unique_ptr<TreeEntry> > mChildren;
-    QString mName {""};
-    QString mFilename {""};
-    QString mExtension {""};
-    std::uint16_t mIndex {0};
-    qint64 mSize {0};
     std::vector<std::uint8_t> mData;
 };
 

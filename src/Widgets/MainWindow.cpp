@@ -120,7 +120,7 @@ void MainWindow::setupActions()
     setMenuBar(mb);
 }
 
-QList<TreeEntry *> MainWindow::loadLevel(const QString &path)
+QList<TreeEntry *> MainWindow::loadLevelVpps(const QString &path)
 {
     QDir dir = QFileInfo(path).dir();
 
@@ -128,19 +128,37 @@ QList<TreeEntry *> MainWindow::loadLevel(const QString &path)
 
     QList<TreeEntry *> list;
 
+    int index = 0;
     for (auto &e : entryPaths) {
-        const auto path = e.absoluteFilePath();
-        const auto filename = e.fileName();
-        if (!filename.endsWith("VPP", Qt::CaseSensitivity::CaseInsensitive)) {
+        if (!e.fileName().endsWith("VPP", Qt::CaseSensitivity::CaseInsensitive))
+            continue;
+
+        FileInfo info;
+        info.index_in_parent = index++;
+        info.absolute_path = e.absoluteFilePath().toStdString();
+        info.file_name = e.fileName().toStdString();
+
+        VppEntry *vpp {nullptr};
+
+        try {
+            info.file_data = LoadFile(path.toStdString());
+            vpp = new VppEntry(info);
+        }
+        catch (const std::runtime_error &e) {
+            mLog->append(QString("[Error] Failed to load VPP: %1").arg(e.what()));
             continue;
         }
-        auto entry = new VppEntry(path);
-        entry->read(LoadFile(path.toStdString()), mLog);
-        list.append(entry);
-        mLog->append(QString("[Info] Adding root %1").arg(filename));
+        catch (...) {
+            mLog->append(QString("[Error] Failed to load VPP: Unhandled exception type"));
+            continue;
+        }
+
+        vpp->read(info.file_data, mLog);
+        list.append(vpp);
+        mLog->append(QString("[Info] Adding root %1").arg(QString::fromStdString(info.file_name)));
     }
 
-    return (list);
+    return list;
 }
 
 void MainWindow::loadVpp(const QString &path)
@@ -155,19 +173,37 @@ void MainWindow::loadVpp(const QString &path)
     QList<TreeEntry *> vppList;
 
     if (path.contains("LEVELS")) {
-        vppList.append(loadLevel(path));
+        vppList.append(loadLevelVpps(path));
     }
     else {
-        auto root = new VppEntry(path);
+        FileInfo info;
+        info.index_in_parent = 0;
+        info.file_name = std::filesystem::path(path.toStdString()).filename().string();
+        info.absolute_path = path.toStdString();
+
+        VppEntry *vpp {nullptr};
 
         try {
-            root->read(LoadFile(path.toStdString()), mLog);
-            mLog->append(QString("[Info] Adding root %1").arg(QFileInfo(path).fileName()));
-            vppList.append(root);
+            info.file_data = LoadFile(path.toStdString());
+            vpp = new VppEntry(info);
         }
-        catch (const ValidationError &e) {
-            std::clog << path.toStdString() << ": " << e.what() << std::endl;
-            delete root;
+        catch (const std::runtime_error &e) {
+            mLog->append(QString("[Error] Failed to load VPP: %1").arg(e.what()));
+        }
+        catch (...) {
+            mLog->append(QString("[Error] Failed to load VPP: Unhandled exception type"));
+        }
+
+        if (vpp) {
+            try {
+                vpp->read(info.file_data, mLog);
+                mLog->append(QString("[Info] Adding VPP %1").arg(QFileInfo(path).fileName()));
+                vppList.append(vpp);
+            }
+            catch (const ValidationError &e) {
+                std::clog << path.toStdString() << ": " << e.what() << std::endl;
+                delete vpp;
+            }
         }
     }
 

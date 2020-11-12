@@ -15,11 +15,6 @@ static constexpr std::uint16_t CHUNK_SIZE = 0x800;
 uint32_t alignToChunk(int n);
 std::vector<std::uint8_t> decompress(const std::uint8_t *const data, std::uint32_t compressedSize, std::uint32_t uncompressedSize);
 
-VppEntry::VppEntry(QString name)
-    : TreeEntry(name)
-{
-}
-
 void VppEntry::readVpp1(std::vector<std::uint8_t> &data, QTextEdit *log)
 {
     VppHeader_V1 header;
@@ -44,7 +39,7 @@ void VppEntry::readVpp1(std::vector<std::uint8_t> &data, QTextEdit *log)
 
     std::uint32_t offset = dataStart;
     for (std::uint16_t i = 0; i < header.fileCount; i++) {
-        const auto filename = QString::fromStdString(dirEntries[i].filename);
+        const auto filename = dirEntries[i].filename;
         const auto index = i;
         const auto size = dirEntries[i].size;
 
@@ -53,32 +48,38 @@ void VppEntry::readVpp1(std::vector<std::uint8_t> &data, QTextEdit *log)
 
         if (size == 0) {
             if (log) {
-                log->append(QString("[Warning] Skipping entry %1: size 0").arg(filename));
+                log->append(QString("[Warning] Skipping entry %1: size 0").arg(QString::fromStdString(filename)));
             }
             continue;
         }
 
         if (vppOffset + size >= data.size()) {
             if (log) {
-                log->append(QString("[Warning] Skipping entry %1: offset exceeds data size").arg(filename));
+                log->append(QString("[Warning] Skipping entry %1: offset exceeds data size").arg(QString::fromStdString(filename)));
             }
             continue;
         }
 
-        const auto ext = ::getExtension(filename);
-
-        TreeEntry *entry;
-
-        if (ext == "peg") {
-            entry = new PegEntry(filename, index, size);
-        }
-        else {
-            entry = new TreeEntry(filename, index, size);
-        }
+        const auto ext = ::getExtension(QString::fromStdString(filename));
 
         std::vector<std::uint8_t> childData(
             data.begin() + vppOffset,
             data.begin() + vppOffset + size);
+
+        FileInfo info;
+        info.index_in_parent = index;
+        info.file_name = filename;
+        info.file_size = size;
+        info.file_data = childData;
+
+        TreeEntry *entry;
+
+        if (ext == "peg") {
+            entry = new PegEntry(info);
+        }
+        else {
+            entry = new TreeEntry(info);
+        }
 
         try {
             entry->read(childData);
@@ -136,7 +137,7 @@ void VppEntry::readVpp2(std::vector<std::uint8_t> &data, QTextEdit *log)
 
     std::uint32_t offset = dataStart;
     for (std::uint16_t i = 0; i < header.fileCount; i++) {
-        const auto filename = QString::fromStdString(filenames[i]);
+        const auto filename = filenames[i];
         const auto index = i;
         const auto size = dirEntries[i].uncompressedSize;
 
@@ -147,32 +148,41 @@ void VppEntry::readVpp2(std::vector<std::uint8_t> &data, QTextEdit *log)
 
         if (size == 0) {
             if (log) {
-                log->append(QString("[Warning] Skipping entry %1: size 0").arg(filename));
+                log->append(QString("[Warning] Skipping entry %1: size 0").arg(QString::fromStdString(filename)));
             }
             continue;
         }
 
         if (vppOffset + size >= data.size()) {
             if (log) {
-                log->append(QString("[Warning] Skipping entry %1: offset exceeds data size").arg(filename));
+                log->append(QString("[Warning] Skipping entry %1: offset exceeds data size").arg(QString::fromStdString(filename)));
             }
             continue;
         }
 
-        const auto ext = ::getExtension(filename);
-
-        TreeEntry *entry;
-
-        if (ext == "peg") {
-            entry = new PegEntry(filename, index, size);
-        }
-        else {
-            entry = new TreeEntry(filename, index, size);
-        }
+        const auto ext = ::getExtension(QString::fromStdString(filename));
 
         std::vector<std::uint8_t> childData(
             data.begin() + vppOffset,
             data.begin() + vppOffset + size);
+
+        TreeEntry *entry;
+        FileInfo info {
+            index,
+            filename,
+            "",
+            ext.toStdString(),
+            size,
+            // FIXME: This uses more memory than necessary
+            childData,
+        };
+
+        if (ext == "peg") {
+            entry = new PegEntry(info);
+        }
+        else {
+            entry = new TreeEntry(info);
+        }
 
         try {
             entry->read(childData);
@@ -187,7 +197,7 @@ void VppEntry::readVpp2(std::vector<std::uint8_t> &data, QTextEdit *log)
 
 void VppEntry::read(std::vector<std::uint8_t> data, QTextEdit *log)
 {
-    mSize = data.size();
+    mFileInfo.file_size = data.size();
 
     std::uint32_t version = 0;
     memcpy(&version, &data[0x4], 4);

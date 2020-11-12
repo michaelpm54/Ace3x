@@ -48,10 +48,10 @@ void FileInspector::setItem(const TreeEntry *const item)
 
     mItem = item;
 
-    auto ext = item->getExtension();
+    auto ext = QString::fromStdString(item->getExtension());
 
-    mFilename->setText(item->getFilename());
-    mFilename->setToolTip(item->getPath());
+    mFilename->setText(QString::fromStdString(item->getFilename()));
+    mFilename->setToolTip(QString::fromStdString(item->getPath()));
     mSize->setText(QLocale::system().formattedDataSize(item->getSize(), 2, nullptr));
     mType->setText(ext);
 
@@ -75,7 +75,7 @@ void FileInspector::addViewer(QString ext, Viewer *viewer)
 
 void FileInspector::saveButtonClicked()
 {
-    const auto fileName = QFileDialog::getSaveFileName(this, "Save File", QDir::currentPath() + '/' + mItem->getFilename());
+    const auto fileName = QFileDialog::getSaveFileName(this, "Save File", QDir::currentPath() + '/' + QString::fromStdString(mItem->getFilename()));
     if (fileName.isEmpty()) {
         std::clog << "[Info] Cancelled save" << std::endl;
         return;
@@ -97,7 +97,7 @@ void FileInspector::saveButtonClicked()
 void FileInspector::viewButtonClicked()
 {
     try {
-        mViewers[mItem->getExtension()]->activate(mItem);
+        mViewers[QString::fromStdString(mItem->getExtension())]->activate(mItem);
     }
     catch (const std::runtime_error &e) {
         QMessageBox::critical(nullptr, "Error", QString::fromStdString(e.what()), QMessageBox::Ok);

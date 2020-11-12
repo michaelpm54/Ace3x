@@ -89,7 +89,7 @@ P3DViewer::P3DViewer(QWidget *parent)
 
 void P3DViewer::onWriteObjClicked()
 {
-    writeVerticesToObj(m_item->getFilename(), m_header, m_item->getData());
+    writeVerticesToObj(QString::fromStdString(m_item->getFilename()), m_header, m_item->getData());
 }
 
 void P3DViewer::activate(const TreeEntry *item)

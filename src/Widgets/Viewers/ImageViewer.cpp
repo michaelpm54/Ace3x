@@ -50,8 +50,8 @@ void ImageViewer::activate(const TreeEntry *item)
         throw std::runtime_error("Failed to activate ImageViewer for item");
     }
 
-    ui.pegLineEdit->setText(mPeg->getFilename());
-    ui.frameLineEdit->setText(mPeg->getChild(mFrameIndex)->getFilename());
+    ui.pegLineEdit->setText(QString::fromStdString(mPeg->getFilename()));
+    ui.frameLineEdit->setText(QString::fromStdString(mPeg->getChild(mFrameIndex)->getFilename()));
     ui.numFrames->setText(QString::number(mPeg->get_num_children()));
     ui.frameIndex->setText(QString::number(mFrameIndex + 1));
 

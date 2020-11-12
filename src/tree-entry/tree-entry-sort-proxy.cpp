@@ -20,7 +20,7 @@ bool TreeEntrySortProxy::lessThan(const QModelIndex &left, const QModelIndex &ri
 
     switch (left.column()) {
         case 0: {
-            return (entryLeft->getFilename().toLower() > entryRight->getFilename().toLower());
+            return (QString::fromStdString(entryLeft->getFilename()).toLower() > QString::fromStdString(entryRight->getFilename()).toLower());
         }
         case 1: {
             return (entryLeft->getSize() < entryRight->getSize());

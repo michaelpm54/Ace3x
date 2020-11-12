@@ -23,7 +23,7 @@ QString getExtension(QString path)
     return QFileInfo(path.toLower()).suffix();
 }
 
-ByteVec LoadFile(const std::string &path)
+std::vector<std::uint8_t> LoadFile(const std::string &path)
 {
     std::ifstream file(path, std::ios::binary | std::ios::ate);
     if (!file) {
@@ -35,13 +35,13 @@ ByteVec LoadFile(const std::string &path)
     auto size = file.tellg();
     file.seekg(0, file.beg);
 
-    ByteVec buffer(size);
+    std::vector<std::uint8_t> buffer(size);
     file.read((char *)buffer.data(), size);
 
     return buffer;
 }
 
-void WriteFile(const std::string &path, const ByteVec &buf)
+void WriteFile(const std::string &path, const std::vector<std::uint8_t> &buf)
 {
     std::string filename = std::filesystem::path(path).filename().string();
     filename = "uncomp_" + filename;
