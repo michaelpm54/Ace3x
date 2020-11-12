@@ -16,11 +16,11 @@
 #include <regex>
 
 #include "Util.hpp"
-#include "Widgets/FileInspector.hpp"
 #include "Widgets/Viewers/ImageViewer.hpp"
 #include "Widgets/Viewers/P3DViewer.hpp"
 #include "Widgets/Viewers/PlaintextViewer.hpp"
 #include "Widgets/Viewers/VIMViewer.hpp"
+#include "Widgets/file-info-frame.hpp"
 #include "tree-entry/tree-entry-sort-proxy.hpp"
 #include "tree-entry/vpp-entry.hpp"
 #include "tree-model.hpp"
@@ -30,7 +30,7 @@ MainWindow::MainWindow(QWidget *parent)
     , mFileView(new QTreeView())
     , mFileViewModel(new TreeModel())
     , mTreeEntrySortProxy(new TreeEntrySortProxy())
-    , mFileInspector(new FileInspector())
+    , mFileInspector(new FileInfoFrame())
     , mLog(new QTextEdit())
     , mImageViewer(new ImageViewer())
     , mPlaintextViewer(new PlaintextViewer())

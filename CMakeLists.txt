@@ -48,7 +48,7 @@ set(ACE3X_SOURCES
 
 	# Custom widgets
 	src/Widgets/MainWindow.cpp
-    src/Widgets/FileInspector.cpp
+    src/Widgets/file-info-frame.cpp
     src/Widgets/Viewers/Viewer.cpp
     src/Widgets/Viewers/ImageViewer.cpp
     src/Widgets/Viewers/PlaintextViewer.cpp

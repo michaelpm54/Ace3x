@@ -15,7 +15,7 @@ class QTextEdit;
 class TreeModel;
 class TreeEntrySortProxy;
 
-class FileInspector;
+class FileInfoFrame;
 class ImageViewer;
 class PlaintextViewer;
 class P3DViewer;
@@ -47,7 +47,7 @@ private:
     TreeModel *mFileViewModel {nullptr};
     TreeEntrySortProxy *mTreeEntrySortProxy {nullptr};
 
-    FileInspector *mFileInspector {nullptr};
+    FileInfoFrame *mFileInspector {nullptr};
 
     QTextEdit *mLog;
     ImageViewer *mImageViewer {nullptr};
