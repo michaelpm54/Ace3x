@@ -47,20 +47,20 @@ set(ACE3X_SOURCES
 	src/format-readers/vif-mesh.cpp
 
 	# Custom widgets
-	src/Widgets/main-window.cpp
-    src/Widgets/file-info-frame.cpp
-    src/Widgets/Viewers/Viewer.cpp
-    src/Widgets/Viewers/ImageViewer.cpp
-    src/Widgets/Viewers/PlaintextViewer.cpp
-    src/Widgets/Viewers/P3DViewer.cpp
-	src/Widgets/Viewers/VIMViewer.cpp
+	src/widgets/main-window.cpp
+    src/widgets/file-info-frame.cpp
+    src/widgets/Viewers/Viewer.cpp
+    src/widgets/Viewers/ImageViewer.cpp
+    src/widgets/Viewers/PlaintextViewer.cpp
+    src/widgets/Viewers/P3DViewer.cpp
+	src/widgets/Viewers/VIMViewer.cpp
 
 	# Widgets to view specific formats
-	src/Widgets/Viewers/Viewer.cpp
-    src/Widgets/Viewers/ImageViewer.cpp
-    src/Widgets/Viewers/PlaintextViewer.cpp
-    src/Widgets/Viewers/P3DViewer.cpp
-    src/Widgets/Viewers/VIMViewer.cpp
+	src/widgets/Viewers/Viewer.cpp
+    src/widgets/Viewers/ImageViewer.cpp
+    src/widgets/Viewers/PlaintextViewer.cpp
+    src/widgets/Viewers/P3DViewer.cpp
+    src/widgets/Viewers/VIMViewer.cpp
 )
 
 set(ACE3X_FORMS

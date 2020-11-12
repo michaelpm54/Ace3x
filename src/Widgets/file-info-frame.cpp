@@ -11,8 +11,9 @@
 #include <QMessageBox>
 #include <QPushButton>
 
-#include "Widgets/Viewers/Viewer.hpp"
 #include "tree-entry/tree-entry.hpp"
+#include "widgets/Viewers/Viewer.hpp"
+
 
 FileInfoFrame::FileInfoFrame(QWidget *parent)
     : QFrame(parent)
