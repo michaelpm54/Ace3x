@@ -33,7 +33,7 @@ protected:
     void fetchMore(const QModelIndex &index);
 
 private:
-    static std::vector<FileInfo> TreeModel::gather_level_vpps_in_dir(const std::string &dir, bool load_data);
+    static std::vector<FileInfo> TreeModel::gather_level_vpps_in_dir(const std::string &dir);
 
     std::unique_ptr<TreeEntry> invisible_root_;
 };

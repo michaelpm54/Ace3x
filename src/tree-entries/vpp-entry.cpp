@@ -12,11 +12,11 @@ VppEntry::VppEntry(const FileInfo &vppInfo)
     : TreeEntry(vppInfo)
 {
     std::uint32_t version {0};
-    std::memcpy(&version, &vppInfo.file_data.data()[0x4], 4);
+    std::memcpy(&version, &vppInfo.mmap.data()[0x4], 4);
 
     if (version == 1) {
         VppV1 vpp;
-        vpp.read(vppInfo.file_data, vppInfo.absolute_path);
+        vpp.read(vppInfo);
 
         for (const auto &entryInfo : vpp.get_entries()) {
             if (entryInfo.extension == ".peg")
@@ -27,7 +27,7 @@ VppEntry::VppEntry(const FileInfo &vppInfo)
     }
     else if (version == 2) {
         VppV2 vpp;
-        vpp.read(vppInfo.file_data, vppInfo.absolute_path);
+        vpp.read(vppInfo);
 
         compressed_ = vpp.is_compressed();
 

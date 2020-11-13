@@ -15,12 +15,13 @@
 
 std::vector<std::uint8_t> decompress(const std::uint8_t *const data, std::uint32_t compressedSize, std::uint32_t uncompressedSize);
 
-void VppV2::read(const std::vector<std::uint8_t> &data, const std::filesystem::path &path)
+void VppV2::read(const FileInfo &info)
 {
     VppV2Header header;
 
-    std::memcpy(&header, data.data(), sizeof(VppV2Header));
+    std::memcpy(&header, info.mmap.data(), sizeof(VppV2Header));
 
+    /* Sanity checks */
     if (header.signature != 0x51890ACE) {
         throw ValidationError("signature mismatch");
     }
@@ -33,39 +34,69 @@ void VppV2::read(const std::vector<std::uint8_t> &data, const std::filesystem::p
         throw ValidationError("bad version");
     }
 
+    /* Read file list */
     std::vector<VppV2DirectoryEntry> dirEntries(header.fileCount);
     std::memcpy(
         dirEntries.data(),
-        &data[vpp_common::kChunkSize],
+        &info.mmap.data()[vpp_common::kChunkSize],
         header.fileCount * sizeof(VppV2DirectoryEntry));
 
-    compressed_ = header.compressedDataSize != 0xFFFFFFFF;
-
+    /* Read filenames */
     const std::uint32_t filenamesStart = vpp_common::align_to_chunk(vpp_common::kChunkSize + header.directorySize);
     std::vector<std::string> filenames;
     {
         std::ptrdiff_t offset = 0;
         do {
-            filenames.push_back(std::string(reinterpret_cast<const char *>(&data[filenamesStart] + offset)));
+            filenames.push_back(std::string(reinterpret_cast<const char *>(&info.mmap.data()[filenamesStart] + offset)));
             offset += filenames.back().size() + 1;
         } while (offset < header.filenamesSize);
     }
 
-    std::uint32_t dataStart = vpp_common::align_to_chunk(filenamesStart + header.filenamesSize);
+    /* Map the file that we already decompressed or make it then map it */
+    compressed_ = header.compressedDataSize != 0xFFFFFFFF;
 
-    std::vector<std::uint8_t> decompressed_data;
+    const mio::shared_mmap_source *mmap {nullptr};
+    std::string vpp_path {info.absolute_path};
 
     if (compressed_) {
-        decompressed_data = decompress(&data[dataStart], header.compressedDataSize, header.uncompressedDataSize);
-        dataStart = 0;
+        const auto decompressed_filename {fmt::format("./temp/{}.decompressed", info.file_name)};
+        vpp_path = std::filesystem::absolute(decompressed_filename).string();
+
+        if (!std::filesystem::exists(decompressed_filename)) {
+            if (!std::filesystem::exists("./temp")) {
+                if (!std::filesystem::create_directory("./temp")) {
+                    spdlog::error("Failed to create './temp' directory for decompressed VPP's");
+                }
+                else {
+                    spdlog::info("Created directory '{}' for decompressed VPP's", std::filesystem::absolute("./path").string());
+                }
+            }
+
+            auto decompressed_data = decompress(reinterpret_cast<const std::uint8_t *>(info.mmap.data()), header.compressedDataSize, header.uncompressedDataSize);
+            FILE *decomp_out {fopen(decompressed_filename.c_str(), "w+")};
+            if (!decomp_out) {
+                throw std::runtime_error("Failed to create decompressed file for VPP " + info.file_name);
+            }
+            fwrite(decompressed_data.data(), decompressed_data.size(), 1, decomp_out);
+            fclose(decomp_out);
+        }
+
+        std::error_code error;
+        decompressed_mmap_.map(decompressed_filename, error);
+
+        if (error) {
+            spdlog::error("Failed to map '{}'", decompressed_filename);
+            throw std::runtime_error("Failed to map decompressed VPP");
+        }
+
+        mmap = &decompressed_mmap_;
     }
     else {
-        decompressed_data = data;
+        mmap = &info.mmap;
     }
 
-    const auto vpp_name = path.filename().string();
+    std::uint32_t offset = compressed_ ? 0 : vpp_common::align_to_chunk(filenamesStart + header.filenamesSize);
 
-    std::uint32_t offset = dataStart;
     for (std::uint16_t i = 0; i < header.fileCount; i++) {
         const auto filename = filenames[i];
         const auto index = i;
@@ -77,27 +108,32 @@ void VppV2::read(const std::vector<std::uint8_t> &data, const std::filesystem::p
         }
 
         if (size == 0) {
-            spdlog::warn("'{}/{}' size is 0, skipping", vpp_name, filename);
+            spdlog::warn("'{}/{}' size is 0, skipping", info.file_name, filename);
             continue;
         }
 
-        if (vppOffset + size >= decompressed_data.size()) {
-            spdlog::warn("'{}/{}' exceeds data size, skipping", vpp_name, filename);
+        if (static_cast<int64_t>(vppOffset) + size >= mmap->mapped_length()) {
+            spdlog::warn("'{}/{}' exceeds data size ({}), skipping", info.file_name, filename, mmap->mapped_length());
             continue;
         }
 
-        std::vector<std::uint8_t> childData(
-            decompressed_data.begin() + vppOffset,
-            decompressed_data.begin() + vppOffset + size);
+        FileInfo child;
+        child.index_in_parent = index;
+        child.file_name = filename;
+        child.absolute_path = info.absolute_path + '/' + child.file_name;
+        child.extension = std::filesystem::path(filename).extension().string();
+        child.base_file_absolute_path = vpp_path;
+        child.offset = vppOffset;
 
-        FileInfo info;
-        info.index_in_parent = index;
-        info.file_name = filename;
-        info.absolute_path = path.string() + '/' + info.file_name;
-        info.extension = std::filesystem::path(filename).extension().string();
-        info.file_data = childData;
+        std::error_code error;
+        child.mmap = mio::make_mmap_source(vpp_path, vppOffset, size, error);
 
-        entries_.push_back(info);
+        if (error) {
+            spdlog::error("Failed to map '{}/{}': {}", info.file_name, filename, error.message());
+            continue;
+        }
+
+        entries_.push_back(child);
     }
 }
 

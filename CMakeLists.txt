@@ -31,6 +31,7 @@ set(ACE3X_SOURCES
     src/main.cpp
     src/fs.cpp
     src/tree-model.cpp
+	src/mio.hpp
 	
 	# GUI: Types of tree entry.
 	# The only reason to make a new type is if

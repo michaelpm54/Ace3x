@@ -12,15 +12,13 @@
 #include "format-readers/validation-error.hpp"
 #include "formats/peg.hpp"
 
-void Peg::read(const std::vector<std::uint8_t> &data, const std::filesystem::path &path)
+void Peg::read(const FileInfo &info)
 {
     PegHeader header;
-    std::memcpy(&header, data.data(), sizeof(PegHeader));
-
-    const auto peg_name = path.filename().string();
+    std::memcpy(&header, info.mmap.data(), sizeof(PegHeader));
 
     if (header.signature != 0x564B4547) {
-        const auto msg = fmt::format("Failed loading PEG '{}': signature 0x{} != 0x564B4547", peg_name, header.signature);
+        const auto msg = fmt::format("Failed loading PEG '{}': signature 0x{} != 0x564B4547", info.file_name, header.signature);
         spdlog::error(msg);
         throw ValidationError("signature mismatch: " + msg);
     }
@@ -29,7 +27,7 @@ void Peg::read(const std::vector<std::uint8_t> &data, const std::filesystem::pat
 
     frames_.resize(header.textureCount);
 
-    std::memcpy(frames_.data(), &data.data()[sizeof(PegHeader)], sizeof(PegFrame) * header.textureCount);
+    std::memcpy(frames_.data(), &info.mmap.data()[sizeof(PegHeader)], sizeof(PegFrame) * header.textureCount);
 
     auto GetFrameSize = [&](std::uint32_t frameIndex) -> std::uint32_t {
         std::uint32_t frameEnd = 0;
@@ -53,7 +51,7 @@ void Peg::read(const std::vector<std::uint8_t> &data, const std::filesystem::pat
                 return static_cast<unsigned char>(c) > 127;
             }) ||
             filename.size() == 4 /* just an extension */) {
-            spdlog::error("PEG '{}': frame {} has invalid filename", peg_name, i);
+            spdlog::error("PEG '{}': frame {} has invalid filename", info.file_name, i);
             continue;
         }
 
@@ -61,20 +59,23 @@ void Peg::read(const std::vector<std::uint8_t> &data, const std::filesystem::pat
         const auto size = sizes[i];
 
         if (size > 1000000) {
-            spdlog::warn("PEG '{}': Skipping entry '{}' because size ({} bytes) is > 1MB", peg_name, filename, size);
+            spdlog::warn("PEG '{}': Skipping entry '{}' because size ({} bytes) is > 1MB", info.file_name, filename, size);
             continue;
         }
 
-        std::vector<std::uint8_t> childData(
-            data.begin() + frames_[i].offset,
-            data.begin() + frames_[i].offset + sizes[i]);
+        FileInfo child;
+        child.index_in_parent = index;
+        child.file_name = filename;
 
-        FileInfo info;
-        info.index_in_parent = index;
-        info.file_name = filename;
-        info.file_data = childData;
+        std::error_code error;
+        child.mmap = mio::make_mmap_source(info.base_file_absolute_path, info.offset + frames_[i].offset, size, error);
 
-        entries_.push_back(info);
+        if (error) {
+            spdlog::error("Failed to map '{}/{}': {}", info.file_name, filename, error.message());
+            continue;
+        }
+
+        entries_.push_back(child);
     }
 }
 
@@ -97,7 +98,7 @@ Peg::Image Peg::getImage(std::uint16_t index) const
     auto frame = frames_[index];
 
     std::vector<std::uint32_t> pixels(frame.width * frame.height);
-    peg_texture_decoder::decode(pixels.data(), entries_[index].file_data.data(), frame.width, frame.height, frame.format);
+    peg_texture_decoder::decode(pixels.data(), reinterpret_cast<const std::uint8_t *>(entries_[index].mmap.data()), frame.width, frame.height, frame.format);
 
     image.filename = frame.filename;
     image.pixels = pixels;

@@ -10,8 +10,6 @@
 
 #include "file-info.hpp"
 
-class QTextEdit;
-
 class TreeEntry {
 public:
     TreeEntry();

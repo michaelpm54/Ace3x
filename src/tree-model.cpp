@@ -172,8 +172,8 @@ int TreeModel::load(const QString &path)
     int num_loaded = 0;
 
     if (path.contains("LEVELS")) {
-        const auto level_vpps = TreeModel::gather_level_vpps_in_dir(path.toStdString(), true);
-        for (const auto &vpp : level_vpps) {
+        auto level_vpps = TreeModel::gather_level_vpps_in_dir(path.toStdString());
+        for (auto &vpp : level_vpps) {
             addTopLevelEntry(new VppEntry(vpp));
         }
         num_loaded = static_cast<int>(level_vpps.size());
@@ -188,11 +188,21 @@ int TreeModel::load(const QString &path)
         info.absolute_path = std::filesystem::absolute(fs_path).generic_string();
 
         try {
-            info.file_data = ace3x::fs::load_file_to_vector(path.toStdString());
+            std::error_code error;
+            info.mmap.map(info.absolute_path, error);
+
+            if (error) {
+                spdlog::debug("Failed to map VPP '{}'", info.absolute_path);
+                throw std::exception();
+            }
+
             addTopLevelEntry(new VppEntry(info));
         }
         catch (const std::runtime_error &e) {
-            spdlog::error("Failed to load VPP: {}", e.what());
+            spdlog::error("Failed to load VPP '{}': {}", info.absolute_path, e.what());
+        }
+        catch (const std::exception &) {
+            spdlog::debug("Failed to load VPP '{}'", info.absolute_path);
         }
         catch (...) {
             spdlog::error("Failed to load VPP: unhandled exception type");
@@ -204,7 +214,7 @@ int TreeModel::load(const QString &path)
     return num_loaded;
 }
 
-std::vector<FileInfo> TreeModel::gather_level_vpps_in_dir(const std::string &dir, bool load_data)
+std::vector<FileInfo> TreeModel::gather_level_vpps_in_dir(const std::string &dir)
 {
     std::vector<FileInfo> vpps;
 
@@ -231,17 +241,16 @@ std::vector<FileInfo> TreeModel::gather_level_vpps_in_dir(const std::string &dir
         info.index_in_parent = index++;
         info.file_name = entry.path().filename().string();
         info.absolute_path = std::filesystem::absolute(entry.path()).generic_string();
+        info.base_file_absolute_path = info.absolute_path;
 
-        if (load_data) {
-            try {
-                info.file_data = ace3x::fs::load_file_to_vector(info.absolute_path);
-            }
-            catch (const std::runtime_error &e) {
-                spdlog::error(e.what());
-            }
+        std::error_code error;
+        info.mmap.map(info.absolute_path, error);
+
+        if (error) {
+            spdlog::error("Failed to map VPP '{}': {}", entry.path().filename().string(), error.message());
         }
 
-        vpps.push_back(info);
+        vpps.emplace_back(info);
     }
 
     return vpps;

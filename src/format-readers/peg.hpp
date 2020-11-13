@@ -14,7 +14,7 @@ class Peg {
 public:
     struct Image;
 
-    void read(const std::vector<std::uint8_t> &data, const std::filesystem::path &path);
+    void read(const FileInfo &info);
     const std::vector<FileInfo> &get_entries() const;
     Image getImage(std::uint16_t index) const;
 

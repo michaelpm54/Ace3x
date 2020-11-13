@@ -3,13 +3,15 @@
 #ifndef ACE3X_FORMAT_READERS_VPP_V1_HPP_
 #define ACE3X_FORMAT_READERS_VPP_V1_HPP_
 
+#include <vector>
+
 #include "format-readers/vpp-archive.hpp"
 
 struct FileInfo;
 
 class VppV1 : public VppArchive {
 public:
-    void read(const std::vector<std::uint8_t> &data, const std::filesystem::path &path) override;
+    void read(const FileInfo &info) override;
     const std::vector<FileInfo> &get_entries() const;
 
 private:

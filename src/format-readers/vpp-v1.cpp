@@ -11,11 +11,11 @@
 #include "format-readers/vpp-common.hpp"
 #include "formats/vpp-v1.hpp"
 
-void VppV1::read(const std::vector<std::uint8_t> &data, const std::filesystem::path &path)
+void VppV1::read(const FileInfo &info)
 {
     VppV1Header header;
 
-    std::memcpy(&header, data.data(), sizeof(VppV1Header));
+    std::memcpy(&header, info.mmap.data(), sizeof(VppV1Header));
 
     if (header.signature != 0x51890ACE) {
         throw ValidationError("signature mismatch");
@@ -28,12 +28,10 @@ void VppV1::read(const std::vector<std::uint8_t> &data, const std::filesystem::p
     std::vector<VppV1DirectoryEntry> dirEntries(header.fileCount);
     std::memcpy(
         dirEntries.data(),
-        &data[vpp_common::kChunkSize],
+        &info.mmap.data()[vpp_common::kChunkSize],
         header.fileCount * sizeof(VppV1DirectoryEntry));
 
     std::uint32_t dataStart = vpp_common::align_to_chunk(static_cast<std::uint32_t>(dirEntries.size() * sizeof(VppV1DirectoryEntry) + vpp_common::kChunkSize));
-
-    const auto vpp_name = path.filename().string();
 
     std::uint32_t offset = dataStart;
     for (std::uint16_t i = 0; i < header.fileCount; i++) {
@@ -45,27 +43,30 @@ void VppV1::read(const std::vector<std::uint8_t> &data, const std::filesystem::p
         offset = vpp_common::align_to_chunk(offset + dirEntries[i].size);
 
         if (size == 0) {
-            spdlog::warn("'{}/{}' size is 0, skipping", vpp_name, filename);
+            spdlog::warn("'{}/{}' size is 0, skipping", info.file_name, filename);
             continue;
         }
 
-        if (vppOffset + size >= data.size()) {
-            spdlog::warn("'{}/{}' exceeds data size, skipping", vpp_name, filename);
+        if (vppOffset + size >= info.mmap.size()) {
+            spdlog::warn("'{}/{}' exceeds data size, skipping", info.file_name, filename);
             continue;
         }
 
-        std::vector<std::uint8_t> childData(
-            data.begin() + vppOffset,
-            data.begin() + vppOffset + size);
+        FileInfo child;
+        child.index_in_parent = index;
+        child.file_name = filename;
+        child.extension = std::filesystem::path(filename).extension().string();
+        child.absolute_path = info.absolute_path + '/' + child.file_name;
 
-        FileInfo info;
-        info.index_in_parent = index;
-        info.file_name = filename;
-        info.file_data = childData;
-        info.extension = std::filesystem::path(filename).extension().string();
-        info.absolute_path = path.string() + '/' + info.file_name;
+        std::error_code error;
+        child.mmap = mio::make_mmap_source(info.mmap, vppOffset, size, error);
 
-        entries_.push_back(info);
+        if (error) {
+            spdlog::error("Failed to map '{}/{}': {}", info.file_name, filename, error.message());
+            continue;
+        }
+
+        entries_.push_back(child);
     }
 }
 

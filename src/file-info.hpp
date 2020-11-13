@@ -3,18 +3,18 @@
 #ifndef ACE3X_FILE_INFO_HPP_
 #define ACE3X_FILE_INFO_HPP_
 
-#include <cstdint>
 #include <string>
-#include <vector>
+
+#include "mio.hpp"
 
 struct FileInfo {
-    int index_in_parent;
+    int index_in_parent {-1};
     std::string file_name;
     std::string absolute_path;
     std::string extension;
-    // FIXME: This uses more memory than necessary
-    // Replace it with a pointer
-    std::vector<std::uint8_t> file_data;
+    std::string base_file_absolute_path;
+    std::int64_t offset;
+    mio::shared_mmap_source mmap;
 };
 
 #endif    // ACE3X_FILE_INFO_HPP_

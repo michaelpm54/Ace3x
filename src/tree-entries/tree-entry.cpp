@@ -69,12 +69,12 @@ TreeEntry *TreeEntry::getParent() const
 
 const std::uint8_t *TreeEntry::getData() const
 {
-    return file_info_.file_data.data();
+    return reinterpret_cast<const std::uint8_t *>(file_info_.mmap.data());
 }
 
 std::uint64_t TreeEntry::getSize() const
 {
-    return file_info_.file_data.size();
+    return file_info_.mmap.size();
 }
 
 int TreeEntry::get_num_children() const
