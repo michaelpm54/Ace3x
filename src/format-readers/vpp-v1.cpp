@@ -2,6 +2,8 @@
 
 #include "format-readers/vpp-v1.hpp"
 
+#include <spdlog/spdlog.h>
+
 #include <filesystem>
 
 #include "file-info.hpp"
@@ -9,7 +11,7 @@
 #include "format-readers/vpp-common.hpp"
 #include "formats/vpp-v1.hpp"
 
-void VppV1::read(const std::vector<std::uint8_t> &data)
+void VppV1::read(const std::vector<std::uint8_t> &data, const std::filesystem::path &path)
 {
     VppV1Header header;
 
@@ -31,6 +33,8 @@ void VppV1::read(const std::vector<std::uint8_t> &data)
 
     std::uint32_t dataStart = vpp_common::align_to_chunk(static_cast<std::uint32_t>(dirEntries.size() * sizeof(VppV1DirectoryEntry) + vpp_common::kChunkSize));
 
+    const auto vpp_name = path.filename().string();
+
     std::uint32_t offset = dataStart;
     for (std::uint16_t i = 0; i < header.fileCount; i++) {
         const auto filename = dirEntries[i].filename;
@@ -41,12 +45,12 @@ void VppV1::read(const std::vector<std::uint8_t> &data)
         offset = vpp_common::align_to_chunk(offset + dirEntries[i].size);
 
         if (size == 0) {
-            // FIXME: Log
+            spdlog::warn("'{}/{}' size is 0, skipping", vpp_name, filename);
             continue;
         }
 
         if (vppOffset + size >= data.size()) {
-            // FIXME: Log
+            spdlog::warn("'{}/{}' exceeds data size, skipping", vpp_name, filename);
             continue;
         }
 
@@ -59,6 +63,7 @@ void VppV1::read(const std::vector<std::uint8_t> &data)
         info.file_name = filename;
         info.file_data = childData;
         info.extension = std::filesystem::path(filename).extension().string();
+        info.absolute_path = path.string() + '/' + info.file_name;
 
         entries_.push_back(info);
     }

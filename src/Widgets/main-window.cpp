@@ -2,6 +2,8 @@
 
 #include "Widgets/main-window.hpp"
 
+#include <spdlog/spdlog.h>
+
 #include <QDebug>
 #include <QDir>
 #include <QFileDialog>
@@ -9,6 +11,7 @@
 #include <QGridLayout>
 #include <QHBoxLayout>
 #include <QMenuBar>
+#include <QPlainTextEdit>
 #include <QSplitter>
 #include <QTextEdit>
 #include <QTreeView>
@@ -23,11 +26,11 @@
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
+    , log_(new QPlainTextEdit())
     , tree_view_(new QTreeView())
     , tree_model_(new TreeModel())
     , tree_sort_proxy_(new TreeEntrySortProxy())
     , file_info_view_(new FileInfoFrame())
-    , log_(new QTextEdit())
     , image_viewer_(new ImageViewer())
     , plaintext_viewer_(new PlaintextViewer())
     , p3d_viewer_(new P3DViewer())
@@ -44,6 +47,12 @@ MainWindow::MainWindow(QWidget *parent)
     auto splitter1 = new QSplitter(Qt::Orientation::Horizontal);
 
     log_->setReadOnly(true);
+
+    QFont monospace_font;
+    monospace_font.setPointSize(12);
+    monospace_font.setStyleHint(QFont::Monospace);
+    monospace_font.setFamily("Consolas");
+    log_->document()->setDefaultFont(monospace_font);
 
     setCentralWidget(centralWidget);
     centralWidget->setLayout(layout);
@@ -99,6 +108,11 @@ MainWindow::~MainWindow()
     delete image_viewer_;
 }
 
+QPlainTextEdit *MainWindow::getLog()
+{
+    return log_;
+}
+
 void MainWindow::setupActions()
 {
     auto mb = new QMenuBar();
@@ -120,8 +134,6 @@ void MainWindow::updateSelection(const QItemSelection &selected, const QItemSele
         return;
     }
 
-    qDebug() << selected.indexes().first();
-
     TreeEntry *entry = tree_model_->itemFromIndex(tree_sort_proxy_->mapToSource(selected.indexes().first()));
 
     file_info_view_->setItem(entry);
@@ -136,7 +148,7 @@ void MainWindow::actionOpen()
 
 void MainWindow::actionClose()
 {
-    log_->clear();
+    //log_->clear();
     tree_model_->clear();
     file_info_view_->clear();
 }

@@ -4,12 +4,13 @@
 #define ACE3X_FORMAT_READERS_VPP_ARCHIVE_HPP_
 
 #include <cstdint>
+#include <filesystem>
 #include <vector>
 
 class VppArchive {
 public:
     ~VppArchive() = default;
-    virtual void read(const std::vector<std::uint8_t> &data) = 0;
+    virtual void read(const std::vector<std::uint8_t> &data, const std::filesystem::path &path) = 0;
 };
 
 #endif    // ACE3X_FORMAT_READERS_VPP_ARCHIVE_HPP_

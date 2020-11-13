@@ -2,6 +2,8 @@
 
 #include "tree-entries/vpp-entry.hpp"
 
+#include <spdlog/spdlog.h>
+
 #include "format-readers/vpp-v1.hpp"
 #include "format-readers/vpp-v2.hpp"
 #include "tree-entries/peg-entry.hpp"
@@ -14,7 +16,7 @@ VppEntry::VppEntry(const FileInfo &vppInfo)
 
     if (version == 1) {
         VppV1 vpp;
-        vpp.read(vppInfo.file_data);
+        vpp.read(vppInfo.file_data, vppInfo.absolute_path);
 
         for (const auto &entryInfo : vpp.get_entries()) {
             if (entryInfo.extension == ".peg")
@@ -25,7 +27,7 @@ VppEntry::VppEntry(const FileInfo &vppInfo)
     }
     else if (version == 2) {
         VppV2 vpp;
-        vpp.read(vppInfo.file_data);
+        vpp.read(vppInfo.file_data, vppInfo.absolute_path);
 
         compressed_ = vpp.is_compressed();
 
@@ -37,6 +39,6 @@ VppEntry::VppEntry(const FileInfo &vppInfo)
         }
     }
     else {
-        // FIXME: Log
+        spdlog::error("Unknown VPP version {}", version);
     }
 }

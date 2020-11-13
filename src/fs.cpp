@@ -2,9 +2,10 @@
 
 #include "fs.hpp"
 
+#include <fmt/format.h>
+
 #include <filesystem>
 #include <fstream>
-#include <sstream>
 
 namespace ace3x::fs {
 
@@ -12,11 +13,8 @@ std::vector<std::uint8_t> load_file_to_vector(const std::string &path)
 {
     std::ifstream file(path, std::ios::binary | std::ios::ate);
 
-    // FIXME: Log
     if (!file) {
-        std::stringstream ss;
-        ss << "Failed to open file '" << path << "' for reading.";
-        throw std::runtime_error(ss.str());
+        throw std::runtime_error(fmt::format("Failed to open file {} for reading", path));
     }
 
     auto size = file.tellg();

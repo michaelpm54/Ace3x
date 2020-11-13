@@ -11,7 +11,7 @@
 PegEntry::PegEntry(const FileInfo &pegInfo)
     : TreeEntry(pegInfo)
 {
-    peg_.read(pegInfo.file_data);
+    peg_.read(pegInfo.file_data, pegInfo.absolute_path);
 
     for (const auto &entryInfo : peg_.get_entries()) {
         addChild(new TreeEntry(entryInfo));

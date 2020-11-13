@@ -2,6 +2,7 @@
 
 #include "format-readers/vpp-v2.hpp"
 
+#include <spdlog/spdlog.h>
 #include <zlib.h>
 
 #include <filesystem>
@@ -14,7 +15,7 @@
 
 std::vector<std::uint8_t> decompress(const std::uint8_t *const data, std::uint32_t compressedSize, std::uint32_t uncompressedSize);
 
-void VppV2::read(const std::vector<std::uint8_t> &data)
+void VppV2::read(const std::vector<std::uint8_t> &data, const std::filesystem::path &path)
 {
     VppV2Header header;
 
@@ -62,6 +63,8 @@ void VppV2::read(const std::vector<std::uint8_t> &data)
         decompressed_data = data;
     }
 
+    const auto vpp_name = path.filename().string();
+
     std::uint32_t offset = dataStart;
     for (std::uint16_t i = 0; i < header.fileCount; i++) {
         const auto filename = filenames[i];
@@ -74,12 +77,12 @@ void VppV2::read(const std::vector<std::uint8_t> &data)
         }
 
         if (size == 0) {
-            // FIXME: Log
+            spdlog::warn("'{}/{}' size is 0, skipping", vpp_name, filename);
             continue;
         }
 
         if (vppOffset + size >= decompressed_data.size()) {
-            // FIXME: Log
+            spdlog::warn("'{}/{}' exceeds data size, skipping", vpp_name, filename);
             continue;
         }
 
@@ -87,14 +90,12 @@ void VppV2::read(const std::vector<std::uint8_t> &data)
             decompressed_data.begin() + vppOffset,
             decompressed_data.begin() + vppOffset + size);
 
-        FileInfo info {
-            index,
-            filename,
-            "",
-            std::filesystem::path(filename).extension().string(),
-            // FIXME: This uses more memory than necessary
-            childData,
-        };
+        FileInfo info;
+        info.index_in_parent = index;
+        info.file_name = filename;
+        info.absolute_path = path.string() + '/' + info.file_name;
+        info.extension = std::filesystem::path(filename).extension().string();
+        info.file_data = childData;
 
         entries_.push_back(info);
     }
@@ -132,17 +133,15 @@ std::vector<std::uint8_t> decompress(const std::uint8_t *const data, std::uint32
             break;
         }
         case Z_MEM_ERROR: {
-            // FIXME: Log
-            std::clog << "inflateInit: Not enough memory." << std::endl;
+            spdlog::warn("inflateInit: Not enough memory.");
             break;
         }
         case Z_VERSION_ERROR: {
-            std::clog << "inflateInit: zlib version incompatible with assumed version."
-                      << std::endl;
+            spdlog::warn("inflateInit: zlib version incompatible with assumed version.");
             break;
         }
         case Z_STREAM_ERROR: {
-            std::clog << "inflateInit: invalid parameters." << std::endl;
+            spdlog::warn("inflateInit: invalid parameters.");
             break;
         }
         default: {
@@ -162,16 +161,15 @@ std::vector<std::uint8_t> decompress(const std::uint8_t *const data, std::uint32
             break;
         }
         case Z_MEM_ERROR: {
-            std::clog << "inflate: Not enough memory." << std::endl;
+            spdlog::warn("inflate: Not enough memory.");
             break;
         }
         case Z_DATA_ERROR: {
-            std::clog << "inflate: Input data corrupted. Msg: " << std::string(stream.msg)
-                      << std::endl;
+            spdlog::warn("inflate: Input data corrupted. Message: {}", std::string(stream.msg));
             break;
         }
         case Z_STREAM_ERROR: {
-            std::clog << "inflate: Inconsistent stream structure." << std::endl;
+            spdlog::warn("inflate: Inconsistent stream structure.");
             break;
         }
         default: {
@@ -180,7 +178,7 @@ std::vector<std::uint8_t> decompress(const std::uint8_t *const data, std::uint32
     }
 
     if (stream.msg) {
-        std::clog << "zlib message: " << std::string(stream.msg) << std::endl;
+        spdlog::debug("zlib message: {}", std::string(stream.msg));
     }
 
     if ((ret != Z_OK) && (ret != Z_BUF_ERROR)) {
@@ -194,7 +192,7 @@ std::vector<std::uint8_t> decompress(const std::uint8_t *const data, std::uint32
             break;
         }
         case Z_STREAM_ERROR: {
-            std::clog << "inflateEnd: inconsistent stream state." << std::endl;
+            spdlog::error("inflateEnd: inconsistent stream state.");
             break;
         }
         default: {

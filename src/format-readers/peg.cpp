@@ -2,23 +2,27 @@
 
 #include "format-readers/peg.hpp"
 
-#include <sstream>
+#include <spdlog/spdlog.h>
+
+#include <algorithm>
+#include <filesystem>
 
 #include "file-info.hpp"
 #include "format-readers/peg-texture-decoder.hpp"
 #include "format-readers/validation-error.hpp"
 #include "formats/peg.hpp"
 
-void Peg::read(const std::vector<std::uint8_t> &data)
+void Peg::read(const std::vector<std::uint8_t> &data, const std::filesystem::path &path)
 {
     PegHeader header;
     std::memcpy(&header, data.data(), sizeof(PegHeader));
 
-    // FIXME: Log
+    const auto peg_name = path.filename().string();
+
     if (header.signature != 0x564B4547) {
-        std::stringstream ss;
-        ss << "(0x" << std::hex << header.signature << " != 0x564B4547)";
-        throw ValidationError("signature mismatch " + ss.str());
+        const auto msg = fmt::format("Failed loading PEG '{}': signature 0x{} != 0x564B4547", peg_name, header.signature);
+        spdlog::error(msg);
+        throw ValidationError("signature mismatch: " + msg);
     }
 
     const std::uint32_t headerTotalSize = sizeof(PegHeader) + header.textureHeaderSize;
@@ -43,16 +47,21 @@ void Peg::read(const std::vector<std::uint8_t> &data)
         sizes[i] = GetFrameSize(i);
 
     for (std::uint32_t i = 0; i < header.textureCount; i++) {
-        const auto filename = frames_[i].filename;
+        const std::string filename = frames_[i].filename;
+
+        if (std::any_of(std::begin(filename), std::end(filename), [](char c) {
+                return static_cast<unsigned char>(c) > 127;
+            }) ||
+            filename.size() == 4 /* just an extension */) {
+            spdlog::error("PEG '{}': frame {} has invalid filename", peg_name, i);
+            continue;
+        }
+
         const auto index = i;
         const auto size = sizes[i];
 
         if (size > 1000000) {
-            // FIXME
-            /*
-            if (log)
-                log->append(QString("[Warning] Skipping entry %1: size > 1MB").arg(filename));
-			*/
+            spdlog::warn("PEG '{}': Skipping entry '{}' because size ({} bytes) is > 1MB", peg_name, filename, size);
             continue;
         }
 

@@ -2,6 +2,8 @@
 
 #include "tree-model.hpp"
 
+#include <spdlog/spdlog.h>
+
 #include <QLocale>
 #include <filesystem>
 #include <regex>
@@ -157,6 +159,8 @@ void TreeModel::addTopLevelEntry(TreeEntry *entry)
     invisible_root_->addChild(entry);
 
     endInsertRows();
+
+    spdlog::info("Loaded VPP: {}", entry->getFilename());
 }
 
 int TreeModel::load(const QString &path)
@@ -181,18 +185,17 @@ int TreeModel::load(const QString &path)
         info.index_in_parent = 0;
         info.file_name = fs_path.filename().string();
         info.extension = fs_path.extension().string();
-        info.absolute_path = std::filesystem::absolute(fs_path).string();
+        info.absolute_path = std::filesystem::absolute(fs_path).generic_string();
 
         try {
             info.file_data = ace3x::fs::load_file_to_vector(path.toStdString());
             addTopLevelEntry(new VppEntry(info));
         }
-        catch (const std::runtime_error &) {
-            // FIXME: Log
-            // log_->append(QString("[Error] Failed to load VPP: %1").arg(e.what()));
+        catch (const std::runtime_error &e) {
+            spdlog::error("Failed to load VPP: {}", e.what());
         }
         catch (...) {
-            // log_->append(QString("[Error] Failed to load VPP: Unhandled exception type"));
+            spdlog::error("Failed to load VPP: unhandled exception type");
         }
 
         num_loaded = 1;
@@ -227,10 +230,16 @@ std::vector<FileInfo> TreeModel::gather_level_vpps_in_dir(const std::string &dir
         FileInfo info;
         info.index_in_parent = index++;
         info.file_name = entry.path().filename().string();
-        info.absolute_path = std::filesystem::absolute(entry.path()).string();
+        info.absolute_path = std::filesystem::absolute(entry.path()).generic_string();
 
-        if (load_data)
-            info.file_data = ace3x::fs::load_file_to_vector(info.absolute_path);
+        if (load_data) {
+            try {
+                info.file_data = ace3x::fs::load_file_to_vector(info.absolute_path);
+            }
+            catch (const std::runtime_error &e) {
+                spdlog::error(e.what());
+            }
+        }
 
         vpps.push_back(info);
     }

@@ -9,7 +9,7 @@ struct FileInfo;
 
 class VppV2 : public VppArchive {
 public:
-    void read(const std::vector<std::uint8_t> &data) override;
+    void read(const std::vector<std::uint8_t> &data, const std::filesystem::path &path) override;
     const std::vector<FileInfo> &get_entries() const;
     bool is_compressed() const;
 

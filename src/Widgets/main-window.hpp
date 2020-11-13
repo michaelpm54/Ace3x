@@ -7,7 +7,7 @@
 #include <QMainWindow>
 
 class QTreeView;
-class QTextEdit;
+class QPlainTextEdit;
 
 class TreeModel;
 class TreeEntrySortProxy;
@@ -23,10 +23,11 @@ class MainWindow : public QMainWindow {
     Q_OBJECT
 
 public:
-    explicit MainWindow(QWidget *parent = nullptr);
+    MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
 
     void load(const QString &path);
+    QPlainTextEdit *getLog();
 
 public slots:
     void actionOpen();
@@ -46,7 +47,7 @@ private:
 
     FileInfoFrame *file_info_view_ {nullptr};
 
-    QTextEdit *log_;
+    QPlainTextEdit *log_;
     ImageViewer *image_viewer_ {nullptr};
     PlaintextViewer *plaintext_viewer_ {nullptr};
     P3DViewer *p3d_viewer_ {nullptr};

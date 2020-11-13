@@ -4,7 +4,7 @@
 #define ACE3X_FORMAT_READERS_PEG_HPP_
 
 #include <cstdint>
-#include <string>
+#include <filesystem>
 #include <vector>
 
 struct FileInfo;
@@ -14,7 +14,7 @@ class Peg {
 public:
     struct Image;
 
-    void read(const std::vector<std::uint8_t> &data);
+    void read(const std::vector<std::uint8_t> &data, const std::filesystem::path &path);
     const std::vector<FileInfo> &get_entries() const;
     Image getImage(std::uint16_t index) const;
 
