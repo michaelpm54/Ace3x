@@ -51,14 +51,13 @@ void ImageViewer::activate(const VfsEntry *item)
 
     assert(current_frame_index_ < peg_->entries.size());
 
-    ui_->pegLineEdit->setText(QString::fromStdString(peg_->name));
-    ui_->frameLineEdit->setText(QString::fromStdString(peg_->entries[current_frame_index_]->name));
-    ui_->numFrames->setText(QString::number(peg_->entries.size()));
-    ui_->frameIndex->setText(QString::number(current_frame_index_ + 1));
+    ui_->peg_name->setText(QString::fromStdString(peg_->name));
+    ui_->image_name->setText(QString::fromStdString(peg_->entries[current_frame_index_]->name));
+    ui_->image_index->setText(QString("%1/%2").arg(current_frame_index_ + 1).arg(peg_->entries.size()));
 
     images_ = ace3x::peg::get_images(peg_->data);
 
-    update();
+    updateImage();
 }
 
 void ImageViewer::keyPressEvent(QKeyEvent *event)
@@ -90,28 +89,26 @@ void ImageViewer::keyPressEvent(QKeyEvent *event)
 void ImageViewer::nextFrame()
 {
     current_frame_index_ = (current_frame_index_ + 1) % peg_->entries.size();
-    ui_->frameIndex->setText(QString::number(current_frame_index_ + 1));
-
-    update();
+    updateImage();
 }
 
 void ImageViewer::prevFrame()
 {
     current_frame_index_ = ((current_frame_index_ - 1) + peg_->entries.size()) % peg_->entries.size();
-    ui_->frameIndex->setText(QString::number(current_frame_index_ + 1));
-
-    update();
+    updateImage();
 }
 
-void ImageViewer::update()
+void ImageViewer::updateImage()
 {
-    const auto peg_image = images_[current_frame_index_];
+    const auto &peg_image = images_[current_frame_index_];
     const auto qt_image = QImage(reinterpret_cast<const unsigned char *>(peg_image.pixels.data()), peg_image.width, peg_image.height, QImage::Format_ARGB32);
 
     current_frame_name_ = QString::fromStdString(peg_image.filename);
 
-    ui_->frameLineEdit->setText(QString::fromStdString(peg_image.filename));
-    ui_->label->setPixmap(QPixmap::fromImage(qt_image));
+    ui_->image_name->setText(QString::fromStdString(peg_image.filename));
+    ui_->image_size->setText(QLocale::system().formattedDataSize(peg_->entries[current_frame_index_]->size, 2, nullptr));
+    ui_->image_index->setText(QString("%1/%2").arg(current_frame_index_ + 1).arg(peg_->entries.size()));
+    ui_->image_label->setPixmap(QPixmap::fromImage(qt_image));
 }
 
 bool ImageViewer::shouldBeEnabled(const VfsEntry *item) const
@@ -131,7 +128,7 @@ void ImageViewer::saveFrame()
     if (false == file.open(QIODevice::WriteOnly)) {
         spdlog::error("Image viewer: Failed to open file for writing: '{}'", fileName.toStdString());
     }
-    else if (!ui_->label->pixmap()->save(fileName, "PNG")) {
+    else if (!ui_->image_label->pixmap()->save(fileName, "PNG")) {
         spdlog::error("Image viewer: Failed to write data for '{}'", fileName.toStdString());
     }
     else {

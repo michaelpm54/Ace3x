@@ -28,7 +28,7 @@ protected:
     void keyPressEvent(QKeyEvent *event) override;
 
 private:
-    void update();
+    void updateImage();
 
 private slots:
     void nextFrame();
