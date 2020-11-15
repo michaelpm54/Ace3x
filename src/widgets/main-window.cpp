@@ -109,8 +109,13 @@ MainWindow::MainWindow(QWidget *parent)
         if (file.open(QIODevice::ReadOnly)) {
             QTextStream stream(&file);
             stream >> last_open_path_;
+            spdlog::info("Loaded settings.txt");
+            spdlog::info("Recently opened path: {}", last_open_path_.toStdString());
         }
         file.close();
+    }
+    else {
+        spdlog::info("settings.txt not found");
     }
 }
 
