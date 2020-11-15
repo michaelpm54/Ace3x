@@ -2,10 +2,7 @@
 
 #include "widgets/format-viewers/plaintext-viewer.hpp"
 
-#include <QByteArray>
-#include <memory>
-
-#include "tree-entries/tree-entry.hpp"
+#include "vfs/vfs-entry.hpp"
 
 namespace Ui {
 class PlaintextViewer;
@@ -20,14 +17,14 @@ PlaintextViewer::PlaintextViewer(QWidget *parent)
     resize(800, 600);
 }
 
-void PlaintextViewer::activate(const TreeEntry *item)
+void PlaintextViewer::activate(const VfsEntry *item)
 {
     show();
-    QString text = QString::fromLatin1(QByteArray(reinterpret_cast<const char *>(item->getData()), item->getSize()));
+    QString text = QString::fromLatin1(QByteArray(reinterpret_cast<const char *>(item->data), item->size));
     ui_->textBrowser->setText(text);
 }
 
-bool PlaintextViewer::shouldBeEnabled(const TreeEntry *) const
+bool PlaintextViewer::shouldBeEnabled(const VfsEntry *) const
 {
     return true;
 }

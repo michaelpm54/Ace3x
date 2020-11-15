@@ -5,9 +5,9 @@
 
 #include <cstdint>
 
-namespace peg_texture_decoder {
+namespace ace3x::peg {
 
-void decode(std::uint32_t *dst, const std::uint8_t *const src, std::uint16_t width, std::uint16_t height, std::uint16_t format);
+void decode(std::uint32_t *dst, const unsigned char *const src, std::uint16_t width, std::uint16_t height, std::uint16_t format);
 
 }
 

@@ -2,25 +2,26 @@
 
 #include "widgets/format-viewers/p3d-viewer.hpp"
 
+#include <spdlog/spdlog.h>
+
 #include <QDir>
 #include <array>
 #include <fstream>
 
-#include "tree-entries/tree-entry.hpp"
 #include "ui_p3d-viewer.h"
+#include "vfs/vfs-entry.hpp"
 
 void P3DViewer::writeVerticesToObj(const QString &fileName, const P3DHeader &header, const std::uint8_t *const vertex_data)
 {
     std::vector<P3DSubHeader> subHeaders(header.numSubHeaders);
     memcpy(subHeaders.data(), vertex_data + header.filenamesEnd, sizeof(P3DSubHeader) * header.numSubHeaders);
 
-    QString fnQt {QString("%1/%2.obj").arg(QDir::currentPath()).arg(fileName)};
-    const std::string fnStd {fnQt.toStdString()};
+    const auto filename = fmt::format("{}.obj", fileName.toStdString());
 
-    std::ofstream file(fnStd, std::ios::trunc);
+    std::ofstream file(filename, std::ios::trunc);
 
     if (!file.good()) {
-        std::clog << "[Error] Failed to open file '" << fnStd << "' for writing P3D vertices" << std::endl;
+        spdlog::error("P3D: Failed to open file '{}' for writing vertices", filename);
         return;
     }
 
@@ -65,7 +66,7 @@ void P3DViewer::writeVerticesToObj(const QString &fileName, const P3DHeader &hea
     file.flush();
     file.close();
 
-    std::clog << "[Info] Wrote P3D vertices to file '" << fnStd << "'" << std::endl;
+    spdlog::info("P3D: Wrote vertices to file '{}'", filename);
 }
 
 P3DViewer::P3DViewer(QWidget *parent)
@@ -87,10 +88,10 @@ P3DViewer::P3DViewer(QWidget *parent)
 
 void P3DViewer::onWriteObjClicked()
 {
-    writeVerticesToObj(QString::fromStdString(item_->getFilename()), p3d_header_, item_->getData());
+    //writeVerticesToObj(QString::fromStdString(item_->getFilename()), p3d_header_, item_->getData());
 }
 
-void P3DViewer::activate(const TreeEntry *item)
+void P3DViewer::activate(const VfsEntry *item)
 {
     ui_->objList->clear();
     ui_->imgList->clear();
@@ -101,7 +102,7 @@ void P3DViewer::activate(const TreeEntry *item)
 
     item_ = item;
 
-    auto ptr = item->getData();
+    auto ptr = item->data;
 
     P3DHeader header;
     memcpy(&header, ptr, sizeof(P3DHeader));
@@ -151,7 +152,7 @@ void P3DViewer::activate(const TreeEntry *item)
     ui_->navTable->sortItems(0, Qt::SortOrder::AscendingOrder);
 }
 
-bool P3DViewer::shouldBeEnabled(const TreeEntry *) const
+bool P3DViewer::shouldBeEnabled(const VfsEntry *) const
 {
     return (true);
 }

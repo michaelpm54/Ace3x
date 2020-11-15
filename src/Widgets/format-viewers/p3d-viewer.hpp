@@ -13,7 +13,6 @@ namespace Ui {
 class P3DViewer;
 }
 
-class TreeEntry;
 struct P3DHeader;
 
 class P3DViewer : public QWidget, public Viewer {
@@ -21,8 +20,8 @@ class P3DViewer : public QWidget, public Viewer {
 public:
     explicit P3DViewer(QWidget *parent = nullptr);
 
-    void activate(const TreeEntry *item) override;
-    bool shouldBeEnabled(const TreeEntry *item) const override;
+    void activate(const VfsEntry *item) override;
+    bool shouldBeEnabled(const VfsEntry *item) const override;
 
 private:
     struct P3DInternal {
@@ -38,7 +37,7 @@ private slots:
 
 private:
     std::unique_ptr<Ui::P3DViewer> ui_;
-    const TreeEntry *item_ {nullptr};
+    const VfsEntry *item_ {nullptr};
     P3DHeader p3d_header_;
 };
 

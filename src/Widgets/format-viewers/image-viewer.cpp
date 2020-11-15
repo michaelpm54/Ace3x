@@ -2,14 +2,16 @@
 
 #include "widgets/format-viewers/image-viewer.hpp"
 
-#include <QDebug>
+#include <spdlog/spdlog.h>
+
 #include <QDir>
 #include <QFileDialog>
 #include <QImage>
 #include <QKeyEvent>
 
-#include "tree-entries/peg-entry.hpp"
+#include "format-readers/peg.hpp"
 #include "ui_image-viewer.h"
+#include "vfs/vfs-entry.hpp"
 
 ImageViewer::ImageViewer(QWidget *parent)
     : QWidget(parent)
@@ -30,35 +32,31 @@ ImageViewer::ImageViewer(QWidget *parent)
     });
 }
 
-void ImageViewer::activate(const TreeEntry *item)
+void ImageViewer::activate(const VfsEntry *item)
 {
-    if (!item) {
-        return;
-    }
+    assert(item);
 
     show();
 
-    if (item->getExtension() == ".peg") {
-        peg_ = static_cast<const PegEntry *>(item);
+    if (item->extension == ".peg") {
         current_frame_index_ = 0;
+        peg_ = item;
     }
-    else if (item->getParent() && (item->getParent()->getExtension() == ".peg")) {
-        peg_ = static_cast<const PegEntry *>(item->getParent());
-        current_frame_index_ = item->getIndex();
-    }
-
-    if (!peg_) {
-        throw std::runtime_error("PEG is null");
+    else if (item->parent && (item->parent->extension == ".peg")) {
+        current_frame_index_ = item->index;
+        peg_ = item->parent;
     }
 
-    if (current_frame_index_ >= peg_->get_num_children()) {
-        throw std::runtime_error("PEG doesn't have frame for index: " + std::to_string(current_frame_index_));
-    }
+    assert(peg_);
 
-    ui_->pegLineEdit->setText(QString::fromStdString(peg_->getFilename()));
-    ui_->frameLineEdit->setText(QString::fromStdString(peg_->getChild(current_frame_index_)->getFilename()));
-    ui_->numFrames->setText(QString::number(peg_->get_num_children()));
+    assert(current_frame_index_ < peg_->entries.size());
+
+    ui_->pegLineEdit->setText(QString::fromStdString(peg_->name));
+    ui_->frameLineEdit->setText(QString::fromStdString(peg_->entries[current_frame_index_]->name));
+    ui_->numFrames->setText(QString::number(peg_->entries.size()));
     ui_->frameIndex->setText(QString::number(current_frame_index_ + 1));
+
+    images_ = ace3x::peg::get_images(peg_->data);
 
     update();
 }
@@ -91,22 +89,24 @@ void ImageViewer::keyPressEvent(QKeyEvent *event)
 
 void ImageViewer::nextFrame()
 {
-    current_frame_index_ = (current_frame_index_ + 1) % peg_->get_num_children();
+    current_frame_index_ = (current_frame_index_ + 1) % peg_->entries.size();
     ui_->frameIndex->setText(QString::number(current_frame_index_ + 1));
+
     update();
 }
 
 void ImageViewer::prevFrame()
 {
-    current_frame_index_ = ((current_frame_index_ - 1) + peg_->get_num_children()) % peg_->get_num_children();
+    current_frame_index_ = ((current_frame_index_ - 1) + peg_->entries.size()) % peg_->entries.size();
     ui_->frameIndex->setText(QString::number(current_frame_index_ + 1));
+
     update();
 }
 
 void ImageViewer::update()
 {
-    const auto peg_image = peg_->getImage(current_frame_index_);
-    const auto qt_image = QImage(reinterpret_cast<const std::uint8_t *>(peg_image.pixels.data()), peg_image.width, peg_image.height, QImage::Format_ARGB32);
+    const auto peg_image = images_[current_frame_index_];
+    const auto qt_image = QImage(reinterpret_cast<const unsigned char *>(peg_image.pixels.data()), peg_image.width, peg_image.height, QImage::Format_ARGB32);
 
     current_frame_name_ = QString::fromStdString(peg_image.filename);
 
@@ -114,32 +114,27 @@ void ImageViewer::update()
     ui_->label->setPixmap(QPixmap::fromImage(qt_image));
 }
 
-bool ImageViewer::shouldBeEnabled(const TreeEntry *item) const
+bool ImageViewer::shouldBeEnabled(const VfsEntry *item) const
 {
-    if (item->getExtension() == ".peg") {
-        return (item->get_num_children() != 0);
-    }
-
-    return (true);
+    return item->extension == ".peg" || (item->parent && item->parent->extension == ".peg");
 }
 
 void ImageViewer::saveFrame()
 {
     const auto fileName = QFileDialog::getSaveFileName(this, "Save File", QDir::currentPath() + '/' + current_frame_name_ + ".png");
     if (fileName.isEmpty()) {
-        std::clog << "[Info] Cancelled save" << std::endl;
         return;
     }
 
     QFile file(fileName);
 
     if (false == file.open(QIODevice::WriteOnly)) {
-        std::clog << "[Error] Failed to open file for writing: " << fileName.toStdString() << std::endl;
+        spdlog::error("Image viewer: Failed to open file for writing: '{}'", fileName.toStdString());
     }
     else if (!ui_->label->pixmap()->save(fileName, "PNG")) {
-        std::clog << "[Error] Failed to write data for " << fileName.toStdString() << std::endl;
+        spdlog::error("Image viewer: Failed to write data for '{}'", fileName.toStdString());
     }
     else {
-        std::clog << "[Info] Wrote file " << fileName.toStdString() << std::endl;
+        spdlog::info("Wrote file '{}'", fileName.toStdString());
     }
 }

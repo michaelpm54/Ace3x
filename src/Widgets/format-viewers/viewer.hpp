@@ -3,13 +3,13 @@
 #ifndef ACE3X_WIDGETS_FORMAT_VIEWERS_VIEWER_HPP_
 #define ACE3X_WIDGETS_FORMAT_VIEWERS_VIEWER_HPP_
 
-class TreeEntry;
+struct VfsEntry;
 
 class Viewer {
 public:
     virtual ~Viewer() = default;
-    virtual void activate(const TreeEntry *item) = 0;
-    virtual bool shouldBeEnabled(const TreeEntry *item) const = 0;
+    virtual void activate(const VfsEntry *item) = 0;
+    virtual bool shouldBeEnabled(const VfsEntry *item) const = 0;
 };
 
 #endif    // ACE3X_WIDGETS_FORMAT_VIEWERS_VIEWER_HPP_

@@ -18,6 +18,8 @@ class PlaintextViewer;
 class P3DViewer;
 class VIMViewer;
 class InfoPanel;
+class Vfs;
+struct VfsEntry;
 
 class MainWindow : public QMainWindow {
     Q_OBJECT
@@ -41,6 +43,8 @@ private slots:
     void updateSelection(const QItemSelection &selected, const QItemSelection &deselected);
 
 private:
+    std::unique_ptr<Vfs> vfs_;
+
     QTreeView *tree_view_ {nullptr};
     TreeModel *tree_model_ {nullptr};
     TreeEntrySortProxy *tree_sort_proxy_ {nullptr};

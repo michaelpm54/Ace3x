@@ -1,7 +1,7 @@
 /* SPDX-License-Identifier: GPLv3-or-later */
 
-#ifndef ACE3X_FORMATS_VIF_MESH_HPP_
-#define ACE3X_FORMATS_VIF_MESH_HPP_
+#ifndef ACE3X_FORMATS_VIM_HPP_
+#define ACE3X_FORMATS_VIM_HPP_
 
 #include <cstdint>
 
@@ -56,4 +56,4 @@ struct VifMeshSub0 {
     uint32_t sub2_data {0};    // VifMeshSub2
 };
 
-#endif    // ACE3X_FORMATS_VIF_MESH_HPP_
+#endif    // ACE3X_FORMATS_VIM_HPP_

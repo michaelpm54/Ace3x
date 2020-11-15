@@ -2,12 +2,11 @@
 
 #include "widgets/format-viewers/vim-viewer.hpp"
 
-#include <QByteArray>
-#include <QDebug>
+#include <spdlog/spdlog.h>
 
-#include "formats/vif-mesh.hpp"
-#include "tree-entries/tree-entry.hpp"
+#include "formats/vim.hpp"
 #include "ui_vim-viewer.h"
+#include "vfs/vfs-entry.hpp"
 
 float ieee_float(uint32_t f)
 {
@@ -50,7 +49,7 @@ VIMViewer::VIMViewer(QWidget *parent)
     ui_->sub5List->setEditTriggers(QAbstractItemView::EditTrigger::NoEditTriggers);
 }
 
-void VIMViewer::activate(const TreeEntry *item)
+void VIMViewer::activate(const VfsEntry *item)
 {
     item_ = item;
 
@@ -72,11 +71,16 @@ void VIMViewer::activate(const TreeEntry *item)
 
     show();
 
-    vim_.read(reinterpret_cast<const char *>(item->getData()));
+    vim_.read(item->data);
 
     ui_->texCount->setText(QString::number(vim_.numTextures_0x1c_));
     for (std::uint32_t i = 0u; i < vim_.numTextures_0x1c_; i++)
         ui_->texList->addItem(vim_.textureNames_0x20_[i]);
+
+    if (vim_.sub0_count_ > 10000) {
+        spdlog::warn("VIM: Something went wrong");
+        return;
+    }
 
     ui_->sub0Count->setText(QString("Sub0 # %1").arg(vim_.sub0_count_));
     ui_->sub0List->setRowCount(vim_.sub0_count_);
@@ -95,7 +99,7 @@ void VIMViewer::activate(const TreeEntry *item)
 
     for (std::uint32_t row = 0u; row < vim_.vifBone_count_; row++) {
         std::uint32_t offset = vim_.vifBone_data_ + sizeof(VifBone) * row;
-        auto *ptr = &item_->getData()[offset];
+        auto *ptr = &item_->data[offset];
 
         VifBone vifBone;
         std::memcpy(&vifBone, ptr, sizeof(VifBone));
@@ -110,7 +114,7 @@ void VIMViewer::activate(const TreeEntry *item)
         ui_->vifBoneList->setItem(row, 8, floatItem(vifBone.c));
 
         QString name;
-        ptr = item_->getData() + vifBone.boneNameOff;
+        ptr = item_->data + vifBone.boneNameOff;
         while (*ptr != 0x0)
             name += *ptr++;
 
@@ -131,7 +135,7 @@ void VIMViewer::activate(const TreeEntry *item)
         std::uint32_t offset = vim_.sub4_data_ + (sizeof(VifMeshSub4) * row);
 
         VifMeshSub4 sub4;
-        std::memcpy(&sub4, &item_->getData()[offset], sizeof(VifMeshSub4));
+        std::memcpy(&sub4, &item_->data[offset], sizeof(VifMeshSub4));
 
         ui_->sub4List->setItem(row, 0, uintItem(offset, 16));
 
@@ -159,7 +163,7 @@ void VIMViewer::activate(const TreeEntry *item)
         ui_->sub5List->setItem(row, 0, new QTableWidgetItem(QString::number(offset, 16)));
 
         VifMeshSub5 sub5;
-        std::memcpy(&sub5, &item_->getData()[offset], sizeof(VifMeshSub5));
+        std::memcpy(&sub5, &item_->data[offset], sizeof(VifMeshSub5));
 
         for (int column = 0; column < 8; column++) {
             std::uint32_t *off = reinterpret_cast<uint32_t *>(&sub5) + column;
@@ -179,13 +183,14 @@ void VIMViewer::activate(const TreeEntry *item)
     }
 }
 
-bool VIMViewer::shouldBeEnabled(const TreeEntry *) const
+bool VIMViewer::shouldBeEnabled(const VfsEntry *) const
 {
     return true;
 }
 
 void VIMViewer::sub0Changed()
 {
+    /*
     VifMeshSub0 sub0;
     std::memcpy(&sub0, &item_->getData()[vim_.sub0_data_ + (sizeof(VifMeshSub0) * ui_->sub0List->currentRow())], sizeof(VifMeshSub0));
 
@@ -233,4 +238,5 @@ void VIMViewer::sub0Changed()
         ui_->sub2List->setItem(row, 2, uintItem(sub2.field_0x4, 16));
         ui_->sub2List->setItem(row, 3, uintItem(sub2.field_0x6, 16));
     }
+    */
 }

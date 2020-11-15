@@ -4,7 +4,6 @@
 
 #include <spdlog/spdlog.h>
 
-#include <QDebug>
 #include <QDir>
 #include <QFileDialog>
 #include <QFrame>
@@ -14,10 +13,12 @@
 #include <QPlainTextEdit>
 #include <QSplitter>
 #include <QTextEdit>
+#include <QTextStream>
 #include <QTreeView>
 
-#include "tree-entries/tree-entry-sort-proxy.hpp"
-#include "tree-model.hpp"
+#include "tree-model/sort-proxy.hpp"
+#include "tree-model/tree-model.hpp"
+#include "vfs/mmap-vfs.hpp"
 #include "widgets/file-info-frame.hpp"
 #include "widgets/format-viewers/image-viewer.hpp"
 #include "widgets/format-viewers/p3d-viewer.hpp"
@@ -26,9 +27,10 @@
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
+    , vfs_(std::make_unique<MmapVfs>())
     , log_(new QPlainTextEdit())
     , tree_view_(new QTreeView())
-    , tree_model_(new TreeModel())
+    , tree_model_(new TreeModel(vfs_.get()))
     , tree_sort_proxy_(new TreeEntrySortProxy())
     , file_info_view_(new FileInfoFrame())
     , image_viewer_(new ImageViewer())
@@ -49,9 +51,10 @@ MainWindow::MainWindow(QWidget *parent)
     log_->setReadOnly(true);
 
     QFont monospace_font;
-    monospace_font.setPointSize(12);
+    monospace_font.setPointSize(10);
+    monospace_font.setBold(false);
     monospace_font.setStyleHint(QFont::Monospace);
-    monospace_font.setFamily("Consolas");
+    monospace_font.setFamily("System,Fixedsys Standard,Consolas");
     log_->document()->setDefaultFont(monospace_font);
 
     setCentralWidget(centralWidget);
@@ -88,6 +91,8 @@ MainWindow::MainWindow(QWidget *parent)
         tree_view_->resizeColumnToContents(0);
     });
 
+    tree_view_->setUniformRowHeights(true);
+
     QSizePolicy rightPolicy(QSizePolicy::Preferred, QSizePolicy::Preferred);
     rightPolicy.setHorizontalStretch(1);
     file_info_view_->setSizePolicy(rightPolicy);
@@ -99,6 +104,15 @@ MainWindow::MainWindow(QWidget *parent)
     file_info_view_->addViewer(".arr", plaintext_viewer_);
     file_info_view_->addViewer(".p3d", p3d_viewer_);
     file_info_view_->addViewer(".vim", vim_viewer_);
+
+    if (std::filesystem::exists("settings.txt")) {
+        QFile file("settings.txt");
+        if (file.open(QIODevice::ReadOnly)) {
+            QTextStream stream(&file);
+            stream >> last_open_path_;
+        }
+        file.close();
+    }
 }
 
 MainWindow::~MainWindow()
@@ -106,6 +120,9 @@ MainWindow::~MainWindow()
     delete tree_model_;
     delete tree_sort_proxy_;
     delete image_viewer_;
+    delete p3d_viewer_;
+    delete vim_viewer_;
+    delete plaintext_viewer_;
 }
 
 QPlainTextEdit *MainWindow::getLog()
@@ -134,27 +151,33 @@ void MainWindow::updateSelection(const QItemSelection &selected, const QItemSele
         return;
     }
 
-    TreeEntry *entry = tree_model_->itemFromIndex(tree_sort_proxy_->mapToSource(selected.indexes().first()));
+    auto *entry = tree_model_->itemFromIndex(tree_sort_proxy_->mapToSource(selected.indexes().first()));
 
     file_info_view_->setItem(entry);
 }
 
 void MainWindow::actionOpen()
 {
-    actionClose();
-
     load(QFileDialog::getOpenFileName(this, "Open VPP", last_open_path_, "Archive File (*.VPP)"));
 }
 
 void MainWindow::actionClose()
 {
-    //log_->clear();
     tree_model_->clear();
     file_info_view_->clear();
 }
 
 void MainWindow::actionQuit()
 {
+    QFile file("settings.txt");
+    if (file.open(QIODevice::ReadWrite)) {
+        QTextStream stream(&file);
+        stream << last_open_path_ << endl;
+    }
+    file.close();
+
+    spdlog::debug("Shutting down");
+
     QApplication::quit();
 }
 
@@ -163,9 +186,11 @@ void MainWindow::load(const QString &path)
     if (path.isEmpty())
         return;
 
+    actionClose();
+
     last_open_path_ = QFileInfo(path).dir().absolutePath();
 
-    int num_loaded = tree_model_->load(path);
+    int num_loaded = tree_model_->load(path, vfs_.get());
 
     // If there is only one top-level archive, expand it.
     // Don't do this for multiple top-level archives because it's messy.

@@ -10,7 +10,7 @@ class QPushButton;
 class QLineEdit;
 
 class Viewer;
-class TreeEntry;
+struct VfsEntry;
 
 class FileInfoFrame : public QFrame {
     Q_OBJECT
@@ -21,7 +21,10 @@ public:
     void clear();
 
 public slots:
-    void setItem(const TreeEntry *const entry);
+    void setItem(VfsEntry *item);
+
+signals:
+    void viewClicked(VfsEntry *entry);
 
 private slots:
     void saveButtonClicked();
@@ -37,7 +40,7 @@ private:
 
     QMap<QString, Viewer *> viewers_;
 
-    const TreeEntry *item_ {nullptr};
+    VfsEntry *item_ {nullptr};
 };
 
 #endif    // ACE3X_WIDGETS_FILE_INFO_FRAME_HPP_

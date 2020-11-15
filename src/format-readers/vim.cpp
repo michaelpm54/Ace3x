@@ -1,11 +1,14 @@
 /* SPDX-License-Identifier: GPLv3-or-later */
 
-#include "format-readers/vif-mesh.hpp"
+#include "format-readers/vim.hpp"
 
+#include <spdlog/spdlog.h>
+
+#include <cassert>
 #include <cstdio>
 #include <cstring>
 
-#include "formats/vif-mesh.hpp"
+#include "formats/vim.hpp"
 
 char **allocate_filenames(const char *buffer, int count, int &totalSize);
 
@@ -18,8 +21,10 @@ VifMesh::~VifMesh()
     }
 }
 
-void VifMesh::read(const char *buffer)
+void VifMesh::read(const unsigned char *buffer)
 {
+    assert(buffer);
+
     if (textureNames_0x20_) {
         for (auto i = 0u; i < numTextures_0x1c_; i++)
             delete[] textureNames_0x20_[i];
@@ -28,7 +33,7 @@ void VifMesh::read(const char *buffer)
     //        if (vim.rtTextureHandles_0x24)
     //                delete[] vim.rtTextureHandles_0x24;
 
-    puts("==== INIT::HEADER ====");
+    spdlog::debug("==== VIM::HEADER ====");
 
     // Copy first 0x20 bytes, stop before filenames
     memcpy(&version_0x0_, buffer, 4);
@@ -40,34 +45,32 @@ void VifMesh::read(const char *buffer)
     memcpy(&field_0x18_, buffer + 24, 4);
     memcpy(&numTextures_0x1c_, buffer + 28, 4);
 
-    printf("Version: %04X\n", version_0x0_);
-    printf("Flags: %04X\n", flags_0x4_);
-    printf("????: %04X\n", field_0x8_);
-    printf("????: %04X\n", field_0xc_);
-    printf("????: %04X\n", field_0x10_);
-    printf("????: %04X\n", field_0x14_);
-    printf("????: %04X\n", field_0x18_);
+    spdlog::debug("VIM: Version: %04X", version_0x0_);
+    spdlog::debug("VIM: Flags: %04X", flags_0x4_);
 
-    puts("==== INIT::FILENAMES ====");
-    printf("Copying filenames...\n");
+    assert(version_0x0_ == 0xB);
+
+    spdlog::debug("==== VIM::FILENAMES ====");
+    spdlog::debug("VIM: Copying filenames...");
+
     int totalFilenamesSize = 0;
-    textureNames_0x20_ = allocate_filenames(buffer, numTextures_0x1c_, totalFilenamesSize);
+    textureNames_0x20_ = allocate_filenames(reinterpret_cast<const char *>(buffer), numTextures_0x1c_, totalFilenamesSize);
 
-    fprintf(stdout, "Copied %d filenames of total size 0x%02X (%d)\n", numTextures_0x1c_, totalFilenamesSize, totalFilenamesSize);
+    spdlog::debug("VIM: Copied {} filenames of total size {:02x} ({})", numTextures_0x1c_, totalFilenamesSize, totalFilenamesSize);
 
-    puts("==== INIT::DATA ====");
+    spdlog::debug("==== VIM::DATA ====");
 
-    printf("Allocating space for texture %d handles...\n", numTextures_0x1c_);
+    spdlog::debug("Allocating space for texture {} handles...", numTextures_0x1c_);
     rtTextureHandles_0x24_ = new uint32_t[numTextures_0x1c_];
 
     int filenamesStart = 0x20;
 
     // Seek to 0xFF
-    const char *ptr = buffer + totalFilenamesSize + filenamesStart;
+    auto *ptr = buffer + totalFilenamesSize + filenamesStart;
     while (((*ptr) & 0xFF) != 0xFF)
         ptr++;
 
-    printf("Buffer %p data %p, offset from start = %td\n", buffer, ptr, reinterpret_cast<intptr_t>(ptr) - reinterpret_cast<intptr_t>(buffer));
+    spdlog::debug("Buffer {:p} data {:p}, offset from start = {:td}", (void *)buffer, (void *)ptr, reinterpret_cast<intptr_t>(ptr) - reinterpret_cast<intptr_t>(buffer));
 
     // Seek past 0xFF's
     while (((*ptr) & 0xFF) == 0xFF)
@@ -98,20 +101,12 @@ char **allocate_filenames(const char *buffer, int count, int &totalSize)
     const char *ptr = &buffer[0x20];
     char c = *ptr++;
 
-    /*
-                      a
-                abdefg0000
-        */
     while (c != 0x0) {
         c = *ptr++;
         filenameSize++;
     }
     filenameSize += 2;    // Add the null byte
 
-    /*
-                   a  b
-                abcdefg0000abc
-        */
     paddedSize = filenameSize - 1;
 
     while ((*ptr & 0xFF) == 0x0) {
@@ -119,15 +114,15 @@ char **allocate_filenames(const char *buffer, int count, int &totalSize)
         paddedSize++;
     }
 
-    printf("Filename trimmed size: %d\n", filenameSize);
-    printf("Filename padded size: %d\n", paddedSize);
+    spdlog::debug("VIM: Filename trimmed size: {}", filenameSize);
+    spdlog::debug("VIM: Filename padded size: {}", paddedSize);
 
     char **names = new char *[count];
     int offset = 0x20;
     for (int i = 0; i < count; i++) {
         names[i] = new char[filenameSize];
         memcpy(names[i], &buffer[offset], filenameSize);
-        printf("Filename %d offset 0x%02X: %s\n", i + 1, offset, names[i]);
+        spdlog::debug("VIM: Filename {} offset {:02x}: {}", i + 1, offset, names[i]);
         offset += paddedSize;
     }
 

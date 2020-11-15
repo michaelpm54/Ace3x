@@ -1,33 +1,23 @@
-/* SPDX-License-Identifier: GPLv3-or-later */
-
 #ifndef ACE3X_FORMAT_READERS_PEG_HPP_
 #define ACE3X_FORMAT_READERS_PEG_HPP_
 
-#include <cstdint>
-#include <filesystem>
+#include <string>
 #include <vector>
 
-struct FileInfo;
-struct PegFrame;
+#include "format-readers/archive-entry.hpp"
 
-class Peg {
-public:
-    struct Image;
+namespace ace3x::peg {
 
-    void read(const FileInfo &info);
-    const std::vector<FileInfo> &get_entries() const;
-    Image getImage(std::uint16_t index) const;
-
-private:
-    std::vector<FileInfo> entries_;
-    std::vector<PegFrame> frames_;
-};
-
-struct Peg::Image {
+struct Image {
     std::string filename;
     std::vector<std::uint32_t> pixels;
     int width;
     int height;
 };
 
-#endif    // ACE3X_FORMAT_READERS_PEG_HPP
+std::vector<ArchiveEntry> read_entries(const unsigned char *const data, const std::string &peg_name);
+std::vector<Image> get_images(const unsigned char *const data);
+
+}    // namespace ace3x::peg
+
+#endif    // ACE3X_FORMAT_READERS_PEG_HPP_

@@ -16,8 +16,8 @@ class PlaintextViewer : public QWidget, public Viewer {
 public:
     explicit PlaintextViewer(QWidget *parent = nullptr);
 
-    void activate(const TreeEntry *item) override;
-    bool shouldBeEnabled(const TreeEntry *item) const override;
+    void activate(const VfsEntry *item) override;
+    bool shouldBeEnabled(const VfsEntry *item) const override;
 
 private:
     std::unique_ptr<Ui::PlaintextViewer> ui_;

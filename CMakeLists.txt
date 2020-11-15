@@ -29,24 +29,29 @@ find_package(Qt5 5.13 COMPONENTS Widgets REQUIRED)
 
 set(ACE3X_SOURCES
     src/main.cpp
-    src/fs.cpp
-    src/tree-model.cpp
-	src/mio.hpp
+
+	src/vfs/mio.hpp
+	src/vfs/vfs.hpp
+	src/vfs/vfs-entry.hpp
+	src/vfs/mmap-vfs.hpp
+	src/vfs/mmap-vfs.cpp
 	
-	# GUI: Types of tree entry.
-	# The only reason to make a new type is if
-	# it needs to add more children to itself from data.
-	src/tree-entries/tree-entry-sort-proxy.cpp
-	src/tree-entries/tree-entry.cpp
-	src/tree-entries/peg-entry.cpp
-	src/tree-entries/vpp-entry.cpp
+	src/tree-model/tree-model.hpp
+	src/tree-model/tree-model.cpp
+	src/tree-model/sort-proxy.hpp
+	src/tree-model/sort-proxy.cpp
 	
-	src/format-readers/validation-error.cpp
-	src/format-readers/vpp-v1.cpp
-	src/format-readers/vpp-v2.cpp
-	src/format-readers/vif-mesh.cpp
+	src/format-readers/vim.hpp
+	src/format-readers/vim.cpp
+	src/format-readers/vpp.hpp
+	src/format-readers/vpp.cpp
+	src/format-readers/peg.hpp
 	src/format-readers/peg.cpp
+	src/format-readers/peg-texture-decoder.hpp
     src/format-readers/peg-texture-decoder.cpp
+	src/format-readers/validation-error.hpp
+	src/format-readers/validation-error.cpp
+	src/format-readers/archive-entry.hpp
 
 	# Custom Qt widgets
 	src/widgets/main-window.cpp

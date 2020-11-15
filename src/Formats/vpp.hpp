@@ -1,7 +1,7 @@
 /* SPDX-License-Identifier: GPLv3-or-later */
 
-#ifndef ACE3X_FORMATS_VPP_V2_HEADER_HPP_
-#define ACE3X_FORMATS_VPP_V2_HEADER_HPP_
+#ifndef ACE3X_FORMATS_VPP_HPP_
+#define ACE3X_FORMATS_VPP_HPP_
 
 #include <cstdint>
 
@@ -23,7 +23,7 @@ struct VppV2Header {
 
 struct VppV2DirectoryEntry {
     std::uint32_t filenameEnd;
-    std::uint32_t rtOffset;
+    std::uint32_t offset;
     std::uint32_t nameHash;
     std::uint32_t uncompressedSize;
     std::uint32_t compressedSize;
@@ -31,4 +31,4 @@ struct VppV2DirectoryEntry {
     std::uint32_t unk2;
 };
 
-#endif    // ACE3X_FORMATS_VPP_V2_HEADER_HPP_
+#endif    // ACE3X_FORMATS_VPP_HPP_

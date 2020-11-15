@@ -8,7 +8,7 @@
 #include <QWidget>
 #include <memory>
 
-#include "format-readers/vif-mesh.hpp"
+#include "format-readers/vim.hpp"
 #include "widgets/format-viewers/viewer.hpp"
 
 namespace Ui {
@@ -20,13 +20,13 @@ class VIMViewer : public QWidget, public Viewer {
 public:
     explicit VIMViewer(QWidget *parent = nullptr);
 
-    void activate(const TreeEntry *item) override;
-    bool shouldBeEnabled(const TreeEntry *item) const override;
+    void activate(const VfsEntry *item) override;
+    bool shouldBeEnabled(const VfsEntry *item) const override;
 
 private:
     std::unique_ptr<Ui::VIMViewer> ui_;
     VifMesh vim_;
-    const TreeEntry *item_;
+    const VfsEntry *item_;
 
 private slots:
     void sub0Changed();

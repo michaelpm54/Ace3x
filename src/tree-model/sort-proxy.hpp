@@ -1,7 +1,7 @@
 /* SPDX-License-Identifier: GPLv3-or-later */
 
-#ifndef ACE3X_TREE_ENTRIES_TREE_ENTRY_SORT_PROXY_HPP_
-#define ACE3X_TREE_ENTRIES_TREE_ENTRY_SORT_PROXY_HPP_
+#ifndef ACE3X_TREE_MODEL_SORT_PROXY_HPP_
+#define ACE3X_TREE_MODEL_SORT_PROXY_HPP_
 
 #include <QSortFilterProxyModel>
 
@@ -12,4 +12,4 @@ public:
     bool lessThan(const QModelIndex &left, const QModelIndex &right) const override;
 };
 
-#endif    // ACE3X_TREE_ENTRIES_TREE_ENTRY_SORT_PROXY_HPP_
+#endif    // ACE3X_TREE_MODEL_SORT_PROXY_HPP_

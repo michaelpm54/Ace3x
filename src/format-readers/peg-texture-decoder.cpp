@@ -1,27 +1,26 @@
 /* SPDX-License-Identifier: GPLv3-or-later */
 
-#include <QDebug>
-#include <iostream>
-#include <stdexcept>
+#include <cstdint>
+#include <cstring>
 
 enum FrameFormat {
-    RGBA5551_Indexed = 0x104,    // gggrrrrr abbbbbgg
-    UNK0 = 0x105,
-    RGBA32_Indexed = 0x204,
+    PixelFormatRgba5551Indexed = 0x104,    // gggrrrrr abbbbbgg
+    PixelFormat0x105 = 0x105,
+    PixelFormatRgba32Indexed = 0x204,
 };
 
-int MungePaletteIndex(int value);
-uint32_t FromArgb(uint8_t a, uint8_t r, uint8_t g, uint8_t b);
+int munge_palette_index(int value);
+std::uint32_t components_to_argb(std::uint8_t a, std::uint8_t r, std::uint8_t g, std::uint8_t b);
 
-void decode_RGBA5551_Indexed(std::uint32_t *dst, const std::uint8_t *const src, std::uint16_t width, std::uint16_t height)
+void decode_rgba5551_indexed(std::uint32_t *dst, const unsigned char *const src, std::uint16_t width, std::uint16_t height)
 {
-    static constexpr auto PALETTE_ENTRY_SIZE = 2;
-    static constexpr auto NUM_PALETTE_ENTRIES = 256;
-    static constexpr auto PALETTE_DATA_SIZE = NUM_PALETTE_ENTRIES * PALETTE_ENTRY_SIZE;
+    static constexpr auto kPaletteEntrySize = 2;
+    static constexpr auto kNumPaletteEntries = 256;
+    static constexpr auto kPaletteDataSize = kNumPaletteEntries * kPaletteEntrySize;
 
-    std::uint32_t palette[NUM_PALETTE_ENTRIES] = {0};
+    std::uint32_t palette[kNumPaletteEntries] = {0};
 
-    for (auto i = 0u, o = 0u; i < NUM_PALETTE_ENTRIES; i++, o += 2u) {
+    for (auto i = 0u, o = 0u; i < kNumPaletteEntries; i++, o += 2u) {
         const auto b0 = src[o + 0u];
         const auto b1 = src[o + 1u];
 
@@ -30,46 +29,46 @@ void decode_RGBA5551_Indexed(std::uint32_t *dst, const std::uint8_t *const src, 
         const auto b = (b1 & 0x7C) << 1u;
         const auto a = (b1 & 0x80) != 0 ? 0xFF : 0x00;
 
-        palette[MungePaletteIndex(i)] = FromArgb(a, r, g, b);
+        palette[munge_palette_index(i)] = components_to_argb(a, r, g, b);
     }
 
     const std::uint32_t size = width * height;
     for (auto i = 0u; i < size; i++)
-        dst[i] = palette[src[PALETTE_DATA_SIZE + i]];
+        dst[i] = palette[src[kPaletteDataSize + i]];
 }
 
-void decode_RGBA32_Indexed(std::uint32_t *dst, const std::uint8_t *const src, std::uint16_t width, std::uint16_t height)
+void decode_rgba32_indexed(std::uint32_t *dst, const unsigned char *const src, std::uint16_t width, std::uint16_t height)
 {
-    static constexpr auto PALETTE_ENTRY_SIZE = 4;
-    static constexpr auto NUM_PALETTE_ENTRIES = 256;
-    static constexpr auto PALETTE_DATA_SIZE = NUM_PALETTE_ENTRIES * PALETTE_ENTRY_SIZE;
+    static constexpr auto kPaletteEntrySize = 4;
+    static constexpr auto kNumPaletteEntries = 256;
+    static constexpr auto kPaletteDataSize = kNumPaletteEntries * kPaletteEntrySize;
 
-    std::uint32_t palette[NUM_PALETTE_ENTRIES] = {0};
+    std::uint32_t palette[kNumPaletteEntries] = {0};
 
-    memcpy(palette, src, PALETTE_DATA_SIZE);
+    std::memcpy(palette, src, kPaletteDataSize);
 
     const std::uint32_t size = width * height;
     for (auto i = 0u; i < size; i++)
-        dst[i] = palette[src[PALETTE_DATA_SIZE + i]] | 0xFF000000;
+        dst[i] = palette[src[kPaletteDataSize + i]] | 0xFF000000;
 }
 
-namespace peg_texture_decoder {
+namespace ace3x::peg {
 
-void decode(std::uint32_t *dst, const std::uint8_t *const src, std::uint16_t width, std::uint16_t height, std::uint16_t format)
+void decode(std::uint32_t *dst, const unsigned char *const src, std::uint16_t width, std::uint16_t height, std::uint16_t format)
 {
     switch (format) {
-        case RGBA5551_Indexed:
-            decode_RGBA5551_Indexed(dst, src, width, height);
+        case PixelFormatRgba5551Indexed:
+            decode_rgba5551_indexed(dst, src, width, height);
             break;
-        case RGBA32_Indexed:
-            decode_RGBA32_Indexed(dst, src, width, height);
+        case PixelFormatRgba32Indexed:
+            decode_rgba32_indexed(dst, src, width, height);
             break;
         default:
             break;
     }
 }
 
-}    // namespace peg_texture_decoder
+}    // namespace ace3x::peg
 
 /* The following notice applies to the MungePaletteIndex function directly below,
     as well as the code for decoding format 0x401 (with some variable naming modifications). */
@@ -94,14 +93,15 @@ void decode(std::uint32_t *dst, const std::uint8_t *const src, std::uint16_t wid
  * 3. This notice may not be removed or altered from any source
  *    distribution.
  */
-int MungePaletteIndex(int value)
+int munge_palette_index(int value)
 {
     // zzzabzzz -> zzzbazzz
     // I'd really like to know WTF.
     return ((value >> 1) & 0x08) | ((value << 1) & 0x10) | (value & 0xE7);
 }
 
-uint32_t FromArgb(uint8_t a, uint8_t r, uint8_t g, uint8_t b)
+std::uint32_t components_to_argb(std::uint8_t a, std::uint8_t r, std::uint8_t g, std::uint8_t b)
 {
-    return (uint32_t(a) << 24) | (uint32_t(r) << 16) | (uint32_t(g) << 8) | b;
+    /* Automatic integer promotion happens. No need to explicitly cast. */
+    return (a << 24) | (r << 16) | (g << 8) | b;
 }

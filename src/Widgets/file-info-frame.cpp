@@ -2,6 +2,8 @@
 
 #include "widgets/file-info-frame.hpp"
 
+#include <spdlog/spdlog.h>
+
 #include <QFile>
 #include <QFileDialog>
 #include <QFormLayout>
@@ -11,7 +13,7 @@
 #include <QMessageBox>
 #include <QPushButton>
 
-#include "tree-entries/tree-entry.hpp"
+#include "vfs/vfs-entry.hpp"
 #include "widgets/format-viewers/viewer.hpp"
 
 FileInfoFrame::FileInfoFrame(QWidget *parent)
@@ -42,17 +44,17 @@ FileInfoFrame::FileInfoFrame(QWidget *parent)
     connect(view_, &QPushButton::released, this, &FileInfoFrame::viewButtonClicked);
 }
 
-void FileInfoFrame::setItem(const TreeEntry *const item)
+void FileInfoFrame::setItem(VfsEntry *item)
 {
     save_->show();
 
     item_ = item;
 
-    auto ext = QString::fromStdString(item->getExtension());
+    auto ext = QString::fromStdString(item->extension);
 
-    filename_->setText(QString::fromStdString(item->getFilename()));
-    filename_->setToolTip(QString::fromStdString(item->getPath()));
-    size_->setText(QLocale::system().formattedDataSize(item->getSize(), 2, nullptr));
+    filename_->setText(QString::fromStdString(item->name));
+    filename_->setToolTip(QString::fromStdString(item->relative_path));
+    size_->setText(QLocale::system().formattedDataSize(item->size, 2, nullptr));
     type_->setText(ext);
 
     if (viewers_.count(ext)) {
@@ -75,29 +77,30 @@ void FileInfoFrame::addViewer(QString ext, Viewer *viewer)
 
 void FileInfoFrame::saveButtonClicked()
 {
-    const auto fileName = QFileDialog::getSaveFileName(this, "Save File", QDir::currentPath() + '/' + QString::fromStdString(item_->getFilename()));
-    if (fileName.isEmpty()) {
-        std::clog << "[Info] Cancelled save" << std::endl;
+    const auto filename = QFileDialog::getSaveFileName(this, "Save File", QDir::currentPath() + '/' + QString::fromStdString(item_->name));
+
+    if (filename.isEmpty()) {
         return;
     }
 
-    QFile file(fileName);
+    QFile file(filename);
 
     if (false == file.open(QIODevice::WriteOnly)) {
-        std::clog << "[Error] Failed to open file for writing: " << fileName.toStdString() << std::endl;
+        spdlog::error("Failed to open file '{}' for writing: {}", filename.toStdString(), file.errorString().toStdString());
     }
-    else if (-1 == file.write(reinterpret_cast<const char *>(item_->getData()), item_->getSize())) {
-        std::clog << "[Error] Failed to write data for " << fileName.toStdString() << std::endl;
+    else if (-1 == file.write(reinterpret_cast<const char *>(item_->data), item_->size)) {
+        spdlog::error("Failed to write data for '{}': ", filename.toStdString(), file.errorString().toStdString());
     }
     else {
-        std::clog << "[Info] Wrote file " << fileName.toStdString() << std::endl;
+        spdlog::info("Wrote file '{}'", filename.toStdString());
     }
 }
 
 void FileInfoFrame::viewButtonClicked()
 {
     try {
-        viewers_[QString::fromStdString(item_->getExtension())]->activate(item_);
+        emit viewClicked(item_);
+        viewers_[QString::fromStdString(item_->extension)]->activate(item_);
     }
     catch (const std::runtime_error &e) {
         QMessageBox::critical(nullptr, "Error", QString::fromStdString(e.what()), QMessageBox::Ok);

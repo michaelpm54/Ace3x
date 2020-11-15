@@ -1,7 +1,7 @@
 /* SPDX-License-Identifier: GPLv3-or-later */
 
-#ifndef ACE3X_FORMAT_READERS_VIF_MESH_HPP_
-#define ACE3X_FORMAT_READERS_VIF_MESH_HPP_
+#ifndef ACE3X_FORMAT_READERS_VIM_HPP_
+#define ACE3X_FORMAT_READERS_VIM_HPP_
 
 #include <cstdint>
 
@@ -9,7 +9,7 @@ class VifMesh {
 public:
     ~VifMesh();
 
-    void read(const char *buffer);
+    void read(const unsigned char *buffer);
 
     //private:
     std::uint32_t version_0x0_;
@@ -54,4 +54,4 @@ public:
     // --
 };
 
-#endif    // ACE3X_FORMAT_READERS_VIF_MESH_HPP_
+#endif    // ACE3X_FORMAT_READERS_VIM_HPP_
