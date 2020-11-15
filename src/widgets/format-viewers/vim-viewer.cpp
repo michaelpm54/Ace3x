@@ -113,6 +113,11 @@ void VIMViewer::activate(const VfsEntry *item)
         ui_->vifBoneList->setItem(row, 7, floatItem(vifBone.b));
         ui_->vifBoneList->setItem(row, 8, floatItem(vifBone.c));
 
+        if (vifBone.boneNameOff >= item_->size) {
+            spdlog::warn("VIM: Something went wrong");
+            return;
+        }
+
         QString name;
         ptr = item_->data + vifBone.boneNameOff;
         while (*ptr != 0x0)
