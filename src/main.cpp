@@ -28,6 +28,8 @@ int main(int argc, char *argv[])
     parser.addOption(fileOption);
     parser.process(app);
 
+    QApplication::setWindowIcon(QPixmap(":/images/ace3x_icon.png"));
+
     MainWindow mainWindow;
 
     std::vector<spdlog::sink_ptr> sinks;

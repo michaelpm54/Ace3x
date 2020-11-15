@@ -79,6 +79,7 @@ set(ACE3X_FORMS
 add_executable(${ACE3X_MAIN_TARGET}
     ${ACE3X_SOURCES}
     ${ACE3X_FORMS}
+	resources/resources.qrc
 )
 
 target_link_libraries(${ACE3X_MAIN_TARGET} PRIVATE
