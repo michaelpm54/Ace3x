@@ -30,6 +30,14 @@ int main(int argc, char *argv[])
 
     QApplication::setWindowIcon(QPixmap(":/images/ace3x_icon.png"));
 
+    /*
+        MainWindow uses spdlog before the logging is fully initialised because
+        initialisation needs QTextEdit *from* the QMainWindow. This can be avoided
+        by passing a QTextEdit into the QMainWindow, but this way isn't too
+        bad either.
+    */
+    spdlog::set_pattern("[%^%L%$] [%H:%M:%S] %v");
+
     MainWindow mainWindow;
 
     std::vector<spdlog::sink_ptr> sinks;

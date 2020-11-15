@@ -2,6 +2,8 @@
 
 #include <spdlog/spdlog.h>
 
+#include <QLocale>
+
 #include "format-readers/peg-texture-decoder.hpp"
 #include "format-readers/validation-error.hpp"
 #include "formats/peg.hpp"
@@ -47,12 +49,12 @@ std::vector<ArchiveEntry> read_entries(const unsigned char *const data, const st
                 return static_cast<unsigned char>(c) > 127;
             }) ||
             filename.size() == 4 /* just an extension */) {
-            spdlog::error("PEG '{}': Frame {} has invalid filename", peg_name, i);
+            spdlog::warn("PEG: Skipping entry '{}/({}) because the filename is invalid", peg_name, i);
             continue;
         }
 
         if (sizes[i] > 1000000) {
-            spdlog::warn("PEG '{}': Skipping entry '{}' because size ({} bytes) is > 1MB", peg_name, filename, sizes[i]);
+            spdlog::warn("PEG: Skipping entry '{}/{}' because it is too large ({} > 1MB)", peg_name, filename, QLocale::system().formattedDataSize(sizes[i], 2, nullptr).toStdString());
             continue;
         }
 
