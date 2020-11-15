@@ -51,10 +51,9 @@ MainWindow::MainWindow(QWidget *parent)
     log_->setReadOnly(true);
 
     QFont monospace_font;
-    monospace_font.setPointSize(10);
-    monospace_font.setBold(false);
+    monospace_font.setPointSize(12);
     monospace_font.setStyleHint(QFont::Monospace);
-    monospace_font.setFamily("System,Fixedsys Standard,Consolas");
+    monospace_font.setFamily("Consolas");
     log_->document()->setDefaultFont(monospace_font);
 
     setCentralWidget(centralWidget);
