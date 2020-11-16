@@ -38,6 +38,9 @@ void Vf2Viewer::activate(const VfsEntry *item)
 {
     show();
 
+    ui_->tabWidget->setCurrentIndex(0);
+    ui_->tab_2->setEnabled(false);
+
     Vf2Header header;
     std::memcpy(&header, item->data, sizeof(header));
 
@@ -134,6 +137,7 @@ void Vf2Viewer::activate(const VfsEntry *item)
     }
 
     ui_->plainTextEdit->clear();
+    ui_->tab_2->setEnabled(true);
 }
 
 bool Vf2Viewer::shouldBeEnabled(const VfsEntry *) const
