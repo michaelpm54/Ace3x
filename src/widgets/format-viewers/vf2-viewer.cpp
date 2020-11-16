@@ -4,6 +4,8 @@
 
 #include <spdlog/spdlog.h>
 
+#include <QGraphicsScene>
+#include <QGraphicsSimpleTextItem>
 #include <filesystem>
 
 #include "format-readers/peg.hpp"
@@ -21,9 +23,15 @@ Vf2Viewer::Vf2Viewer(Vfs *vfs, QWidget *parent)
     : QWidget(parent)
     , ui_(new Ui::Vf2Viewer())
     , vfs_(vfs)
+    , font_scene_(new QGraphicsScene(this))
+    , font_pixmap_(new QPixmap())
 {
     ui_->setupUi(this);
     setWindowTitle("Ace3x - Font Viewer");
+
+    ui_->graphicsView->setScene(font_scene_);
+
+    connect(ui_->plainTextEdit, &QPlainTextEdit::textChanged, this, &Vf2Viewer::update_font_scene);
 }
 
 void Vf2Viewer::activate(const VfsEntry *item)
@@ -32,6 +40,9 @@ void Vf2Viewer::activate(const VfsEntry *item)
 
     Vf2Header header;
     std::memcpy(&header, item->data, sizeof(header));
+
+    font_height_ = header.height;
+    first_ascii_ = header.first_ascii;
 
     ui_->signature->setText(QString::fromLocal8Bit(QByteArray::fromRawData((const char *)(&header.signature), 4)));
     ui_->version->setText(QString::number(header.version));
@@ -45,13 +56,6 @@ void Vf2Viewer::activate(const VfsEntry *item)
     ui_->chars->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
 
     ui_->image_label->clear();
-
-    struct FontChar {
-        int min_width;
-        int max_width;
-        std::uint32_t pixel_offset;
-        std::uint32_t kerning_back_pixels_width;
-    };
 
     std::uint64_t chars_offset = sizeof(header);
     while (chars_offset + 4u < item->size) {
@@ -108,11 +112,68 @@ void Vf2Viewer::activate(const VfsEntry *item)
         return;
     }
 
-    const auto qt_image = QImage(reinterpret_cast<const unsigned char *>(vbm->pixels.data()), vbm->width, vbm->height, QImage::Format_ARGB32);
-    ui_->image_label->setPixmap(QPixmap::fromImage(qt_image));
+    auto img = QImage(reinterpret_cast<const unsigned char *>(vbm->pixels.data()), vbm->width, vbm->height, QImage::Format_ARGB32);
+    font_pixmap_->convertFromImage(img);
+    ui_->image_label->setPixmap(*font_pixmap_);
+
+    int tex_x = 0;
+    int tex_y = 0;
+    int tex_w = 0;
+    int tex_h = font_height_;
+
+    char_rects_.resize(chars.size());
+
+    for (auto i = 0u; i < chars.size(); i++) {
+        tex_w = chars[i].max_width;
+        if (tex_x + tex_w >= img.width()) {
+            tex_x = 0;
+            tex_y += tex_h;
+        }
+        char_rects_[i] = {tex_x, tex_y, tex_w, tex_h};
+        tex_x += tex_w;
+    }
+
+    ui_->plainTextEdit->clear();
 }
 
 bool Vf2Viewer::shouldBeEnabled(const VfsEntry *) const
 {
     return true;
+}
+
+void Vf2Viewer::update_font_scene()
+{
+    font_scene_->clear();
+
+    const auto text = ui_->plainTextEdit->toPlainText();
+
+    int draw_x = 0;
+    int draw_y = 0;
+
+    for (auto i = 0u; i < text.size(); i++) {
+        if (text[i] == '\n') {
+            draw_x = 0;
+            draw_y += font_height_;
+            continue;
+        }
+
+        if (text[i] == ' ') {
+            /* This looks weird, but as 'space' happens to be the first character
+            * in the vector, it works. */
+            draw_x += char_rects_[' '].width();
+            continue;
+        }
+
+        auto val = text[i].unicode() - first_ascii_;
+
+        if (val >= char_rects_.size())
+            continue;
+
+        const auto &char_rect = char_rects_[val];
+
+        auto *item = font_scene_->addPixmap(font_pixmap_->copy(char_rect));
+        item->setPos(draw_x, draw_y);
+
+        draw_x += char_rect.width();
+    }
 }
