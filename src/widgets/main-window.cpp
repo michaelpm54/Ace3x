@@ -23,6 +23,7 @@
 #include "widgets/format-viewers/image-viewer.hpp"
 #include "widgets/format-viewers/p3d-viewer.hpp"
 #include "widgets/format-viewers/plaintext-viewer.hpp"
+#include "widgets/format-viewers/vf2-viewer.hpp"
 #include "widgets/format-viewers/vim-viewer.hpp"
 
 MainWindow::MainWindow(QWidget *parent)
@@ -37,6 +38,7 @@ MainWindow::MainWindow(QWidget *parent)
     , plaintext_viewer_(new PlaintextViewer())
     , p3d_viewer_(new P3DViewer())
     , vim_viewer_(new VIMViewer())
+    , vf2_viewer_(new Vf2Viewer(vfs_.get()))
     , last_open_path_(QDir::currentPath())
 {
     setupActions();
@@ -90,6 +92,8 @@ MainWindow::MainWindow(QWidget *parent)
         tree_view_->resizeColumnToContents(0);
     });
 
+    connect(vf2_viewer_, &Vf2Viewer::request_load, this, &MainWindow::load_extra);
+
     tree_view_->setUniformRowHeights(true);
 
     QSizePolicy rightPolicy(QSizePolicy::Preferred, QSizePolicy::Preferred);
@@ -103,6 +107,7 @@ MainWindow::MainWindow(QWidget *parent)
     file_info_view_->addViewer(".arr", plaintext_viewer_);
     file_info_view_->addViewer(".p3d", p3d_viewer_);
     file_info_view_->addViewer(".vim", vim_viewer_);
+    file_info_view_->addViewer(".vf2", vf2_viewer_);
 
     if (std::filesystem::exists("settings.txt")) {
         QFile file("settings.txt");
@@ -126,6 +131,7 @@ MainWindow::~MainWindow()
     delete image_viewer_;
     delete p3d_viewer_;
     delete vim_viewer_;
+    delete vf2_viewer_;
     delete plaintext_viewer_;
 }
 
@@ -202,6 +208,17 @@ void MainWindow::load(const QString &path)
     if (num_loaded == 1) {
         tree_view_->expandToDepth(0);
     }
+
+    tree_view_->resizeColumnToContents(0);
+    tree_view_->setSortingEnabled(true);
+}
+
+void MainWindow::load_extra(const QString &path)
+{
+    if (path.isEmpty())
+        return;
+
+    tree_model_->load(path, vfs_.get());
 
     tree_view_->resizeColumnToContents(0);
     tree_view_->setSortingEnabled(true);

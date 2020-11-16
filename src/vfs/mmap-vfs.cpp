@@ -35,7 +35,7 @@ bool MmapVfs::add_root_archive(const std::string& path)
     const std::string absolute_path = std::filesystem::absolute(fs_path).generic_string();
 
     if (loaded_vpps_.count(absolute_path)) {
-        return loaded_vpps_[absolute_path].entry;
+        return false;
     }
 
     VppFile vpp;

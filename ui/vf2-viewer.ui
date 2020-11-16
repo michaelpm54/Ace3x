@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>Vf2Viewer</class>
+ <widget class="QWidget" name="Vf2Viewer">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>860</width>
+    <height>452</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Form</string>
+  </property>
+  <layout class="QGridLayout" name="gridLayout_2">
+   <item row="0" column="0">
+    <widget class="QTabWidget" name="tabWidget">
+     <property name="currentIndex">
+      <number>0</number>
+     </property>
+     <widget class="QWidget" name="tab">
+      <attribute name="title">
+       <string>Info</string>
+      </attribute>
+      <layout class="QGridLayout" name="gridLayout_3">
+       <item row="1" column="0">
+        <widget class="QLabel" name="label_5">
+         <property name="styleSheet">
+          <string notr="true">font-weight: bold</string>
+         </property>
+         <property name="text">
+          <string>Characters</string>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="0" colspan="2">
+        <layout class="QGridLayout" name="gridLayout">
+         <item row="2" column="1">
+          <widget class="QLabel" name="label">
+           <property name="text">
+            <string># characters in font</string>
+           </property>
+          </widget>
+         </item>
+         <item row="3" column="3">
+          <widget class="QLineEdit" name="height"/>
+         </item>
+         <item row="1" column="3">
+          <widget class="QLineEdit" name="version"/>
+         </item>
+         <item row="0" column="3">
+          <widget class="QLineEdit" name="signature"/>
+         </item>
+         <item row="3" column="1">
+          <widget class="QLabel" name="label_4">
+           <property name="text">
+            <string>Height</string>
+           </property>
+          </widget>
+         </item>
+         <item row="2" column="3">
+          <widget class="QLineEdit" name="num_chars">
+           <property name="readOnly">
+            <bool>true</bool>
+           </property>
+          </widget>
+         </item>
+         <item row="1" column="1">
+          <widget class="QLabel" name="label_3">
+           <property name="text">
+            <string>Version</string>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="1">
+          <widget class="QLabel" name="label_2">
+           <property name="text">
+            <string>Signature</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </item>
+       <item row="2" column="0">
+        <widget class="QTableWidget" name="chars"/>
+       </item>
+      </layout>
+     </widget>
+     <widget class="QWidget" name="tab_2">
+      <attribute name="title">
+       <string>View</string>
+      </attribute>
+      <layout class="QGridLayout" name="gridLayout_4">
+       <item row="0" column="0">
+        <widget class="QLabel" name="image_label">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+           <horstretch>0</horstretch>
+           <verstretch>2</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="styleSheet">
+          <string notr="true">background-color: grey</string>
+         </property>
+         <property name="frameShape">
+          <enum>QFrame::Box</enum>
+         </property>
+         <property name="text">
+          <string/>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignCenter</set>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+    </widget>
+   </item>
+  </layout>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>

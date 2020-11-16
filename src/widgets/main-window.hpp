@@ -17,6 +17,7 @@ class ImageViewer;
 class PlaintextViewer;
 class P3DViewer;
 class VIMViewer;
+class Vf2Viewer;
 class InfoPanel;
 class Vfs;
 struct VfsEntry;
@@ -41,6 +42,7 @@ private:
 
 private slots:
     void updateSelection(const QItemSelection &selected, const QItemSelection &deselected);
+    void load_extra(const QString &path);
 
 private:
     std::unique_ptr<Vfs> vfs_;
@@ -56,6 +58,7 @@ private:
     PlaintextViewer *plaintext_viewer_ {nullptr};
     P3DViewer *p3d_viewer_ {nullptr};
     VIMViewer *vim_viewer_ {nullptr};
+    Vf2Viewer *vf2_viewer_ {nullptr};
 
     QString last_open_path_;
 };

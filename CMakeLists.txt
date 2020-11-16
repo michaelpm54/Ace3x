@@ -41,12 +41,16 @@ set(ACE3X_SOURCES
 	src/tree-model/sort-proxy.hpp
 	src/tree-model/sort-proxy.cpp
 	
+	src/formats/vf2.hpp
+
 	src/format-readers/vim.hpp
 	src/format-readers/vim.cpp
 	src/format-readers/vpp.hpp
 	src/format-readers/vpp.cpp
 	src/format-readers/peg.hpp
 	src/format-readers/peg.cpp
+	src/format-readers/vf2.hpp
+	src/format-readers/vf2.cpp
 	src/format-readers/peg-texture-decoder.hpp
     src/format-readers/peg-texture-decoder.cpp
 	src/format-readers/validation-error.hpp
@@ -63,13 +67,15 @@ set(ACE3X_SOURCES
     src/widgets/format-viewers/p3d-viewer.cpp
 	src/widgets/format-viewers/vim-viewer.cpp
     src/widgets/format-viewers/plaintext-viewer.cpp
+	src/widgets/format-viewers/vf2-viewer.cpp
 )
 
 set(ACE3X_FORMS
     ui/image-viewer.ui
-    ui/plaintext-viewer.ui
     ui/p3d-viewer.ui
+    ui/plaintext-viewer.ui
     ui/vim-viewer.ui
+	ui/vf2-viewer.ui
 )
 
 ## SOURCES_END
