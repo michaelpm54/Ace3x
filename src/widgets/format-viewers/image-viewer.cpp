@@ -48,12 +48,7 @@ void ImageViewer::activate(const VfsEntry *item)
     }
 
     assert(peg_);
-
     assert(current_frame_index_ < peg_->entries.size());
-
-    ui_->peg_name->setText(QString::fromStdString(peg_->name));
-    ui_->image_name->setText(QString::fromStdString(peg_->entries[current_frame_index_]->name));
-    ui_->image_index->setText(QString("%1/%2").arg(current_frame_index_ + 1).arg(peg_->entries.size()));
 
     images_ = ace3x::peg::get_images(peg_->data);
 
@@ -105,9 +100,10 @@ void ImageViewer::updateImage()
 
     current_frame_name_ = QString::fromStdString(peg_image.filename);
 
-    ui_->image_name->setText(QString::fromStdString(peg_image.filename));
+    ui_->image_name->setText(QString::fromStdString(peg_->entries[current_frame_index_]->name));
+    ui_->image_index->setText(QString::number(current_frame_index_ + 1));
+    ui_->image_max->setText(QString::number(peg_->entries.size()));
     ui_->image_size->setText(QLocale::system().formattedDataSize(peg_->entries[current_frame_index_]->size, 2, nullptr));
-    ui_->image_index->setText(QString("%1/%2").arg(current_frame_index_ + 1).arg(peg_->entries.size()));
     ui_->image_label->setPixmap(QPixmap::fromImage(qt_image));
 }
 
