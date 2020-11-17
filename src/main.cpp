@@ -38,11 +38,11 @@ int main(int argc, char *argv[])
     */
     spdlog::set_pattern("[%^%L%$] [%H:%M:%S] %v");
 
-    MainWindow mainWindow;
+    MainWindow main_window;
 
     std::vector<spdlog::sink_ptr> sinks;
     sinks.push_back(std::make_shared<spdlog::sinks::stdout_color_sink_mt>());
-    sinks.push_back(std::make_shared<qt_sink_mt>(mainWindow.getLog()));
+    sinks.push_back(std::make_shared<qt_sink_mt>(main_window.get_log()));
 
     auto logger = std::make_shared<spdlog::logger>("qt_stdout_chain_logger", std::begin(sinks), std::end(sinks));
     logger->set_pattern("[%^%L%$] [%H:%M:%S] %v");
@@ -53,8 +53,8 @@ int main(int argc, char *argv[])
 
     try {
         if (parser.isSet(fileOption))
-            mainWindow.load(parser.value(fileOption));
-        mainWindow.show();
+            main_window.load(parser.value(fileOption));
+        main_window.show();
     }
     catch (const std::exception &e) {
         fprintf(stderr, "%s\n", e.what());

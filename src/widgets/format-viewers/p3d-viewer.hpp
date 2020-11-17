@@ -15,7 +15,7 @@ class P3DViewer;
 
 struct P3DHeader;
 
-class P3DViewer : public QWidget, public Viewer {
+class P3DViewer : public Viewer {
     Q_OBJECT
 public:
     explicit P3DViewer(QWidget *parent = nullptr);

@@ -5,8 +5,9 @@
 
 struct VfsEntry;
 
-class Viewer {
+class Viewer : public QWidget {
 public:
+    using QWidget::QWidget;
     virtual ~Viewer() = default;
     virtual void activate(const VfsEntry *item) = 0;
     virtual bool shouldBeEnabled(const VfsEntry *item) const = 0;

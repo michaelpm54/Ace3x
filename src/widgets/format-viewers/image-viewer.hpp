@@ -16,7 +16,7 @@ namespace ace3x::peg {
 struct Image;
 }
 
-class ImageViewer : public QWidget, public Viewer {
+class ImageViewer : public Viewer {
     Q_OBJECT
 public:
     explicit ImageViewer(QWidget *parent = nullptr);

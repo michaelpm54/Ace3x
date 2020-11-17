@@ -12,15 +12,9 @@ class QPlainTextEdit;
 class TreeModel;
 class TreeEntrySortProxy;
 
-class FileInfoFrame;
-class ImageViewer;
-class PlaintextViewer;
-class P3DViewer;
-class VIMViewer;
-class Vf2Viewer;
-class InfoPanel;
 class Vfs;
-struct VfsEntry;
+
+class Ui_MainWindow;
 
 class MainWindow : public QMainWindow {
     Q_OBJECT
@@ -30,36 +24,25 @@ public:
     ~MainWindow();
 
     void load(const QString &path);
-    QPlainTextEdit *getLog();
+    QPlainTextEdit *get_log();
 
 public slots:
-    void actionOpen();
-    void actionClose();
-    void actionQuit();
-
-private:
-    void setupActions();
+    void action_open();
+    void action_close();
+    void action_quit();
 
 private slots:
-    void updateSelection(const QItemSelection &selected, const QItemSelection &deselected);
+    void update_selection(const QItemSelection &selected, const QItemSelection &deselected);
     void load_extra(const QString &path);
 
 private:
-    std::unique_ptr<Vfs> vfs_;
+    void load_settings();
 
-    QTreeView *tree_view_ {nullptr};
+private:
+    Ui_MainWindow *ui;
+    std::unique_ptr<Vfs> vfs_;
     TreeModel *tree_model_ {nullptr};
     TreeEntrySortProxy *tree_sort_proxy_ {nullptr};
-
-    FileInfoFrame *file_info_view_ {nullptr};
-
-    QPlainTextEdit *log_;
-    ImageViewer *image_viewer_ {nullptr};
-    PlaintextViewer *plaintext_viewer_ {nullptr};
-    P3DViewer *p3d_viewer_ {nullptr};
-    VIMViewer *vim_viewer_ {nullptr};
-    Vf2Viewer *vf2_viewer_ {nullptr};
-
     QString last_open_path_;
 };
 

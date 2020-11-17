@@ -13,69 +13,42 @@
 #include <QMessageBox>
 #include <QPushButton>
 
+#include "ui_file-info-frame.h"
 #include "vfs/vfs-entry.hpp"
 #include "widgets/format-viewers/viewer.hpp"
 
 FileInfoFrame::FileInfoFrame(QWidget *parent)
-    : QFrame(parent)
-    , filename_(new QLineEdit())
-    , size_(new QLineEdit())
-    , type_(new QLineEdit())
-    , save_(new QPushButton("Save"))
-    , view_(new QPushButton("View"))
+    : QWidget(parent)
+    , ui(new Ui_FileInfoFrame())
 {
-    view_->hide();
+    ui->setupUi(this);
 
-    auto layout = new QFormLayout();
-    setLayout(layout);
-
-    filename_->setReadOnly(true);
-    size_->setReadOnly(true);
-    type_->setReadOnly(true);
-    layout->addRow("Filename", filename_);
-    layout->addRow("Size", size_);
-    layout->addRow("Type", type_);
-    layout->addWidget(save_);
-    layout->addWidget(view_);
-
-    save_->hide();
-
-    connect(save_, &QPushButton::released, this, &FileInfoFrame::saveButtonClicked);
-    connect(view_, &QPushButton::released, this, &FileInfoFrame::viewButtonClicked);
+    connect(ui->save_btn, &QPushButton::released, this, &FileInfoFrame::save_btn_clicked);
+    connect(ui->view_btn, &QPushButton::released, this, &FileInfoFrame::view_btn_clicked);
 }
 
-void FileInfoFrame::setItem(VfsEntry *item)
+void FileInfoFrame::set_item(VfsEntry *item)
 {
-    save_->show();
-
     item_ = item;
 
     auto ext = QString::fromStdString(item->extension);
 
-    filename_->setText(QString::fromStdString(item->name));
-    filename_->setToolTip(QString::fromStdString(item->relative_path));
-    size_->setText(QLocale::system().formattedDataSize(item->size, 2, nullptr));
-    type_->setText(ext);
+    ui->archive_name->setText(QString::fromStdString(item->root->name));
+    ui->filename->setText(QString::fromStdString(item->name));
+    ui->filename->setToolTip(QString::fromStdString(item->relative_path));
+    ui->filesize->setText(QLocale::system().formattedDataSize(item->size, 2, nullptr));
+    ui->extension->setText(ext);
 
-    if (viewers_.count(ext)) {
-        if (viewers_[ext]->shouldBeEnabled(item)) {
-            view_->show();
-        }
-        else {
-            view_->hide();
-        }
-    }
-    else {
-        view_->hide();
-    }
+    ui->view_btn->setEnabled(false);
+    ui->save_btn->setEnabled(true);
 }
 
-void FileInfoFrame::addViewer(QString ext, Viewer *viewer)
+void FileInfoFrame::enable_view()
 {
-    viewers_[ext] = viewer;
+    ui->view_btn->setEnabled(true);
 }
 
-void FileInfoFrame::saveButtonClicked()
+void FileInfoFrame::save_btn_clicked()
 {
     const auto filename = QFileDialog::getSaveFileName(this, "Save File", QDir::currentPath() + '/' + QString::fromStdString(item_->name));
 
@@ -96,22 +69,17 @@ void FileInfoFrame::saveButtonClicked()
     }
 }
 
-void FileInfoFrame::viewButtonClicked()
+void FileInfoFrame::view_btn_clicked()
 {
-    try {
-        emit viewClicked(item_);
-        viewers_[QString::fromStdString(item_->extension)]->activate(item_);
-    }
-    catch (const std::runtime_error &e) {
-        QMessageBox::critical(nullptr, "Error", QString::fromStdString(e.what()), QMessageBox::Ok);
-    }
+    emit view_clicked(item_);
 }
 
 void FileInfoFrame::clear()
 {
-    filename_->clear();
-    size_->clear();
-    type_->clear();
-    save_->hide();
-    view_->hide();
+    ui->archive_name->clear();
+    ui->filename->clear();
+    ui->filesize->clear();
+    ui->extension->clear();
+    ui->view_btn->setEnabled(false);
+    ui->save_btn->setEnabled(false);
 }

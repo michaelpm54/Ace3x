@@ -16,7 +16,7 @@ class Vf2Viewer;
 
 class Vfs;
 
-class Vf2Viewer : public QWidget, public Viewer {
+class Vf2Viewer : public Viewer {
     Q_OBJECT
 public:
     Vf2Viewer(Vfs *vfs, QWidget *parent = nullptr);

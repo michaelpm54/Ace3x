@@ -15,7 +15,7 @@ namespace Ui {
 class VIMViewer;
 }
 
-class VIMViewer : public QWidget, public Viewer {
+class VIMViewer : public Viewer {
     Q_OBJECT
 public:
     explicit VIMViewer(QWidget *parent = nullptr);

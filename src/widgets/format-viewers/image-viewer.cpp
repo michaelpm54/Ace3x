@@ -14,7 +14,7 @@
 #include "vfs/vfs-entry.hpp"
 
 ImageViewer::ImageViewer(QWidget *parent)
-    : QWidget(parent)
+    : Viewer(parent)
     , ui_(new Ui::ImageViewer())
 {
     ui_->setupUi(this);

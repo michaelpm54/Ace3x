@@ -32,7 +32,7 @@ QTableWidgetItem *floatItem(float n)
 }
 
 VIMViewer::VIMViewer(QWidget *parent)
-    : QWidget(parent)
+    : Viewer(parent)
     , ui_(new Ui::VIMViewer())
 {
     ui_->setupUi(this);

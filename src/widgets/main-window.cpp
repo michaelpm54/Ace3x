@@ -18,6 +18,7 @@
 
 #include "tree-model/sort-proxy.hpp"
 #include "tree-model/tree-model.hpp"
+#include "ui_main-window.h"
 #include "vfs/mmap-vfs.hpp"
 #include "widgets/file-info-frame.hpp"
 #include "widgets/format-viewers/image-viewer.hpp"
@@ -28,134 +29,62 @@
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
+    , ui(new Ui_MainWindow())
     , vfs_(std::make_unique<MmapVfs>())
-    , log_(new QPlainTextEdit())
-    , tree_view_(new QTreeView())
     , tree_model_(new TreeModel(vfs_.get()))
     , tree_sort_proxy_(new TreeEntrySortProxy())
-    , file_info_view_(new FileInfoFrame())
-    , image_viewer_(new ImageViewer())
-    , plaintext_viewer_(new PlaintextViewer())
-    , p3d_viewer_(new P3DViewer())
-    , vim_viewer_(new VIMViewer())
-    , vf2_viewer_(new Vf2Viewer(vfs_.get()))
     , last_open_path_(QDir::currentPath())
 {
-    setupActions();
+    ui->setupUi(this);
 
-    resize(1280, 720);
-
-    auto centralWidget = new QWidget();
-    auto layout = new QGridLayout();
-    auto splitter0 = new QSplitter(Qt::Orientation::Vertical);
-    auto splitter1 = new QSplitter(Qt::Orientation::Horizontal);
-
-    log_->setReadOnly(true);
-
-    QFont monospace_font;
-    monospace_font.setPointSize(12);
-    monospace_font.setStyleHint(QFont::Monospace);
-    monospace_font.setFamily("Consolas");
-    log_->document()->setDefaultFont(monospace_font);
-
-    setCentralWidget(centralWidget);
-    centralWidget->setLayout(layout);
-
-    layout->addWidget(splitter0);
-
-    splitter0->addWidget(splitter1);
-    splitter0->addWidget(log_);
-    splitter0->setChildrenCollapsible(false);
-
-    splitter1->addWidget(tree_view_);
-    splitter1->addWidget(file_info_view_);
-    splitter1->setChildrenCollapsible(false);
-
-    splitter0->setStretchFactor(0, 3);
-    splitter0->setStretchFactor(1, 1);
-
-    image_viewer_->hide();
+    ui->action_open->setShortcut({"Ctrl+O"});
+    ui->action_close->setShortcut({"Ctrl+W"});
+    ui->action_quit->setShortcut({"Ctrl+Q"});
 
     tree_sort_proxy_->setSortCaseSensitivity(Qt::CaseInsensitive);
     tree_sort_proxy_->setSourceModel(tree_model_);
+    ui->tree_view->setModel(tree_sort_proxy_);
 
-    QSizePolicy leftPolicy(QSizePolicy::Preferred, QSizePolicy::Preferred);
-    leftPolicy.setHorizontalStretch(2);
-    tree_view_->setSizePolicy(leftPolicy);
-    tree_view_->setSelectionMode(QAbstractItemView::SelectionMode::SingleSelection);
-    tree_view_->setSelectionBehavior(QAbstractItemView::SelectionBehavior::SelectRows);
-    tree_view_->setAlternatingRowColors(true);
-    tree_view_->setModel(tree_sort_proxy_);
+    auto *image_viewer {new ImageViewer()};
+    auto *text_viewer {new PlaintextViewer()};
+    ui->view_stack->add_viewer(".peg", image_viewer);
+    ui->view_stack->add_viewer(".tga", image_viewer);
+    ui->view_stack->add_viewer(".vbm", image_viewer);
+    ui->view_stack->add_viewer(".tbl", text_viewer);
+    ui->view_stack->add_viewer(".arr", text_viewer);
+    ui->view_stack->add_viewer(".vim", new VIMViewer());
+    ui->view_stack->add_viewer(".p3d", new P3DViewer());
+    ui->view_stack->add_viewer(".vf2", new Vf2Viewer(vfs_.get()));
 
-    connect(tree_view_->selectionModel(), &QItemSelectionModel::selectionChanged, this, &MainWindow::updateSelection);
-    connect(tree_view_, &QTreeView::expanded, this, [this]() {
-        tree_view_->resizeColumnToContents(0);
+    load_settings();
+
+    connect(ui->action_open, &QAction::triggered, this, &MainWindow::action_open);
+    connect(ui->action_close, &QAction::triggered, this, &MainWindow::action_close);
+    connect(ui->action_quit, &QAction::triggered, this, &MainWindow::action_quit);
+    connect(ui->tree_view->selectionModel(), &QItemSelectionModel::selectionChanged, this, &MainWindow::update_selection);
+    connect(ui->tree_view, &QTreeView::expanded, this, [this]() {
+        ui->tree_view->resizeColumnToContents(0);
     });
-
-    connect(vf2_viewer_, &Vf2Viewer::request_load, this, &MainWindow::load_extra);
-
-    tree_view_->setUniformRowHeights(true);
-
-    QSizePolicy rightPolicy(QSizePolicy::Preferred, QSizePolicy::Preferred);
-    rightPolicy.setHorizontalStretch(1);
-    file_info_view_->setSizePolicy(rightPolicy);
-
-    file_info_view_->addViewer(".peg", image_viewer_);
-    file_info_view_->addViewer(".tga", image_viewer_);
-    file_info_view_->addViewer(".vbm", image_viewer_);
-    file_info_view_->addViewer(".tbl", plaintext_viewer_);
-    file_info_view_->addViewer(".arr", plaintext_viewer_);
-    file_info_view_->addViewer(".p3d", p3d_viewer_);
-    file_info_view_->addViewer(".vim", vim_viewer_);
-    file_info_view_->addViewer(".vf2", vf2_viewer_);
-
-    if (std::filesystem::exists("settings.txt")) {
-        QFile file("settings.txt");
-        if (file.open(QIODevice::ReadOnly)) {
-            QTextStream stream(&file);
-            stream >> last_open_path_;
-            spdlog::info("Loaded settings.txt");
-            spdlog::info("Recently opened path: {}", last_open_path_.toStdString());
-        }
-        file.close();
-    }
-    else {
-        spdlog::info("settings.txt not found");
-    }
+    connect(ui->inspector, &FileInfoFrame::view_clicked, ui->view_stack, &ViewManager::activate_viewer);
+    connect(ui->clear_log_btn, &QPushButton::clicked, this, [this]() {
+        ui->log->clear();
+    });
+    //connect(vf2_viewer_, &Vf2Viewer::request_load, this, &MainWindow::load_extra);
 }
 
 MainWindow::~MainWindow()
 {
     delete tree_model_;
     delete tree_sort_proxy_;
-    delete image_viewer_;
-    delete p3d_viewer_;
-    delete vim_viewer_;
-    delete vf2_viewer_;
-    delete plaintext_viewer_;
+    delete ui;
 }
 
-QPlainTextEdit *MainWindow::getLog()
+QPlainTextEdit *MainWindow::get_log()
 {
-    return log_;
+    return ui->log;
 }
 
-void MainWindow::setupActions()
-{
-    auto mb = new QMenuBar();
-
-    auto file = new QMenu("File");
-    file->addAction("Open", this, &MainWindow::actionOpen, QKeySequence("Ctrl+O"));
-    file->addAction("Close", this, &MainWindow::actionClose, QKeySequence("Ctrl+W"));
-    file->addSeparator();
-    file->addAction("Quit", this, &MainWindow::actionQuit, QKeySequence("Ctrl+Q"));
-
-    mb->addMenu(file);
-
-    setMenuBar(mb);
-}
-
-void MainWindow::updateSelection(const QItemSelection &selected, const QItemSelection &)
+void MainWindow::update_selection(const QItemSelection &selected, const QItemSelection &)
 {
     if (selected.isEmpty()) {
         return;
@@ -163,21 +92,27 @@ void MainWindow::updateSelection(const QItemSelection &selected, const QItemSele
 
     auto *entry = tree_model_->itemFromIndex(tree_sort_proxy_->mapToSource(selected.indexes().first()));
 
-    file_info_view_->setItem(entry);
+    ui->inspector->set_item(entry);
+
+    if (ui->view_stack->has_viewer(entry->extension)) {
+        ui->inspector->enable_view();
+    }
 }
 
-void MainWindow::actionOpen()
+void MainWindow::action_open()
 {
     load(QFileDialog::getOpenFileName(this, "Open VPP", last_open_path_, "Archive File (*.VPP)"));
 }
 
-void MainWindow::actionClose()
+void MainWindow::action_close()
 {
     tree_model_->clear();
-    file_info_view_->clear();
+    ui->inspector->clear();
+    ui->view_stack->clear();
+    ui->action_close->setEnabled(false);
 }
 
-void MainWindow::actionQuit()
+void MainWindow::action_quit()
 {
     QFile file("settings.txt");
     if (file.open(QIODevice::ReadWrite)) {
@@ -196,21 +131,23 @@ void MainWindow::load(const QString &path)
     if (path.isEmpty())
         return;
 
-    actionClose();
+    action_close();
 
     last_open_path_ = QFileInfo(path).dir().absolutePath();
 
     int num_loaded = tree_model_->load(path, vfs_.get());
 
-    // If there is only one top-level archive, expand it.
-    // Don't do this for multiple top-level archives because it's messy.
-    // Let the user expand them on their own.
+    /* If there is only one top-level archive, expand it.
+     * Don't do this for multiple top-level archives because it's messy.
+     * Let the user expand them on their own.
+     */
     if (num_loaded == 1) {
-        tree_view_->expandToDepth(0);
+        ui->tree_view->expandToDepth(0);
     }
 
-    tree_view_->resizeColumnToContents(0);
-    tree_view_->setSortingEnabled(true);
+    ui->tree_view->resizeColumnToContents(0);
+
+    ui->action_close->setEnabled(true);
 }
 
 void MainWindow::load_extra(const QString &path)
@@ -220,6 +157,24 @@ void MainWindow::load_extra(const QString &path)
 
     tree_model_->load(path, vfs_.get());
 
-    tree_view_->resizeColumnToContents(0);
-    tree_view_->setSortingEnabled(true);
+    ui->tree_view->resizeColumnToContents(0);
+
+    ui->action_close->setEnabled(true);
+}
+
+void MainWindow::load_settings()
+{
+    if (std::filesystem::exists("settings.txt")) {
+        QFile file("settings.txt");
+        if (file.open(QIODevice::ReadOnly)) {
+            QTextStream stream(&file);
+            stream >> last_open_path_;
+            spdlog::info("Loaded settings.txt");
+            spdlog::info("Recently opened path: {}", last_open_path_.toStdString());
+        }
+        file.close();
+    }
+    else {
+        spdlog::info("settings.txt not found");
+    }
 }

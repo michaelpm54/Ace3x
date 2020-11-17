@@ -20,7 +20,7 @@ class Vf2Viewer;
 }
 
 Vf2Viewer::Vf2Viewer(Vfs *vfs, QWidget *parent)
-    : QWidget(parent)
+    : Viewer(parent)
     , ui_(new Ui::Vf2Viewer())
     , vfs_(vfs)
     , font_scene_(new QGraphicsScene(this))

@@ -9,9 +9,7 @@
 #include "ui_plaintext-viewer.h"
 #include "widgets/format-viewers/viewer.hpp"
 
-class TreeEntry;
-
-class PlaintextViewer : public QWidget, public Viewer {
+class PlaintextViewer : public Viewer {
     Q_OBJECT
 public:
     explicit PlaintextViewer(QWidget *parent = nullptr);

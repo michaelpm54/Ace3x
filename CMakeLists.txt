@@ -60,6 +60,7 @@ set(ACE3X_SOURCES
 	# Custom Qt widgets
 	src/widgets/main-window.cpp
     src/widgets/file-info-frame.cpp
+	src/widgets/view-manager.cpp
 
 	# Qt widgets to view specific formats
     src/widgets/format-viewers/image-viewer.cpp
@@ -68,14 +69,18 @@ set(ACE3X_SOURCES
 	src/widgets/format-viewers/vim-viewer.cpp
     src/widgets/format-viewers/plaintext-viewer.cpp
 	src/widgets/format-viewers/vf2-viewer.cpp
+	src/widgets/format-viewers/empty-viewer.cpp
 )
 
 set(ACE3X_FORMS
+	ui/main-window.ui
+	ui/file-info-frame.ui
     ui/image-viewer.ui
     ui/p3d-viewer.ui
     ui/plaintext-viewer.ui
     ui/vim-viewer.ui
 	ui/vf2-viewer.ui
+	ui/empty-viewer.ui
 )
 
 ## SOURCES_END
@@ -100,7 +105,7 @@ target_include_directories(${ACE3X_MAIN_TARGET} PUBLIC
 
 # Enable warnings
 target_compile_options(${ACE3X_MAIN_TARGET} PRIVATE
-  $<$<CXX_COMPILER_ID:MSVC>:/W4>
+  $<$<CXX_COMPILER_ID:MSVC>:/W3>
   $<$<NOT:$<CXX_COMPILER_ID:MSVC>>:-Wall -Wextra -pedantic>
 )
 

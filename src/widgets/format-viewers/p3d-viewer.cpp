@@ -70,7 +70,7 @@ void P3DViewer::writeVerticesToObj(const QString &fileName, const P3DHeader &hea
 }
 
 P3DViewer::P3DViewer(QWidget *parent)
-    : QWidget(parent)
+    : Viewer(parent)
     , ui_(new Ui::P3DViewer())
 {
     ui_->setupUi(this);

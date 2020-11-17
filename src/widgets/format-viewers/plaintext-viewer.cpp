@@ -9,7 +9,7 @@ class PlaintextViewer;
 }
 
 PlaintextViewer::PlaintextViewer(QWidget *parent)
-    : QWidget(parent)
+    : Viewer(parent)
     , ui_(new Ui::PlaintextViewer())
 {
     ui_->setupUi(this);
