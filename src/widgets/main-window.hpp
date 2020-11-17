@@ -30,6 +30,7 @@ public slots:
     void action_open();
     void action_close();
     void action_quit();
+    void action_about();
 
 private slots:
     void update_selection(const QItemSelection &selected, const QItemSelection &deselected);

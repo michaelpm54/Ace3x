@@ -211,7 +211,6 @@
      <string>Help</string>
     </property>
     <addaction name="action_about"/>
-    <addaction name="action_license"/>
    </widget>
    <addaction name="menuFile"/>
    <addaction name="menuHelp"/>
@@ -236,17 +235,6 @@
    </property>
   </action>
   <action name="action_about">
-   <property name="enabled">
-    <bool>false</bool>
-   </property>
-   <property name="text">
-    <string>License</string>
-   </property>
-  </action>
-  <action name="action_license">
-   <property name="enabled">
-    <bool>false</bool>
-   </property>
    <property name="text">
     <string>About</string>
    </property>

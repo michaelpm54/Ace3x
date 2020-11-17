@@ -10,6 +10,7 @@
 #include <QGridLayout>
 #include <QHBoxLayout>
 #include <QMenuBar>
+#include <QMessageBox>
 #include <QPlainTextEdit>
 #include <QSplitter>
 #include <QTextEdit>
@@ -61,6 +62,8 @@ MainWindow::MainWindow(QWidget *parent)
     connect(ui->action_open, &QAction::triggered, this, &MainWindow::action_open);
     connect(ui->action_close, &QAction::triggered, this, &MainWindow::action_close);
     connect(ui->action_quit, &QAction::triggered, this, &MainWindow::action_quit);
+    connect(ui->action_about, &QAction::triggered, this, &MainWindow::action_about);
+
     connect(ui->tree_view->selectionModel(), &QItemSelectionModel::selectionChanged, this, &MainWindow::update_selection);
     connect(ui->tree_view, &QTreeView::expanded, this, [this]() {
         ui->tree_view->resizeColumnToContents(0);
@@ -177,4 +180,14 @@ void MainWindow::load_settings()
     else {
         spdlog::info("settings.txt not found");
     }
+}
+
+void MainWindow::action_about()
+{
+    /* clang-format off */
+    QMessageBox::about(this, "Ace3x - About",
+                       "Ace3x resource viewer for Summoner 2.<br/>"
+                       "License - <a href=\"https://www.gnu.org/licenses/gpl-3.0.en.html\">GNU GENERAL PUBLIC LICENSE Version 3</a><br/>"
+                       "<a href=\"https://github.com/michaelpm54/Ace3x\">GitHub</a>");
+    /* clang-format on */
 }
