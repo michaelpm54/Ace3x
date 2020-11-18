@@ -50,7 +50,6 @@ bool MmapVfs::add_root_archive(const std::string& path)
     root_entry.relative_path = path;
     root_entry.extension = ".vpp";
     root_entry.parent = nullptr;
-    root_entry.root = &root_entry;
 
     if (!map_file(vpp.mmap, fs_path))
         return false;
@@ -65,6 +64,7 @@ bool MmapVfs::add_root_archive(const std::string& path)
     }
 
     vpp.entry = add_entry(root_entry);
+    vpp.entry->root = vpp.entry;    // It is its own root
 
     for (const auto& vpp_entry : ace3x::vpp::read_entries(vpp.info, vpp.mmap.mapped_length())) {
         VfsEntry entry;
