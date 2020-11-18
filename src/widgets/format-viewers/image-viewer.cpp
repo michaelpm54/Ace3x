@@ -28,6 +28,25 @@ ImageViewer::ImageViewer(QWidget *parent)
     connect(ui_->save, &QPushButton::pressed, this, [this]() {
         saveFrame();
     });
+    connect(ui_->image_index, &QLineEdit::textEdited, this, [this](const QString &text) {
+        bool ok {false};
+        uint64_t value = text.toInt(&ok);
+
+        if (!ok) {
+            ui_->image_index->clear();
+            return;
+        }
+
+        if (value > peg_->entries.size()) {
+            value = static_cast<int>(peg_->entries.size());
+        }
+        if (value < 1) {
+            value = 1;
+        }
+
+        current_frame_index_ = value - 1;
+        updateImage();
+    });
 }
 
 void ImageViewer::activate(const VfsEntry *item)
@@ -49,6 +68,8 @@ void ImageViewer::activate(const VfsEntry *item)
     assert(current_frame_index_ < peg_->entries.size());
 
     images_ = ace3x::peg::get_images(peg_->data);
+
+    ui_->image_max->setText(QString::number(peg_->entries.size()));
 
     updateImage();
 }
@@ -99,9 +120,8 @@ void ImageViewer::updateImage()
     current_frame_name_ = QString::fromStdString(peg_image.filename);
 
     ui_->image_name->setText(QString::fromStdString(peg_->entries[current_frame_index_]->name));
-    ui_->image_index->setText(QString::number(current_frame_index_ + 1));
-    ui_->image_max->setText(QString::number(peg_->entries.size()));
     ui_->image_size->setText(QLocale::system().formattedDataSize(peg_->entries[current_frame_index_]->size, 2, nullptr));
+    ui_->image_index->setText(QString::number(current_frame_index_ + 1));
     ui_->image_label->setPixmap(QPixmap::fromImage(qt_image));
 }
 
