@@ -3,14 +3,15 @@
 #ifndef ACE3X_WIDGETS_VIEW_MANAGER_HPP_
 #define ACE3X_WIDGETS_VIEW_MANAGER_HPP_
 
-#include <QStackedWidget>
+#include <QGroupBox>
 #include <unordered_map>
 
 class EmptyViewer;
 struct VfsEntry;
 class Viewer;
+class QStackedWidget;
 
-class ViewManager : public QStackedWidget {
+class ViewManager : public QGroupBox {
     Q_OBJECT
 
 public:
@@ -27,6 +28,7 @@ signals:
     void referenced_file(const std::string &filename);
 
 private:
+    QStackedWidget *stack_;
     Viewer *empty_viewer_;
     std::unordered_map<std::string, Viewer *> viewers_;
 };

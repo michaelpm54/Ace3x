@@ -49,14 +49,14 @@ MainWindow::MainWindow(QWidget *parent)
     auto *image_viewer {new ImageViewer()};
     auto *text_viewer {new PlaintextViewer()};
     auto *vf2_viewer {new Vf2Viewer(vfs_.get())};
-    ui->view_stack->add_viewer(".peg", image_viewer);
-    ui->view_stack->add_viewer(".tga", image_viewer);
-    ui->view_stack->add_viewer(".vbm", image_viewer);
-    ui->view_stack->add_viewer(".tbl", text_viewer);
-    ui->view_stack->add_viewer(".arr", text_viewer);
-    ui->view_stack->add_viewer(".vim", new VIMViewer());
-    ui->view_stack->add_viewer(".p3d", new P3DViewer());
-    ui->view_stack->add_viewer(".vf2", vf2_viewer);
+    ui->view_manager->add_viewer(".peg", image_viewer);
+    ui->view_manager->add_viewer(".tga", image_viewer);
+    ui->view_manager->add_viewer(".vbm", image_viewer);
+    ui->view_manager->add_viewer(".tbl", text_viewer);
+    ui->view_manager->add_viewer(".arr", text_viewer);
+    ui->view_manager->add_viewer(".vim", new VIMViewer());
+    ui->view_manager->add_viewer(".p3d", new P3DViewer());
+    ui->view_manager->add_viewer(".vf2", vf2_viewer);
 
     load_settings();
 
@@ -72,12 +72,12 @@ MainWindow::MainWindow(QWidget *parent)
     connect(ui->inspector, &FileInfoFrame::view_clicked, this, [this]() {
         ui->referenced_files->clear();
     });
-    connect(ui->inspector, &FileInfoFrame::view_clicked, ui->view_stack, &ViewManager::activate_viewer);
+    connect(ui->inspector, &FileInfoFrame::view_clicked, ui->view_manager, &ViewManager::activate_viewer);
     connect(ui->clear_log_btn, &QPushButton::clicked, this, [this]() {
         ui->log->clear();
     });
     connect(vf2_viewer, &Vf2Viewer::request_load, this, &MainWindow::load_extra);
-    connect(ui->view_stack, &ViewManager::referenced_file, this, &MainWindow::add_referenced_file);
+    connect(ui->view_manager, &ViewManager::referenced_file, this, &MainWindow::add_referenced_file);
 }
 
 MainWindow::~MainWindow()
@@ -102,7 +102,7 @@ void MainWindow::update_selection(const QItemSelection &selected, const QItemSel
 
     ui->inspector->set_item(entry);
 
-    if (ui->view_stack->has_viewer(entry->extension)) {
+    if (ui->view_manager->has_viewer(entry->extension)) {
         ui->inspector->enable_view();
     }
 }
@@ -116,7 +116,7 @@ void MainWindow::action_close()
 {
     tree_model_->clear();
     ui->inspector->clear();
-    ui->view_stack->clear();
+    ui->view_manager->clear();
     vfs_->clear();
     ui->action_close->setEnabled(false);
 }

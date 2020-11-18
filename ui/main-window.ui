@@ -94,7 +94,7 @@
         <property name="orientation">
          <enum>Qt::Horizontal</enum>
         </property>
-        <widget class="ViewManager" name="view_stack">
+        <widget class="ViewManager" name="view_manager">
          <property name="sizePolicy">
           <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
            <horstretch>90</horstretch>
@@ -249,7 +249,7 @@
   </customwidget>
   <customwidget>
    <class>ViewManager</class>
-   <extends>QStackedWidget</extends>
+   <extends>QGroupBox</extends>
    <header>widgets/view-manager.hpp</header>
    <container>1</container>
   </customwidget>
