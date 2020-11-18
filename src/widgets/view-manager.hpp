@@ -7,7 +7,7 @@
 #include <unordered_map>
 
 class EmptyViewer;
-class VfsEntry;
+struct VfsEntry;
 class Viewer;
 
 class ViewManager : public QStackedWidget {
