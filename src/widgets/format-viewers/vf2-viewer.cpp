@@ -153,7 +153,7 @@ void Vf2Viewer::update_font_scene()
     int draw_x = 0;
     int draw_y = 0;
 
-    for (auto i = 0u; i < text.size(); i++) {
+    for (auto i = 0; i < text.size(); i++) {
         if (text[i] == '\n') {
             draw_x = 0;
             draw_y += font_height_;

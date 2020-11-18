@@ -94,6 +94,10 @@ add_executable(${ACE3X_MAIN_TARGET}
 	resources/resources.qrc
 )
 
+target_compile_definitions(${ACE3X_MAIN_TARGET} PRIVATE
+	_CRT_SECURE_NO_WARNINGS
+)
+
 target_link_libraries(${ACE3X_MAIN_TARGET} PRIVATE
 	Qt5::Widgets
 	${CONAN_LIBS}

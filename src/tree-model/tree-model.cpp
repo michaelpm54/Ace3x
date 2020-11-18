@@ -113,11 +113,11 @@ int TreeModel::rowCount(const QModelIndex &parent) const
 
     const VfsEntry *parent_entry;
     if (!parent.isValid())
-        return invisible_root_.size();
+        return static_cast<int>(invisible_root_.size());
     else
         parent_entry = static_cast<const VfsEntry *>(parent.internalPointer());
 
-    return parent_entry->entries.size();
+    return static_cast<int>(parent_entry->entries.size());
 }
 
 int TreeModel::columnCount(const QModelIndex &) const
@@ -136,9 +136,9 @@ void TreeModel::clear()
 
 void TreeModel::addTopLevelEntry(VfsEntry *entry)
 {
-    beginInsertRows(QModelIndex(), invisible_root_.size(), invisible_root_.size());
+    beginInsertRows(QModelIndex(), static_cast<int>(invisible_root_.size()), static_cast<int>(invisible_root_.size()));
 
-    entry->index = invisible_root_.size();
+    entry->index = static_cast<int>(invisible_root_.size());
     invisible_root_.push_back(entry);
 
     endInsertRows();

@@ -15,7 +15,7 @@ class MmapVfs : public Vfs {
 private:
     struct VppFile {
         mio::mmap_source mmap;
-        VfsEntry* entry;
+        VfsEntry* entry {nullptr};
         ace3x::vpp::VppInfo info;
     };
 

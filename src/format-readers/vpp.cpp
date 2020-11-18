@@ -173,15 +173,15 @@ std::vector<ArchiveEntry> read_entries(const VppInfo& info, std::size_t file_siz
 
     for (std::uint16_t i = 0; i < info.header.fileCount; i++) {
         const std::string filename = filenames[i];
-        const auto size = dir_entries[i].uncompressedSize;
-        const auto final_offset = info.compressed ? dir_entries[i].offset + info.data_offset : offset;
+        const int size = dir_entries[i].uncompressedSize;
+        const int final_offset = info.compressed ? dir_entries[i].offset + info.data_offset : offset;
 
         if (size == 0) {
             spdlog::warn("VPP: Skipping entry '{}/{}' because size is 0", filename, filename);
             continue;
         }
 
-        if (static_cast<int64_t>(final_offset) + size >= file_size) {
+        if (final_offset + size >= file_size) {
             spdlog::warn("VPP: Skipping entry '{}/{}' because [offset 0x{:04x} + size 0x{:04x} = 0x{:04x}] exceeds data size 0x{:04x}", info.filename, filename, offset, size, offset + size, file_size);
             continue;
         }

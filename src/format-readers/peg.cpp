@@ -98,7 +98,7 @@ std::vector<Image> get_images(const unsigned char *const data)
 
     std::vector<Image> images;
 
-    for (int i = 0; i < header.textureCount; i++) {
+    for (auto i = 0u; i < header.textureCount; i++) {
         const auto &frame {frames[i]};
 
         Image image;

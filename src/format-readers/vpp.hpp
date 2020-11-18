@@ -13,11 +13,11 @@
 namespace ace3x::vpp {
 
 struct VppInfo {
-    std::uint32_t filenames_offset;
-    std::uint32_t data_offset;
-    const unsigned char* data;
+    std::uint32_t filenames_offset {0};
+    std::uint32_t data_offset {0};
+    const unsigned char* data {nullptr};
     VppV2Header header;
-    bool compressed;
+    bool compressed {false};
     std::string filename;
 };
 

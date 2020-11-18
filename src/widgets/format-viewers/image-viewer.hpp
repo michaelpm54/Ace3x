@@ -38,7 +38,7 @@ private slots:
 private:
     std::unique_ptr<Ui::ImageViewer> ui_;
     const VfsEntry *peg_ {nullptr};
-    std::uint16_t current_frame_index_ {0};
+    std::size_t current_frame_index_ {0};
     QString current_frame_name_;
     std::vector<ace3x::peg::Image> images_;
 };
