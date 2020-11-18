@@ -113,6 +113,7 @@ void MainWindow::action_close()
     tree_model_->clear();
     ui->inspector->clear();
     ui->view_stack->clear();
+    vfs_->clear();
     ui->action_close->setEnabled(false);
 }
 

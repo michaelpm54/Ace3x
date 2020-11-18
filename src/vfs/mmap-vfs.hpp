@@ -22,6 +22,7 @@ private:
 public:
     bool add_root_archive(const std::string& path) override;
     VfsEntry* get_entry(const std::string& absolute_path) override;
+    void clear() override;
 
 private:
     VfsEntry* add_entry(const VfsEntry& entry);

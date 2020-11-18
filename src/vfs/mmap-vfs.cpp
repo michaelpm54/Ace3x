@@ -196,3 +196,9 @@ VfsEntry* MmapVfs::get_entry(const std::string& absolute_path)
 
     return nullptr;
 }
+
+void MmapVfs::clear()
+{
+    loaded_vpps_.clear();
+    entries_.clear();
+}
