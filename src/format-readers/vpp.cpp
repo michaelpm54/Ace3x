@@ -181,7 +181,7 @@ std::vector<ArchiveEntry> read_entries(const VppInfo& info, std::size_t file_siz
             continue;
         }
 
-        if (final_offset + size >= file_size) {
+        if (static_cast<uint64_t>(final_offset) + size >= file_size) {
             spdlog::warn("VPP: Skipping entry '{}/{}' because [offset 0x{:04x} + size 0x{:04x} = 0x{:04x}] exceeds data size 0x{:04x}", info.filename, filename, offset, size, offset + size, file_size);
             continue;
         }
