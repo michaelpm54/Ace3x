@@ -24,7 +24,7 @@
  * Work is partially based on information from Roma Sorokin <sorok-roma@yandex.ru>
  **/
 
-#define VF_SIGNATURE 0x544E4656 // 'VFNT'
+#define VF_SIGNATURE 0x544E4656    // 'VFNT'
 
 struct Vf2Header {
     std::uint32_t signature;          // should be equal to VF_SIGNATURE
