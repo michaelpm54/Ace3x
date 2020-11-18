@@ -86,7 +86,7 @@
        </property>
        <widget class="QSplitter" name="view_ref_splitter">
         <property name="sizePolicy">
-         <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
+         <sizepolicy hsizetype="MinimumExpanding" vsizetype="Minimum">
           <horstretch>0</horstretch>
           <verstretch>3</verstretch>
          </sizepolicy>
@@ -94,7 +94,7 @@
         <property name="orientation">
          <enum>Qt::Horizontal</enum>
         </property>
-        <widget class="ViewManager" name="view_manager">
+        <widget class="ViewManager" name="view_manager" native="true">
          <property name="sizePolicy">
           <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
            <horstretch>90</horstretch>
@@ -131,9 +131,9 @@
        </widget>
        <widget class="QGroupBox" name="groupBox">
         <property name="sizePolicy">
-         <sizepolicy hsizetype="Preferred" vsizetype="Maximum">
+         <sizepolicy hsizetype="Maximum" vsizetype="Maximum">
           <horstretch>0</horstretch>
-          <verstretch>2</verstretch>
+          <verstretch>1</verstretch>
          </sizepolicy>
         </property>
         <property name="title">
@@ -249,7 +249,7 @@
   </customwidget>
   <customwidget>
    <class>ViewManager</class>
-   <extends>QGroupBox</extends>
+   <extends>QWidget</extends>
    <header>widgets/view-manager.hpp</header>
    <container>1</container>
   </customwidget>
