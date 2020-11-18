@@ -35,6 +35,7 @@ public slots:
 private slots:
     void update_selection(const QItemSelection &selected, const QItemSelection &deselected);
     void load_extra(const QString &path);
+    void add_referenced_file(const std::string &filename);
 
 private:
     void load_settings();

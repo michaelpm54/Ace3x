@@ -63,6 +63,7 @@ set(ACE3X_SOURCES
 	src/widgets/view-manager.cpp
 
 	# Qt widgets to view specific formats
+	src/widgets/format-viewers/viewer.cpp
     src/widgets/format-viewers/image-viewer.cpp
     src/widgets/format-viewers/plaintext-viewer.cpp
     src/widgets/format-viewers/p3d-viewer.cpp

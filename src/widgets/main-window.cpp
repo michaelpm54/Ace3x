@@ -69,11 +69,15 @@ MainWindow::MainWindow(QWidget *parent)
     connect(ui->tree_view, &QTreeView::expanded, this, [this]() {
         ui->tree_view->resizeColumnToContents(0);
     });
+    connect(ui->inspector, &FileInfoFrame::view_clicked, this, [this]() {
+        ui->referenced_files->clear();
+    });
     connect(ui->inspector, &FileInfoFrame::view_clicked, ui->view_stack, &ViewManager::activate_viewer);
     connect(ui->clear_log_btn, &QPushButton::clicked, this, [this]() {
         ui->log->clear();
     });
     connect(vf2_viewer, &Vf2Viewer::request_load, this, &MainWindow::load_extra);
+    connect(ui->view_stack, &ViewManager::referenced_file, this, &MainWindow::add_referenced_file);
 }
 
 MainWindow::~MainWindow()
@@ -192,4 +196,9 @@ void MainWindow::action_about()
                        "License - <a href=\"https://www.gnu.org/licenses/gpl-3.0.en.html\">GNU GENERAL PUBLIC LICENSE Version 3</a><br/>"
                        "<a href=\"https://github.com/michaelpm54/Ace3x\">GitHub</a>");
     /* clang-format on */
+}
+
+void MainWindow::add_referenced_file(const std::string &filename)
+{
+    ui->referenced_files->addItem(new QListWidgetItem(QString::fromStdString(filename)));
 }

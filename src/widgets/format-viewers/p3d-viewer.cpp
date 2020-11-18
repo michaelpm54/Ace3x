@@ -127,6 +127,7 @@ void P3DViewer::activate(const VfsEntry *item)
     for (auto &f : names) {
         auto str = QString::fromStdString(f);
         if (str.endsWith("tga", Qt::CaseSensitivity::CaseInsensitive)) {
+            emit referenced_file(str.toStdString());
             ui_->imgList->addItem(str);
         }
         else if (str.startsWith('$')) {

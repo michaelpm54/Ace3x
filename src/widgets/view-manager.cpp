@@ -15,8 +15,12 @@ void ViewManager::add_viewer(const std::string& ext, Viewer* viewer)
 {
     assert(!viewers_.count(ext));
     viewers_[ext] = viewer;
-    if (indexOf(viewer) == -1)
+    if (indexOf(viewer) == -1) {
+        connect(viewer, &Viewer::referenced_file, this, [this](const std::string& filename) {
+            emit referenced_file(filename);
+        });
         addWidget(viewer);
+    }
 }
 
 bool ViewManager::has_viewer(const std::string& ext) const

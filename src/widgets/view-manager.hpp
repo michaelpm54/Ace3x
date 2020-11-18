@@ -12,6 +12,7 @@ class Viewer;
 
 class ViewManager : public QStackedWidget {
     Q_OBJECT
+
 public:
     ViewManager(QWidget *parent = nullptr);
 
@@ -21,6 +22,9 @@ public:
 
 public slots:
     void activate_viewer(VfsEntry *entry);
+
+signals:
+    void referenced_file(const std::string &filename);
 
 private:
     Viewer *empty_viewer_;
