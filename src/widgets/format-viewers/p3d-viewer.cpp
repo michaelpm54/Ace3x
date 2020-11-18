@@ -75,10 +75,6 @@ P3DViewer::P3DViewer(QWidget *parent)
 {
     ui_->setupUi(this);
 
-    resize(800, 600);
-
-    setWindowTitle("Ace3x - P3D Viewer");
-
     ui_->navTable->setColumnCount(8);
     ui_->navTable->setHorizontalHeaderLabels({"Name", "?", "?", "?", "?", "x", "y", "z"});
     ui_->navTable->setSortingEnabled(true);

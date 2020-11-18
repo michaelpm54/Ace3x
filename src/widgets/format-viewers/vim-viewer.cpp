@@ -36,8 +36,6 @@ VIMViewer::VIMViewer(QWidget *parent)
     , ui_(new Ui::VIMViewer())
 {
     ui_->setupUi(this);
-    setWindowTitle("Ace3x - VIM Viewer");
-    resize(800, 600);
 
     connect(ui_->sub0List, &QTableWidget::itemSelectionChanged, this, &VIMViewer::sub0Changed);
 

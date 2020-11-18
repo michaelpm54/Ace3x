@@ -19,8 +19,6 @@ ImageViewer::ImageViewer(QWidget *parent)
 {
     ui_->setupUi(this);
 
-    setWindowTitle("Ace3x - Image Viewer");
-
     connect(ui_->prev, &QPushButton::pressed, this, [this]() {
         prevFrame();
     });

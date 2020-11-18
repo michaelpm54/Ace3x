@@ -13,8 +13,6 @@ PlaintextViewer::PlaintextViewer(QWidget *parent)
     , ui_(new Ui::PlaintextViewer())
 {
     ui_->setupUi(this);
-    setWindowTitle("Ace3x - Plaintext Viewer");
-    resize(800, 600);
 }
 
 void PlaintextViewer::activate(const VfsEntry *item)

@@ -27,7 +27,6 @@ Vf2Viewer::Vf2Viewer(Vfs *vfs, QWidget *parent)
     , font_pixmap_(new QPixmap())
 {
     ui_->setupUi(this);
-    setWindowTitle("Ace3x - Font Viewer");
 
     ui_->graphicsView->setScene(font_scene_);
 
