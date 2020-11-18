@@ -29,8 +29,6 @@ protected:
 
 private:
     void updateImage();
-
-private slots:
     void nextFrame();
     void prevFrame();
     void saveFrame();
