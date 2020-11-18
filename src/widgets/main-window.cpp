@@ -48,6 +48,7 @@ MainWindow::MainWindow(QWidget *parent)
 
     auto *image_viewer {new ImageViewer()};
     auto *text_viewer {new PlaintextViewer()};
+    auto *vf2_viewer {new Vf2Viewer(vfs_.get())};
     ui->view_stack->add_viewer(".peg", image_viewer);
     ui->view_stack->add_viewer(".tga", image_viewer);
     ui->view_stack->add_viewer(".vbm", image_viewer);
@@ -55,7 +56,7 @@ MainWindow::MainWindow(QWidget *parent)
     ui->view_stack->add_viewer(".arr", text_viewer);
     ui->view_stack->add_viewer(".vim", new VIMViewer());
     ui->view_stack->add_viewer(".p3d", new P3DViewer());
-    ui->view_stack->add_viewer(".vf2", new Vf2Viewer(vfs_.get()));
+    ui->view_stack->add_viewer(".vf2", vf2_viewer);
 
     load_settings();
 
@@ -72,7 +73,7 @@ MainWindow::MainWindow(QWidget *parent)
     connect(ui->clear_log_btn, &QPushButton::clicked, this, [this]() {
         ui->log->clear();
     });
-    //connect(vf2_viewer_, &Vf2Viewer::request_load, this, &MainWindow::load_extra);
+    connect(vf2_viewer, &Vf2Viewer::request_load, this, &MainWindow::load_extra);
 }
 
 MainWindow::~MainWindow()
