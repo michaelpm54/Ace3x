@@ -84,7 +84,7 @@ P3DViewer::P3DViewer(QWidget *parent)
 
 void P3DViewer::onWriteObjClicked()
 {
-    //writeVerticesToObj(QString::fromStdString(item_->getFilename()), p3d_header_, item_->getData());
+    writeVerticesToObj(QString::fromStdString(item_->name), p3d_header_, item_->data);
 }
 
 void P3DViewer::activate(const VfsEntry *item)
