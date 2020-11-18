@@ -13,6 +13,7 @@ struct Image {
     std::vector<std::uint32_t> pixels;
     int width;
     int height;
+    std::uint16_t format;
 };
 
 std::vector<ArchiveEntry> read_entries(const unsigned char *const data, const std::string &peg_name);

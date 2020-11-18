@@ -123,6 +123,28 @@ void ImageViewer::updateImage()
     ui_->image_size->setText(QLocale::system().formattedDataSize(peg_->entries[current_frame_index_]->size, 2, nullptr));
     ui_->image_index->setText(QString::number(current_frame_index_ + 1));
     ui_->image_label->setPixmap(QPixmap::fromImage(qt_image));
+    ui_->raw_format->setText(QString::number(peg_image.format, 16));
+
+    QString format_name;
+    switch (peg_image.format) {
+        case 0x3:
+            format_name = "RGBA 5551";
+            break;
+        case 0x7:
+            format_name = "RGBA 32";
+            break;
+        case 0x104:
+            format_name = "RGBA 5551 Indexed";
+            break;
+        case 0x204:
+            format_name = "RGBA 32 Indexed";
+            break;
+        default:
+            format_name = "Unknown";
+            break;
+    }
+
+    ui_->format->setText(format_name);
 }
 
 bool ImageViewer::shouldBeEnabled(const VfsEntry *item) const

@@ -1,9 +1,12 @@
 /* SPDX-License-Identifier: GPLv3-or-later */
 
+#include <algorithm>
 #include <cstdint>
 #include <cstring>
 
 enum FrameFormat {
+    PixelFormatRgba5551 = 0x3,
+    PixelFormatRgba32 = 0x7,
     PixelFormatRgba5551Indexed = 0x104,    // gggrrrrr abbbbbgg
     PixelFormat0x105 = 0x105,
     PixelFormatRgba32Indexed = 0x204,
@@ -44,12 +47,62 @@ void decode_rgba32_indexed(std::uint32_t *dst, const unsigned char *const src, s
     static constexpr auto kPaletteDataSize = kNumPaletteEntries * kPaletteEntrySize;
 
     std::uint32_t palette[kNumPaletteEntries] = {0};
-
     std::memcpy(palette, src, kPaletteDataSize);
 
+    /* Fix the components.
+    * Found through experimentation, not sure exactly what's going on. */
+    for (auto i = 0u; i < kNumPaletteEntries; i++) {
+        unsigned char *pn = reinterpret_cast<unsigned char *>(&palette[i]);
+        std::swap(pn[0], pn[2]);
+    }
+
+    /* Optimisation(?) to not have to call munge_palette_index on every pixel,
+    * rather, on every palette entry. */
+    std::uint32_t palette_copy[kNumPaletteEntries] = {0};
+    std::memcpy(palette_copy, palette, kNumPaletteEntries * 4);
+
+    for (auto i = 0u; i < kNumPaletteEntries; i++) {
+        palette[i] = palette_copy[munge_palette_index(i)];
+    }
+
     const std::uint32_t size = width * height;
-    for (auto i = 0u; i < size; i++)
-        dst[i] = palette[src[kPaletteDataSize + i]] | 0xFF000000;
+    for (auto i = 0u; i < size; i++) {
+        dst[i] = palette[src[kPaletteDataSize + i]];
+    }
+}
+
+void decode_rgba32(std::uint32_t *dst, const unsigned char *const src, std::uint16_t width, std::uint16_t height)
+{
+    unsigned char *d = reinterpret_cast<unsigned char *>(dst);
+
+    int size = width * height * 4;
+
+    for (int i = 0; i < size; i += 4) {
+        d[i + 0] = src[i + 2];
+        d[i + 1] = src[i + 1];
+        d[i + 2] = src[i + 0];
+        d[i + 3] = 0xFF;
+    }
+}
+
+void decode_rgba5551(std::uint32_t *dst, const unsigned char *const src, std::uint16_t width, std::uint16_t height)
+{
+    unsigned char *d = reinterpret_cast<unsigned char *>(dst);
+
+    int size = width * height;
+
+    for (int i = 0; i < size; i += 2) {
+        std::uint8_t r = src[i + 0] & 0x1F;
+        std::uint8_t b = (src[i + 1] & 0x7C) >> 2;
+
+        d[i + 0] = src[i + 0];
+        d[i + 0] &= 0xE0;
+        d[i + 0] |= b;
+
+        d[i + 1] = src[i + 1];
+        d[i + 1] &= 0x83;
+        d[i + 1] |= (r << 2);
+    }
 }
 
 namespace ace3x::peg {
@@ -57,6 +110,12 @@ namespace ace3x::peg {
 void decode(std::uint32_t *dst, const unsigned char *const src, std::uint16_t width, std::uint16_t height, std::uint16_t format)
 {
     switch (format) {
+        case PixelFormatRgba5551:
+            decode_rgba5551(dst, src, width, height);
+            break;
+        case PixelFormatRgba32:
+            decode_rgba32(dst, src, width, height);
+            break;
         case PixelFormatRgba5551Indexed:
             decode_rgba5551_indexed(dst, src, width, height);
             break;

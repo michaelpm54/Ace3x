@@ -105,7 +105,11 @@ std::vector<Image> get_images(const unsigned char *const data)
         image.width = frame.width;
         image.height = frame.height;
         image.filename = frame.filename;
+        image.format = frame.format;
+
         image.pixels.resize(static_cast<std::uint64_t>(frame.width) * static_cast<uint64_t>(frame.height));
+        std::fill(image.pixels.begin(), image.pixels.end(), 0);
+
         ace3x::peg::decode(image.pixels.data(), reinterpret_cast<const unsigned char *>(data + frame.offset), frame.width, frame.height, frame.format);
 
         images.push_back(image);
