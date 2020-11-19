@@ -9,6 +9,8 @@
 #include "formats/p3d.hpp"
 #include "widgets/format-viewers/viewer.hpp"
 
+using u32 = std::uint32_t;
+
 namespace Ui {
 class P3DViewer;
 }
@@ -24,13 +26,9 @@ public:
     bool shouldBeEnabled(const VfsEntry *item) const override;
 
 private:
-    struct P3DInternal {
-        std::uint32_t verticesStart;
-    };
-
-private:
     void addNavpoint(const QString &str, const P3DHeader &header, const std::uint8_t *const navpoint_data);
     void writeVerticesToObj(const QString &fileName, const P3DHeader &header, const std::uint8_t *const vertex_data);
+    void load_layers(const unsigned char *data, u32 count, u32 offset);
 
 private slots:
     void onWriteObjClicked();

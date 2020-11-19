@@ -11,10 +11,46 @@
 #include "ui_p3d-viewer.h"
 #include "vfs/vfs-entry.hpp"
 
+using u16 = std::uint16_t;
+using u32 = std::uint32_t;
+using f32 = float;
+
+struct sub_structure_0 {
+    /* 0000014A, 0000014B, 00000152, 00000154 */
+    u32 unk_0x0;
+    /* FFFF FFFF 0005 0005 */
+    u16 unk_0x4;
+    /* FFFF FFFF 0004 0004 */
+    u16 unk_0x6;
+    /* FFFFFFFF FFFFFFFF 00000003 00000002 */
+    u32 unk_0x8;
+    f32 unk_0xC;
+    f32 unk_0x10;
+    f32 unk_0x14;
+    f32 unk_0x18;
+    f32 unk_0x1C;
+    f32 unk_0x20;
+    f32 unk_0x24;
+    f32 unk_0x28;
+    f32 unk_0x2C;
+    f32 unk_0x30;
+    f32 unk_0x34;
+    f32 unk_0x38;
+    f32 unk_0x3C;
+    f32 unk_0x40;
+    f32 unk_0x44;
+};
+
+struct p3d_layer {
+    u32 layer_name;
+    u32 num_objects;
+    u32 ofs_0xC;
+};
+
 void P3DViewer::writeVerticesToObj(const QString &fileName, const P3DHeader &header, const std::uint8_t *const vertex_data)
 {
     std::vector<P3DSubHeader> subHeaders(header.numSubHeaders);
-    memcpy(subHeaders.data(), vertex_data + header.filenamesEnd, sizeof(P3DSubHeader) * header.numSubHeaders);
+    memcpy(subHeaders.data(), vertex_data + header.filenamesEnd_xStart, sizeof(P3DSubHeader) * header.numSubHeaders);
 
     const auto filename = fmt::format("{}.obj", fileName.toStdString());
 
@@ -91,7 +127,6 @@ void P3DViewer::activate(const VfsEntry *item)
 {
     ui_->objList->clear();
     ui_->imgList->clear();
-    ui_->lyrList->clear();
     ui_->navTable->clearContents();
 
     show();
@@ -107,7 +142,7 @@ void P3DViewer::activate(const VfsEntry *item)
     p3d_header_ = header;
 
     std::uint32_t namesStart = sizeof(P3DHeader);
-    std::uint32_t namesEnd = header.filenamesEnd;
+    std::uint32_t namesEnd = header.filenamesEnd_xStart;
     std::vector<std::string> names;
     {
         std::ptrdiff_t offset = namesStart;
@@ -132,7 +167,7 @@ void P3DViewer::activate(const VfsEntry *item)
                 addNavpoint(str, header, ptr);
             }
             else {
-                ui_->lyrList->addItem(str);
+                //ui_->lyrList->addItem(str);
             }
         }
         else {
@@ -142,11 +177,12 @@ void P3DViewer::activate(const VfsEntry *item)
 
     ui_->objCount->setNum(ui_->objList->count());
     ui_->imgCount->setNum(ui_->imgList->count());
-    ui_->lyrCount->setNum(ui_->lyrList->count());
     ui_->navCount->setNum(ui_->navTable->rowCount());
 
     ui_->navTable->resizeColumnsToContents();
     ui_->navTable->sortItems(0, Qt::SortOrder::AscendingOrder);
+
+    load_layers(item->data, header.num_layers_2C, header.ptr_layers_30);
 }
 
 bool P3DViewer::shouldBeEnabled(const VfsEntry *) const
@@ -171,4 +207,32 @@ void P3DViewer::addNavpoint(const QString &str, const P3DHeader &header, const s
     ui_->navTable->setItem(row, 5, new QTableWidgetItem(QString::number(nav.x, 'g', 4)));
     ui_->navTable->setItem(row, 6, new QTableWidgetItem(QString::number(nav.y, 'g', 4)));
     ui_->navTable->setItem(row, 7, new QTableWidgetItem(QString::number(nav.z, 'g', 4)));
+}
+
+void P3DViewer::load_layers(const unsigned char *data, u32 count, u32 offset)
+{
+    std::vector<p3d_layer> layers(count);
+    std::memcpy(layers.data(), data + offset, count * sizeof(p3d_layer));
+
+    ui_->layer_count->setNum(static_cast<double>(count));
+
+    ui_->layer_table->clear();
+    ui_->layer_table->setRowCount(count);
+    ui_->layer_table->setColumnCount(3);
+    ui_->layer_table->setHorizontalHeaderLabels({"Name", "# objects", "Offset"});
+
+    for (auto i = 0; i < count; i++) {
+        char name[16];
+        for (int j = 0; j < 16; j++) {
+            name[j] = data[layers[i].layer_name + j];
+            if (name[j] == '\0') {
+                break;
+            }
+        }
+        name[15] = '\0';
+
+        ui_->layer_table->setItem(i, 0, new QTableWidgetItem(name));
+        ui_->layer_table->setItem(i, 1, new QTableWidgetItem(QString::number(layers[i].num_objects)));
+        ui_->layer_table->setItem(i, 2, new QTableWidgetItem("0x" + QString::number(layers[i].ofs_0xC, 16)));
+    }
 }
