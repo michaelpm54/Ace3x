@@ -124,6 +124,7 @@ void ImageViewer::updateImage()
     ui_->image_index->setText(QString::number(current_frame_index_ + 1));
     ui_->image_label->setPixmap(QPixmap::fromImage(qt_image));
     ui_->raw_format->setText(QString::number(peg_image.format, 16));
+    ui_->dimensions->setText(QString("%1x%2").arg(peg_image.width).arg(peg_image.height));
 
     QString format_name;
     switch (peg_image.format) {
