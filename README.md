@@ -1,5 +1,5 @@
 # Ace3x
 
-![](/screenshots/image2.png)
+![](/screenshots/image-viewer.png)
 
 See 'screenshots/' folder for more.
