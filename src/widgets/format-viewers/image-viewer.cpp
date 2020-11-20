@@ -47,6 +47,11 @@ ImageViewer::ImageViewer(QWidget *parent)
         current_frame_index_ = value - 1;
         updateImage();
     });
+    connect(ui_->brightness, &QSlider::valueChanged, this, [this]() {
+        auto rgb = ui_->brightness->value() / 100.0f * 255.0f;
+        ui_->image_label->setStyleSheet(QString("background-color:rgb(%1,%2,%3)").arg(rgb).arg(rgb).arg(rgb));
+    });
+    ui_->brightness->setValue(49);
 }
 
 void ImageViewer::activate(const VfsEntry *item)
