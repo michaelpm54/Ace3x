@@ -26,8 +26,8 @@ public:
     bool shouldBeEnabled(const VfsEntry *item) const override;
 
 private:
-    void addNavpoint(const QString &str, const P3DHeader &header, const std::uint8_t *const navpoint_data);
-    void writeVerticesToObj(const QString &fileName, const P3DHeader &header, const std::uint8_t *const vertex_data);
+    void write_vertices(const QString &fileName, const P3DHeader &header, const unsigned char *const item_data);
+    void load_navpoints(const unsigned char *data, u32 count, u32 offset);
     void load_layers(const unsigned char *data, u32 count, u32 offset);
 
 private slots:
@@ -36,7 +36,8 @@ private slots:
 private:
     std::unique_ptr<Ui::P3DViewer> ui_;
     const VfsEntry *item_ {nullptr};
-    P3DHeader p3d_header_;
+    P3DHeader header_;
+    std::vector<P3DNavpoint> navpoints_;
 };
 
 #endif    // ACE3X_WIDGETS_FORMAT_VIEWERS_P3D_VIEWER_HPP_
